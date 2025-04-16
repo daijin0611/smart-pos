@@ -6,7 +6,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="pos-common" />
         <module name="pos-web" />
         <module name="pos-server" />
       </profile>
@@ -14,8 +13,6 @@
     <bytecodeTargetLevel>
       <module name="pos-common" target="17" />
       <module name="pos-java" target="17" />
-      <module name="pos-server" target="17" />
-      <module name="pos-web" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
