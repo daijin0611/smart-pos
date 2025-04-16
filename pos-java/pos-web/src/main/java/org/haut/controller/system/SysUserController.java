@@ -38,7 +38,6 @@ public class SysUserController {
         return JsonVO.success(sysUserService.getList(query));
     }
 
-
     @GetMapping("/query-info")
     @Operation(description = "根据用户id查询详细信息", summary = "根据用户id查询详细信息")
     public JsonVO<UserInfoDTO> getUserById(@RequestParam Long id){
