@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: com.baomidou:mybatis-plus-annotation:3.5.11" type="java-imported" external-system-id="Maven">
+    <properties groupId="com.baomidou" artifactId="mybatis-plus-annotation" version="3.5.11" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../maven-repository/com/baomidou/mybatis-plus-annotation/3.5.11/mybatis-plus-annotation-3.5.11.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../../maven-repository/com/baomidou/mybatis-plus-annotation/3.5.11/mybatis-plus-annotation-3.5.11-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../maven-repository/com/baomidou/mybatis-plus-annotation/3.5.11/mybatis-plus-annotation-3.5.11-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
