@@ -69,8 +69,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="ServerProduct" />
-                  <option name="tableName" value="server_product" />
+                  <option name="className" value="ServerPackage" />
+                  <option name="tableName" value="server_package" />
                 </TableUIInfo>
               </list>
             </option>

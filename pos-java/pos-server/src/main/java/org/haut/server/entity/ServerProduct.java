@@ -17,7 +17,7 @@ import lombok.Data;
 @Schema(description = "服务产品表")
 public class ServerProduct {
     /**
-     * 主键
+     * 主键 自增
      */
     @TableId(type = IdType.AUTO)
     private Long id;
@@ -83,6 +83,10 @@ public class ServerProduct {
      */
     private BigDecimal productCommissionPrice;
 
+
+//    equals 方法：
+//    作用：用于比较两个对象是否相等。
+//    实现：通过比较对象的各个字段来判断两个对象是否相等。如果所有字段都相等，则认为两个对象相等。
 //    @Override
 //    public boolean equals(Object that) {
 //        if (this == that) {
@@ -110,6 +114,9 @@ public class ServerProduct {
 //            && (this.getProductCommissionPrice() == null ? other.getProductCommissionPrice() == null : this.getProductCommissionPrice().equals(other.getProductCommissionPrice()));
 //    }
 //
+//hashCode 方法：
+//    作用：用于生成对象的哈希码，通常用于哈希表（如 HashMap）中。
+//    实现：根据对象的字段生成一个整数哈希码
 //    @Override
 //    public int hashCode() {
 //        final int prime = 31;
