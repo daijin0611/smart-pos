@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.server.ServerProductInfoDTO;
-import org.haut.common.domain.dto.server.ServerProductListDto;
+import org.haut.common.domain.dto.server.ServerProductListDTO;
 import org.haut.common.domain.query.ServerProductListQuery;
 import org.haut.server.entity.ServerProduct;
 import org.haut.server.service.ServerProductService;
@@ -26,7 +26,7 @@ public class ServerProductController {
 
     @GetMapping("/query-list")
     @Operation(description = "获取服务产品列表", summary = "获取服务产品列表")
-    public JsonVO<List<ServerProductListDto>> getList(ServerProductListQuery query){
+    public JsonVO<List<ServerProductListDTO>> getList(ServerProductListQuery query){
         log.info(query.toString());
         return JsonVO.success(serverProductService.getList(query));
     }
@@ -44,8 +44,13 @@ public class ServerProductController {
     @Operation(description = "添加服务产品", summary = "添加服务产品")
     public JsonVO<String> addServerProduct(@Validated @RequestBody ServerProductInfoDTO product) {
         // 将 ServerProductInfoDTO 转换为 ServerProduct 实体类
-        serverProductService.save(BeanUtil.toBean(product, ServerProduct.class));
-        return JsonVO.success("添加成功");
+        ServerProduct serverProduct = BeanUtil.toBean(product, ServerProduct.class);
+        boolean result = serverProductService.saveOrUpdateProduct(serverProduct);
+        if (result) {
+            return JsonVO.success("添加成功");
+        } else {
+            return JsonVO.fail("添加失败");
+        }
     }
 
 
