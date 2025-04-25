@@ -1,10 +1,8 @@
-package org.haut.common.domain.query;
+package org.haut.common.domain.query.system;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 @Schema(description = "用户列表查询对象")

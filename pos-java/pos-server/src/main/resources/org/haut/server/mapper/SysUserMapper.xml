@@ -7,7 +7,7 @@
     <resultMap id="BaseResultMap" type="org.haut.server.entity.SysUser">
             <id property="id" column="id" />
             <result property="createTime" column="create_time" />
-            <result property="updataTime" column="updata_time" />
+            <result property="updateTime" column="update_time" />
             <result property="isDelete" column="is_delete" />
             <result property="userCode" column="user_code" />
             <result property="userPassword" column="user_password" />
