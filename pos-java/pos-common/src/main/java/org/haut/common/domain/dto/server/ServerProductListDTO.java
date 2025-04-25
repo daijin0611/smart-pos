@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 @Data
 @Schema(description = "服务产品列表对象")
-public class ServerProductListDto {
+public class ServerProductListDTO {
 
 
     /**

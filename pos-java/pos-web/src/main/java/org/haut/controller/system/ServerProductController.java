@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.server.ServerProductInfoDTO;
-import org.haut.common.domain.dto.server.ServerProductListDto;
+import org.haut.common.domain.dto.server.ServerProductListDTO;
 import org.haut.common.domain.query.ServerProductListQuery;
 import org.haut.server.entity.ServerProduct;
 import org.haut.server.service.ServerProductService;
@@ -17,7 +17,7 @@ import org.haut.common.domain.vo.JsonVO;
 import java.util.List;
 
 @RestController
-@RequestMapping("/server/serverProduct")
+@RequestMapping("/server/product")
 @Tag(name = "服务产品管理", description = "服务产品管理")
 @Slf4j
 public class ServerProductController {
@@ -26,7 +26,7 @@ public class ServerProductController {
 
     @GetMapping("/query-list")
     @Operation(description = "获取服务产品列表", summary = "获取服务产品列表")
-    public JsonVO<List<ServerProductListDto>> getList(ServerProductListQuery query){
+    public JsonVO<List<ServerProductListDTO>> getList(ServerProductListQuery query){
         log.info(query.toString());
         return JsonVO.success(serverProductService.getList(query));
     }
@@ -40,16 +40,17 @@ public class ServerProductController {
         return JsonVO.success(productInfoDTO);
     }
 
-    @PostMapping("/add-serverProduct")
+    @PostMapping("/add-product")
     @Operation(description = "添加服务产品", summary = "添加服务产品")
     public JsonVO<String> addServerProduct(@Validated @RequestBody ServerProductInfoDTO product) {
         // 将 ServerProductInfoDTO 转换为 ServerProduct 实体类
+        product.setId(null);
         serverProductService.save(BeanUtil.toBean(product, ServerProduct.class));
         return JsonVO.success("添加成功");
     }
 
 
-    @PutMapping("/update-serverProduct")
+    @PutMapping("/update-product")
     @Operation(description = "更新服务产品", summary = "更新服务产品")
     public JsonVO<String> updateServerProduct(@Validated @RequestBody ServerProductInfoDTO product) {
         // 将 ServerProductInfoDTO 转换为 ServerProduct 实体类并更新

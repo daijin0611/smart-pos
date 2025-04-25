@@ -3,7 +3,8 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.haut.common.domain.dto.server.ServerProductListDto;
+import org.haut.common.domain.dto.server.ServerProductListDTO;
+
 import org.haut.common.domain.query.ServerProductListQuery;
 import org.haut.server.entity.ServerProduct;
 import org.haut.server.service.ServerProductService;
@@ -26,11 +27,12 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
 
     /**
      * 查询服务产品列表,条件查询
+     *
      * @param query
      * @return
      */
     @Override
-    public List<ServerProductListDto> getList(ServerProductListQuery query) {
+    public List<ServerProductListDTO> getList(ServerProductListQuery query) {
         //构建条件查询器，当产品名称、产品编号不为空时，进行查询
         QueryWrapper<ServerProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(query.getProductName()),"product_name",query.getProductName())
@@ -38,7 +40,7 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
         //查询数据库
         List<ServerProduct> serverProducts = serverProductMapper.selectList(queryWrapper);
         //转化为DTO
-        return BeanUtil.copyToList(serverProducts, ServerProductListDto.class);
+        return BeanUtil.copyToList(serverProducts, ServerProductListDTO.class);
     }
 
 

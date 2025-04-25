@@ -43,11 +43,11 @@ public class ServerProductInfoDTO {
     private String productEncode;
 
     @Schema(description = "服务产品标准价格")
-    @NotBlank(message = "服务产品标准价格不能为空")
+//    @NotBlank(message = "服务产品标准价格不能为空")
     private BigDecimal productPrice;
 
     @Schema(description = "服务产品VIP价格")
-    @NotBlank(message = "服务产品VIP价格不能为空")
+//    @NotBlank(message = "服务产品VIP价格不能为空")
     private BigDecimal vipProductPrice;
 
     @Schema(description = "服务产品是否参与打折（0是，1否）")
