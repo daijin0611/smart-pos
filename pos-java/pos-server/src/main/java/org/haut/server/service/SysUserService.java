@@ -1,8 +1,7 @@
 package org.haut.server.service;
 
-import org.haut.common.domain.dto.system.UserInfoDTO;
 import org.haut.common.domain.dto.system.UserListDTO;
-import org.haut.common.domain.query.UserListQuery;
+import org.haut.common.domain.query.system.UserListQuery;
 import org.haut.server.entity.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
