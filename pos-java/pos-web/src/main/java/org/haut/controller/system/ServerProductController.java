@@ -17,7 +17,7 @@ import org.haut.common.domain.vo.JsonVO;
 import java.util.List;
 
 @RestController
-@RequestMapping("/server/product")
+@RequestMapping("/server/serverProduct")
 @Tag(name = "服务产品管理", description = "服务产品管理")
 @Slf4j
 public class ServerProductController {
@@ -40,17 +40,21 @@ public class ServerProductController {
         return JsonVO.success(productInfoDTO);
     }
 
-    @PostMapping("/add-product")
+    @PostMapping("/add-serverProduct")
     @Operation(description = "添加服务产品", summary = "添加服务产品")
     public JsonVO<String> addServerProduct(@Validated @RequestBody ServerProductInfoDTO product) {
         // 将 ServerProductInfoDTO 转换为 ServerProduct 实体类
-        product.setId(null);
-        serverProductService.save(BeanUtil.toBean(product, ServerProduct.class));
-        return JsonVO.success("添加成功");
+        ServerProduct serverProduct = BeanUtil.toBean(product, ServerProduct.class);
+        boolean result = serverProductService.saveOrUpdateProduct(serverProduct);
+        if (result) {
+            return JsonVO.success("添加成功");
+        } else {
+            return JsonVO.fail("添加失败");
+        }
     }
 
 
-    @PutMapping("/update-product")
+    @PutMapping("/update-serverProduct")
     @Operation(description = "更新服务产品", summary = "更新服务产品")
     public JsonVO<String> updateServerProduct(@Validated @RequestBody ServerProductInfoDTO product) {
         // 将 ServerProductInfoDTO 转换为 ServerProduct 实体类并更新
