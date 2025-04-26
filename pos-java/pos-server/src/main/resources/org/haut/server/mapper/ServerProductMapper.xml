@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.mapper.ServerProductMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.entity.ServerProduct">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="productName" column="product_name" />
+            <result property="productEncode" column="product_encode" />
+            <result property="productPrice" column="product_price" />
+            <result property="vipProductPrice" column="vip_product_price" />
+            <result property="isDiscount" column="is_discount" />
+            <result property="commissioinType" column="commissioin_type" />
+            <result property="productCommissionValue" column="product_commission_value" />
+            <result property="productCommissionPrice" column="product_commission_price" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,product_name,
+        product_encode,product_price,vip_product_price,is_discount,commissioin_type,
+        product_commission_value,product_commission_price
+    </sql>
+</mapper>
