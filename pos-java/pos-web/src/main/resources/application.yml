@@ -14,6 +14,9 @@ spring:
           max-wait: -1  # 最大等待时间（-1表示无限等待）
           max-idle: 8  # 最大空闲连接数
           min-idle: 0  # 最小空闲连接数
+  jackson:
+    time-zone: GMT+8  # 设置 Jackson 的时区为 GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss  # 设置 Jackson 的日期格式
 
   datasource: # 数据源配置
     type: com.alibaba.druid.pool.DruidDataSource
