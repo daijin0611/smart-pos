@@ -1,4 +1,4 @@
-package org.haut.controller.system;
+package org.haut.controller.server;
 
 import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;

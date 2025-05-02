@@ -62,14 +62,17 @@ public class ServerItemInfoDTO {
     @Schema(description = "该服务项目提成类型")
     private String commissionType;
 
-    @Schema(description = "该服务项目提成值（比例）（轮牌）")
+    @Schema(description = "该服务项目提成值比例（轮牌）")
     private BigDecimal commissionValueRotation;
 
-    @Schema(description = "该服务项目提成值（比例）（点钟）")
+    @Schema(description = "该服务项目提成值比例（点钟）")
     private BigDecimal commissionValueAppointment;
 
-    @Schema(description = "该服务项目提成值（固定值）")
+    @Schema(description = "该服务项目提成值比例（加钟）")
     private BigDecimal commissionValueExtend;
+
+    @Schema(description = "提成基数")
+    private String commissionBase;
 
 
 }
