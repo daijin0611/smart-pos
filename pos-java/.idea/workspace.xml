@@ -4,19 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="651de768-4470-4992-94d7-808051028b48" name="Changes" comment="完成用户（员工相关接口）">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/mybatisx/templates.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/query/ServerItemListQuery.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/impl/ServerItemServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/server/ServerItemController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/ServerItemInfoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/ServerItemInfoDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/ServerItemListDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/ServerItemListDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/system/ServerProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/server/ServerProductController.java" afterDir="false" />
-    </list>
+    <list default="true" id="651de768-4470-4992-94d7-808051028b48" name="Changes" comment="完成品项设定——项目管理四个接口" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -142,7 +130,7 @@
       <workItem from="1745839173839" duration="226000" />
       <workItem from="1745975747902" duration="8985000" />
       <workItem from="1746169685719" duration="936000" />
-      <workItem from="1746175317895" duration="1521000" />
+      <workItem from="1746175317895" duration="1871000" />
     </task>
     <task id="LOCAL-00001" summary="完成用户（员工相关接口）">
       <option name="closed" value="true" />
@@ -176,15 +164,35 @@
       <option name="project" value="LOCAL" />
       <updated>1744773916920</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="完成品项设定——项目管理四个接口">
+      <option name="closed" value="true" />
+      <created>1746176958887</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1746176958887</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="完成用户（员工相关接口）" />
-    <option name="LAST_COMMIT_MESSAGE" value="完成用户（员工相关接口）" />
+    <MESSAGE value="完成品项设定——项目管理四个接口" />
+    <option name="LAST_COMMIT_MESSAGE" value="完成品项设定——项目管理四个接口" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

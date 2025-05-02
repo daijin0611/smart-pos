@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.domain.dto.server.ServerItemInfoDTO;
 import org.haut.common.domain.dto.server.ServerItemListDTO;
 import org.haut.common.domain.query.ServerItemListQuery;
 import org.haut.common.domain.vo.JsonVO;
@@ -32,10 +33,10 @@ public class ServerItemController {
 
     @GetMapping("/query-info")
     @Operation(description = "获取服务项目详细信息", summary = "获取服务项目详细信息")
-    public JsonVO<ServerItemListDTO> getServerItemById(@RequestParam Long id) {
+    public JsonVO<ServerItemInfoDTO> getServerItemById(@RequestParam Long id) {
         log.info("服务项目id：{}", id);
-        ServerItemListDTO serverItemListDTO = BeanUtil.toBean(serverItemService.getById(id), ServerItemListDTO.class);
-        return JsonVO.success(serverItemListDTO);
+        ServerItemInfoDTO serverItemInfoDTO = BeanUtil.toBean(serverItemService.getById(id), ServerItemInfoDTO.class);
+        return JsonVO.success(serverItemInfoDTO);
     }
     @PostMapping("/add-item")
     @Operation(description = "添加服务项目", summary = "添加服务项目")
