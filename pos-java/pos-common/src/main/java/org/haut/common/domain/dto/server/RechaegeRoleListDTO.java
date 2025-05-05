@@ -1,0 +1,79 @@
+package org.haut.common.domain.dto.server;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+@Data
+@Schema(description = "充值提成规则列表对象")
+public class RechaegeRoleListDTO {
+    /**
+     * 主键
+     */
+    @Schema(description = "充值提成规则ID", example = "1")
+    @TableId(type = IdType.AUTO)
+    @NotNull(message = "ID不能为空")
+    private Long id;
+
+    /**
+     * 创建时间
+     */
+    @Schema(description = "创建时间")
+    @PastOrPresent(message = "创建时间不能是未来日期")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    @Schema(description = "更新时间")
+    @PastOrPresent(message = "更新时间不能是未来日期")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date updateTime;
+
+    /**
+     * 删除状态(0 存在，1 删除)
+     */
+    @Schema(description = "删除状态(0 存在，1 删除)")
+    private Integer isDelete;
+
+    /**
+     * 备注（其他描述）
+     */
+    @Schema(description = "备注（其他描述）")
+    private String remark;
+
+    /**
+     * 充值提成规则名称
+     */
+    @Schema(description = "充值提成规则名称")
+    @NotBlank(message = "充值提成规则名称不能为空")
+    @Size(max = 20, message = "充值提成规则名称长度不能超过20")
+    private String rechargeRoleName;
+
+    /**
+     * 充值金额
+     */
+    private BigDecimal rechargePrice;
+
+    /**
+     * 提成类型
+     */
+    @Schema(description = "提成类型")
+    private String commissionType;
+
+    /**
+     * 提成值（比例）
+     */
+    @Schema(description = "提成值（比例）")
+    private BigDecimal rechargeCommissionValue;
+}
