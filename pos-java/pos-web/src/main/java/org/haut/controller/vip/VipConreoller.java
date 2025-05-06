@@ -31,7 +31,7 @@ public class VipConreoller {
     @Operation(description = "获取会员列表", summary = "获取会员列表")
     public JsonVO<List<VipListDTO>> getList(VipListQuery query) {
         log.info(query.toString());
-        //TODO
+
         return JsonVO.success(vipInfoService.getList(query));
     }
 
@@ -57,9 +57,4 @@ public class VipConreoller {
         vipInfoService.updateById(BeanUtil.toBean(vip,VipInfo.class));
         return JsonVO.success("更新成功");
     }
-
-
-
-
-
 }

@@ -20,6 +20,11 @@ public class VipInfoDTO {
     @Size(max = 50, message = "姓名长度不能超过50")
     private String infoName;
 
+    @Schema(description = "会员密码", example = "123456")
+    @NotBlank(message = "密码不能为空")
+    @Size(min = 6, max = 20, message = "密码长度必须在6到20位之间")
+    private String infoPwd;
+
     @Schema(description = "性别(0-男,1-女)", example = "1")
     @NotNull(message = "性别不能为空")
     @Min(value = 0, message = "性别值不合法")

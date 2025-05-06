@@ -46,6 +46,11 @@ public class VipInfo {
     private String infoName;
 
     /**
+     * 会员密码
+     */
+    private String infoPwd;
+
+    /**
      * 性别（0 男，1 女）
      */
     private Integer infoGender;
@@ -151,5 +156,4 @@ public class VipInfo {
         return sb.toString();
     }
 }
-
-     */
+*/
