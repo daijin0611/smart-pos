@@ -15,6 +15,4 @@ import java.util.List;
 public interface ServerProductService extends IService<ServerProduct> {
 
     List<ServerProductListDTO> getList(ServerProductListQuery query);
-
-    boolean saveOrUpdateProduct(ServerProduct bean);
 }
