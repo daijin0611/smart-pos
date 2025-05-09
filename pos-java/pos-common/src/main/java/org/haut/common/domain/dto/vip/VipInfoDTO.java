@@ -25,6 +25,11 @@ public class VipInfoDTO {
     @Size(min = 6, max = 20, message = "密码长度必须在6到20位之间")
     private String infoPwd;
 
+    @Schema(description = "会员卡号", example = "N008700235")
+    @NotBlank(message = "会员卡号不能为空")
+    @Size(min = 8, max = 20, message = "会员卡号长度必须在8到20位之间")
+    private String infoCardNumber;
+
     @Schema(description = "性别(0-男,1-女)", example = "1")
     @NotNull(message = "性别不能为空")
     @Min(value = 0, message = "性别值不合法")
@@ -62,6 +67,10 @@ public class VipInfoDTO {
 
     @Schema(description = "备注信息", example = "")
     private String remark;
+
+    @Schema(description = "会员资产余额", example = "100.00")
+    private Double assetBalance;
+
 
 
 }

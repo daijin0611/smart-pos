@@ -4,9 +4,12 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.haut.common.domain.dto.vip.VipAssetDTO;
+import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
 import org.haut.common.domain.query.VipListQuery;
 import org.haut.server.entity.VipInfo;
+import org.haut.server.mapper.VipAssetMapper;
 import org.haut.server.service.VipInfoService;
 import org.haut.server.mapper.VipInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,28 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         List<VipInfo> vipInfos = vipInfoMapper.selectList(queryWrapper);
         //转化为DTO
         return BeanUtil.copyToList(vipInfos, VipListDTO.class);
+    }
+
+    @Autowired
+    private VipAssetMapper vipAssetMapper;
+
+    /*
+     * 1.将会员信息表和会员资产表关联查询，查询会员详细信息
+     * 2.根据会员id查询会员详细信息（会员资产表中的余额部分）
+     */
+    @Override
+    public VipInfoDTO getVipById(Long id) {
+        VipInfo vipInfo = getById(id);
+
+        //自定义方法
+        VipAssetDTO vipAssetDTO = vipAssetMapper.selectByVipId(id);
+
+        ////将VipInfo转化为VipInfoDTO
+        VipInfoDTO dto = BeanUtil.toBean(vipInfo, VipInfoDTO.class);
+        if(vipAssetDTO != null){
+            dto.setAssetBalance(vipAssetDTO.getAssetBalance());
+        }
+        return dto;
     }
 }
 

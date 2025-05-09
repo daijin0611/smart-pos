@@ -1,6 +1,7 @@
 package org.haut.server.service;
 
 import org.haut.common.domain.dto.system.UserListDTO;
+import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
 import org.haut.common.domain.query.UserListQuery;
 import org.haut.common.domain.query.VipListQuery;
@@ -16,6 +17,13 @@ import java.util.List;
 */
 public interface VipInfoService extends IService<VipInfo> {
 
+    // 获取会员列表的接口
     List<VipListDTO> getList(VipListQuery query);
+
+    /**
+     *根据会员ID查询详细信息（含资产余额）
+     */
+    VipInfoDTO getVipById(Long id);
+
 
 }

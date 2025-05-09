@@ -4,12 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.haut.common.domain.dto.system.UserInfoDTO;
 import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
 import org.haut.common.domain.query.VipListQuery;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.server.entity.SysUser;
 import org.haut.server.entity.VipInfo;
 import org.haut.server.service.VipInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,7 @@ import java.util.List;
 @RequestMapping("/vip")
 @Tag(name = "会员管理", description = "会员管理")
 @Slf4j
-public class VipConreoller {
+public class VipController {
 
     @Autowired
     private VipInfoService vipInfoService;
@@ -31,7 +29,6 @@ public class VipConreoller {
     @Operation(description = "获取会员列表", summary = "获取会员列表")
     public JsonVO<List<VipListDTO>> getList(VipListQuery query) {
         log.info(query.toString());
-
         return JsonVO.success(vipInfoService.getList(query));
     }
 
@@ -40,8 +37,8 @@ public class VipConreoller {
     public JsonVO<VipInfoDTO> getVipById(@RequestParam Long id) {
         log.info("会员id：{}",id);
         //将VipInfo转化为VipInfoDTO
-        VipInfoDTO vipInfoDTO = BeanUtil.toBean(vipInfoService.getById(id),VipInfoDTO.class);
-        return JsonVO.success(vipInfoDTO);
+        //VipInfoDTO vipInfoDTO = BeanUtil.toBean(vipInfoService.getById(id),VipInfoDTO.class);该行代码在VipInfoServiceImpl.java中已经实现
+        return JsonVO.success(vipInfoService.getVipById(id));
     }
 
     @PostMapping("/add-vip")
