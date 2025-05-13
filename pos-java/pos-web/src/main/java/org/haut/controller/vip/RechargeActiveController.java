@@ -16,17 +16,17 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class RechargeActiveController {
 
-    @GetMapping("/activeName-list")
+    @GetMapping("/active-list")
     @Operation(description = "获取充值活动列表", summary = "获取充值活动列表")
     public JsonVO<RechargeActiveListDTO> getList(RechargeActiveListDTO activeName) {
         log.info(activeName.toString());
         return null;
     }
 
-    @GetMapping("/querry-info")
+    @GetMapping("/active-info")
     @Operation(description = "根据充值活动id查询详细信息", summary = "根据充值活动id查询详细信息")
     public JsonVO<RechargeActiveInfoDTO> getInfoById(@RequestParam Long id) {
-        log.info("会员id：{}",id);
+        log.info("优惠券id：{}",id);
         return null;
     }
 
