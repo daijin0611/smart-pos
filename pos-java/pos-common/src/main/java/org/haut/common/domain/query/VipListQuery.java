@@ -22,6 +22,5 @@ public class VipListQuery {
     /**
      * 手机号
      */
-    @NotNull
     private String vipPhone;
 }

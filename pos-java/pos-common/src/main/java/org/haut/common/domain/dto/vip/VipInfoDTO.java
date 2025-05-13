@@ -36,14 +36,13 @@ public class VipInfoDTO {
     @Max(value = 1, message = "性别值不合法")
     private Integer infoGender;
 
-    @Schema(description = "手机号码", example = "13800138000")
-    @NotBlank(message = "手机号不能为空")
+    @Schema(description = "会员手机号", example = "13800138000")
+    @NotBlank(message = "会员手机号不能为空")
     @Size(min = 11, max = 11, message = "手机号长度必须为11位")
     @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
     private String infoPhoneNumber;
 
     @Schema(description = "会员身份", example = "钻石会员")
-    @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = "普通会员|白银会员|黄金会员|铂金会员|钻石会员", message = "会员身份只能是这几种")
     private String infoIdentity;
 
