@@ -63,6 +63,7 @@ public class RechaegeRoleListDTO {
     /**
      * 充值金额
      */
+    @Schema(description = "充值金额")
     private BigDecimal rechargePrice;
 
     /**
