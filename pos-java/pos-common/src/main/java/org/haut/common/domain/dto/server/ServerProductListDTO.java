@@ -14,29 +14,35 @@ public class ServerProductListDTO {
     /**
      * 产品ID（唯一标识）
      */
-    private Long id;
+//    @Schema(description = "产品ID（唯一标识）", example = "1")
+//    private Long id;
     /**
      * 产品名称
      */
+    @Schema(description = "产品名称", example = "产品名称")
     private String productName;
 
     /**
      * 产品编码
      */
+    @Schema(description = "产品编码", example = "0001")
     private String productEncode;
 
     /**
      * 标准价
      */
+    @Schema(description = "标准价")
     private BigDecimal productPrice;
 
     /**
      * 会员价
      */
+    @Schema(description = "会员价")
     private BigDecimal vipProductPrice;
 
     /**
      * 是否参与打折（0 是，1 否）
      */
+    @Schema(description = "是否参与打折（0 是，1 否）")
     private Integer isDiscount;
 }

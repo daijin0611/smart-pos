@@ -69,8 +69,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="SysUserRole" />
-                  <option name="tableName" value="sys_user_role" />
+                  <option name="className" value="ServerPackageDetail" />
+                  <option name="tableName" value="server_package_detail" />
                 </TableUIInfo>
               </list>
             </option>
