@@ -4,23 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="651de768-4470-4992-94d7-808051028b48" name="Changes" comment="完成用户（员工相关接口）">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/mybatisx/templates.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/entity/SysUserRole.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/mapper/SysUserRoleMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/SysUserRoleService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/impl/SysUserRoleServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pos-server/src/main/resources/org/haut/server/mapper/SysUserRoleMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+    <list default="true" id="651de768-4470-4992-94d7-808051028b48" name="Changes" comment="完成品项设定（充值提成规则3个接口）">
+      <change afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/CureTicketDetailInfoDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/CureTicketInfoDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/CureTicketListDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/PackageDetailDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/PackageInfoDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/PackageListDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/query/ServerCureTicketListQuery.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/query/ServerPackageListQuery.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/server/CureTicketController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/server/PackageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mybatisx/templates.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/mybatisx/templates.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/component/MetaObjectHandlerComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/component/MetaObjectHandlerComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/system/UserInfoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/system/UserInfoDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/query/UserListQuery.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/query/system/UserListQuery.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/SysUserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/SysUserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/impl/SysUserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/impl/SysUserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pos-server/src/main/resources/org/haut/server/mapper/SysUserMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pos-server/src/main/resources/org/haut/server/mapper/SysUserMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/system/SysUserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/system/SysUserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/RechaegeRoleListDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/RechaegeRoleListDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/ServerItemListDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/ServerItemListDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/ServerProductListDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/server/ServerProductListDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/server/ServerItemController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/server/ServerItemController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +87,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;Spring Boot.PosApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev__CDH(20250505)&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/Codes/pos/pos-java&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -143,15 +143,17 @@
       <workItem from="1744773044672" duration="429000" />
       <workItem from="1744773627640" duration="222000" />
       <workItem from="1744773893635" duration="72000" />
-      <workItem from="1744774003712" duration="1084000" />
-      <workItem from="1744983049477" duration="2787000" />
-      <workItem from="1745061996382" duration="2920000" />
-      <workItem from="1745073785034" duration="328000" />
-      <workItem from="1745210099550" duration="1314000" />
-      <workItem from="1745223870648" duration="257000" />
-      <workItem from="1745224140537" duration="17000" />
-      <workItem from="1745224176788" duration="6256000" />
-      <workItem from="1745545056981" duration="324000" />
+      <workItem from="1746412071156" duration="1363000" />
+      <workItem from="1746415565679" duration="3833000" />
+      <workItem from="1746419424901" duration="25000" />
+      <workItem from="1746499757839" duration="139000" />
+      <workItem from="1746506498731" duration="11009000" />
+      <workItem from="1746535015979" duration="4337000" />
+      <workItem from="1746599176604" duration="7342000" />
+      <workItem from="1746927172630" duration="24034000" />
+      <workItem from="1747120857753" duration="2104000" />
+      <workItem from="1747133977113" duration="3274000" />
+      <workItem from="1747230735916" duration="771000" />
     </task>
     <task id="LOCAL-00001" summary="完成用户（员工相关接口）">
       <option name="closed" value="true" />
@@ -185,13 +187,13 @@
       <option name="project" value="LOCAL" />
       <updated>1744773916920</updated>
     </task>
-    <task id="LOCAL-00005" summary="完成用户（员工相关接口）">
+    <task id="LOCAL-00005" summary="完成品项设定（充值提成规则3个接口）">
       <option name="closed" value="true" />
-      <created>1744774219832</created>
+      <created>1746418944172</created>
       <option name="number" value="00005" />
       <option name="presentableId" value="LOCAL-00005" />
       <option name="project" value="LOCAL" />
-      <updated>1744774219832</updated>
+      <updated>1746418944172</updated>
     </task>
     <option name="localTasksCounter" value="6" />
     <servers />
@@ -202,6 +204,7 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="完成用户（员工相关接口）" />
-    <option name="LAST_COMMIT_MESSAGE" value="完成用户（员工相关接口）" />
+    <MESSAGE value="完成品项设定（充值提成规则3个接口）" />
+    <option name="LAST_COMMIT_MESSAGE" value="完成品项设定（充值提成规则3个接口）" />
   </component>
 </project>
