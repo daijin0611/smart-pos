@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.mapper.VipTicketMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.entity.VipTicket">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="ticketStatus" column="ticket_status" />
+            <result property="ticketName" column="ticket_name" />
+            <result property="ticketType" column="ticket_type" />
+            <result property="ticketEffectiveTime" column="ticket_effective_time" />
+            <result property="ticketFullPayment" column="ticket_full_payment" />
+            <result property="ticketValue" column="ticket_value" />
+            <result property="ticketAfterDay" column="ticket_after_day" />
+            <result property="isPackageTicket" column="is_package_ticket" />
+            <result property="serverId" column="server_id" />
+            <result property="packageId" column="package_id" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,ticket_status,
+        ticket_name,ticket_type,ticket_effective_time,ticket_full_payment,ticket_value,
+        ticket_after_day,is_package_ticket,server_id,package_id
+    </sql>
+</mapper>
