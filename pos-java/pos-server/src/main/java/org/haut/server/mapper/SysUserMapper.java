@@ -13,7 +13,6 @@ import org.mybatis.spring.annotation.MapperScan;
 */
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUser> {
-
 }
 
 

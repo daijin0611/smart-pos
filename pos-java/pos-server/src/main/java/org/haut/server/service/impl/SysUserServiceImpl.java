@@ -5,14 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.haut.common.domain.dto.system.UserListDTO;
-import org.haut.common.domain.query.UserListQuery;
+import org.haut.common.domain.query.system.UserListQuery;
 import org.haut.server.entity.SysUser;
 import org.haut.server.service.SysUserService;
 import org.haut.server.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

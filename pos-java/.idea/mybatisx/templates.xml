@@ -64,7 +64,7 @@
             <option name="needToStringHashcodeEquals" value="true" />
             <option name="needsComment" value="true" />
             <option name="needsModel" value="true" />
-            <option name="relativePackage" value="entity" />
+            <option name="relativePackage" value="entity.system" />
             <option name="superClass" value="" />
             <option name="tableUIInfoList">
               <list>
