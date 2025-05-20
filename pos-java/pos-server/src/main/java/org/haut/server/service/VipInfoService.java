@@ -1,9 +1,7 @@
 package org.haut.server.service;
 
-import org.haut.common.domain.dto.system.UserListDTO;
 import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
-import org.haut.common.domain.query.UserListQuery;
 import org.haut.common.domain.query.VipListQuery;
 import org.haut.server.entity.VipInfo;
 import com.baomidou.mybatisplus.extension.service.IService;

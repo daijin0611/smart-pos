@@ -17,11 +17,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-
 @Tag(name = "充值提成规则管理", description = "充值提成规则管理")
 @RestController
 @RequestMapping("/server/recharge-role")
-
 public class RechaegeRoleController {
 
     @Autowired private ServerRechargeRoleService serverRechargeRoleService;

@@ -2,31 +2,48 @@
 .idea/
 *.iml
 *.iws
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/usage.statistics.xml
-.idea/**/shelf/
-.idea/dictionaries
-.idea/**/gradle.xml
-.idea/**/dataSources/
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-.idea/workspace.xml
+*.ipr
+.idea/*
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
 
-# -------- Maven Output --------
+# -------- Build Tools --------
 **/target/
+**/build/
 !.mvn/wrapper/maven-wrapper.jar
 .mvn/timing.properties
+.gradle/
+build/
+out/
+bin/
 
 # -------- Logs / Temp --------
 *.log
 *.pid
 hs_err_pid*
 replay_pid*
+Thumbs.db
+desktop.ini
+
+# -------- Environment --------
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# -------- Dependency directories --------
+node_modules/
+jspm_packages/
+
+# -------- Test reports --------
+**/test-output/
+**/test-results/
+**/reports/
+**/coverage/*.tmp
+*.bak
+*.swp
+*~
 *.hprof
 
 # -------- OS-specific --------
-.DS_Store
-Thumbs.db

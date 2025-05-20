@@ -50,6 +50,8 @@ public class SysUserController {
         return JsonVO.success("添加成功");
     }
 
+
+
     @PutMapping("/update-user")
     @Operation(description = "更新用户", summary = "更新用户")
     public JsonVO<String> updateUser(@Validated @RequestBody UserInfoDTO user){

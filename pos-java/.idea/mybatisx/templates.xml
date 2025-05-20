@@ -27,7 +27,7 @@
                   <option name="fileName" value="${domain.fileName}ServiceImpl" />
                   <option name="fileNameWithSuffix" value="${domain.fileName}ServiceImpl.java" />
                   <option name="modulePath" value="$PROJECT_DIR$/pos-server" />
-                  <option name="packageName" value="${domain.basePackage}.service.impl" />
+                  <option name="packageName" value="org.haut.server.service.impl" />
                 </ModuleInfoGo>
                 <ModuleInfoGo>
                   <option name="basePath" value="${domain.basePath}" />
@@ -69,8 +69,12 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="ServerPackageDetail" />
-                  <option name="tableName" value="server_package_detail" />
+                  <option name="className" value="RoomBed" />
+                  <option name="tableName" value="room_bed" />
+                </TableUIInfo>
+                <TableUIInfo>
+                  <option name="className" value="RoomInfo" />
+                  <option name="tableName" value="room_info" />
                 </TableUIInfo>
               </list>
             </option>
