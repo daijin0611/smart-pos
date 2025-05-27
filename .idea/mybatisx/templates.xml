@@ -69,8 +69,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="ServerPackage" />
-                  <option name="tableName" value="server_package" />
+                  <option name="className" value="VipAsset" />
+                  <option name="tableName" value="vip_asset" />
                 </TableUIInfo>
               </list>
             </option>

@@ -4,11 +4,40 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="651de768-4470-4992-94d7-808051028b48" name="Changes" comment="完成用户（员工相关接口）" />
+    <list default="true" id="651de768-4470-4992-94d7-808051028b48" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/pos-common/src/main/java/org/haut/common/domain/dto/room/RoomInfoDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/entity/RoomBed.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/entity/RoomInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/mapper/RoomBedMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/mapper/RoomInfoMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/RoomBedService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/RoomInfoService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/impl/RoomBedServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/impl/RoomInfoServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-server/src/main/resources/org/haut/server/mapper/RoomBedMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-server/src/main/resources/org/haut/server/mapper/RoomInfoMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/room/RoomController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ApifoxUploaderProjectSetting.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ApifoxUploaderProjectSetting.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/mybatisx/templates.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/mybatisx/templates.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/VipInfoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-server/src/main/java/org/haut/server/service/VipInfoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/server/RechaegeRoleController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/server/RechaegeRoleController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/system/SysUserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pos-web/src/main/java/org/haut/controller/system/SysUserController.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -44,27 +73,49 @@
   &quot;associatedIndex&quot;: 1
 }</component>
   <component name="ProjectId" id="2vnFgiZJQNeZTA3NGJdjC1QUlTs" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Maven.pos-java [clean].executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.PosApplication.executor&quot;: &quot;Run&quot;,
     &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Codes/pos/pos-java&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/iflytek/intern/intern-api-heads_hangan/intern-api&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
+    ]
   }
 }</component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
   <component name="RunManager">
     <configuration name="PosApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <module name="pos-web" />
@@ -104,6 +155,19 @@
       <workItem from="1744773044672" duration="429000" />
       <workItem from="1744773627640" duration="222000" />
       <workItem from="1744773893635" duration="72000" />
+      <workItem from="1744774003712" duration="1084000" />
+      <workItem from="1744983049477" duration="2787000" />
+      <workItem from="1745061996382" duration="2920000" />
+      <workItem from="1745073785034" duration="328000" />
+      <workItem from="1745210099550" duration="1314000" />
+      <workItem from="1745223870648" duration="257000" />
+      <workItem from="1745224140537" duration="17000" />
+      <workItem from="1745224176788" duration="6256000" />
+      <workItem from="1745545056981" duration="324000" />
+      <workItem from="1747126970967" duration="3834000" />
+      <workItem from="1747364436447" duration="1329000" />
+      <workItem from="1747580234084" duration="5465000" />
+      <workItem from="1747720458560" duration="4066000" />
     </task>
     <task id="LOCAL-00001" summary="完成用户（员工相关接口）">
       <option name="closed" value="true" />
@@ -137,13 +201,23 @@
       <option name="project" value="LOCAL" />
       <updated>1744773916920</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="完成用户（员工相关接口）">
+      <option name="closed" value="true" />
+      <created>1744774219832</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1744774219832</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Merge remote-tracking branch 'origin/dev' into dev" />
     <MESSAGE value="完成用户（员工相关接口）" />
     <option name="LAST_COMMIT_MESSAGE" value="完成用户（员工相关接口）" />
   </component>

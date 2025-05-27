@@ -1,0 +1,49 @@
+package org.haut.controller.server;
+
+import cn.hutool.core.bean.BeanUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+import org.haut.common.domain.dto.server.RechaegeRoleListDTO;
+import org.haut.common.domain.query.ServerRechaegeRoleListQuery;
+import org.haut.common.domain.vo.JsonVO;
+import org.haut.server.entity.ServerRechargeRole;
+import org.haut.server.service.ServerRechargeRoleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@Slf4j
+@Tag(name = "充值提成规则管理", description = "充值提成规则管理")
+@RestController
+@RequestMapping("/server/recharge-role")
+public class RechaegeRoleController {
+
+    @Autowired private ServerRechargeRoleService serverRechargeRoleService;
+    @GetMapping("/query-list")
+    @Operation(description = "获取充值提成规则列表", summary = "获取充值提成规则列表")
+    public JsonVO<List<RechaegeRoleListDTO>>  getList(ServerRechaegeRoleListQuery query) {
+       log.info(query.toString());
+       return JsonVO.success(serverRechargeRoleService.getList(query));
+    }
+
+    @PostMapping("/add-role")
+    @Operation(description = "添加充值提成规则", summary = "添加充值提成规则")
+    public JsonVO<String> addRole(@Validated @RequestBody RechaegeRoleListDTO role) {
+        log.info(role.toString());
+        role.setId(null);
+        serverRechargeRoleService.save(BeanUtil.toBean(role, ServerRechargeRole.class));
+        return JsonVO.success("添加成功");
+    }
+
+    @PutMapping("/update-role")
+    @Operation(description = "更新充值提成规则", summary = "更新充值提成规则")
+    public JsonVO<String> updateRole(@Validated @RequestBody RechaegeRoleListDTO role) {
+        log.info(role.toString());
+        serverRechargeRoleService.updateById(BeanUtil.toBean(role, ServerRechargeRole.class));
+        return JsonVO.success("更新成功");
+    }
+}

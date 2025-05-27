@@ -1,0 +1,19 @@
+package org.haut.common.domain.query;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+@Data
+@Schema(description = "疗程券列表查询对象")
+public class ServerCureTicketListQuery {
+
+    /**
+     * 疗程卷名称
+     */
+    private String cureTicketName;
+
+    /**
+     * 疗程编码
+     */
+    private String cureTicketEncode;
+}

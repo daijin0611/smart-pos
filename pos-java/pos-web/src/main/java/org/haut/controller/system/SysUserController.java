@@ -2,23 +2,18 @@ package org.haut.controller.system;
 
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.system.UserInfoDTO;
 import org.haut.common.domain.dto.system.UserListDTO;
-import org.haut.common.domain.query.UserListQuery;
+import org.haut.common.domain.query.system.UserListQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.server.entity.SysUser;
 import org.haut.server.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -54,6 +49,8 @@ public class SysUserController {
         sysUserService.save(BeanUtil.toBean(user,SysUser.class));
         return JsonVO.success("添加成功");
     }
+
+
 
     @PutMapping("/update-user")
     @Operation(description = "更新用户", summary = "更新用户")
