@@ -1,7 +1,8 @@
 package org.haut.server.service;
 
-import org.haut.common.domain.dto.system.UserListDTO;
+
 import org.haut.common.domain.query.system.UserListQuery;
+import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.server.entity.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -14,6 +15,6 @@ import java.util.List;
 */
 public interface SysUserService extends IService<SysUser> {
 
-    List<UserListDTO> getList(UserListQuery query);
+    List<UserInfoVO> getList(UserListQuery query);
 
 }

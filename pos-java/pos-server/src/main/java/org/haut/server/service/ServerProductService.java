@@ -1,7 +1,7 @@
 package org.haut.server.service;
 
-import org.haut.common.domain.dto.server.ServerProductListDTO;
 import org.haut.common.domain.query.ServerProductListQuery;
+import org.haut.common.domain.vo.server.ServerProductVO;
 import org.haut.server.entity.ServerProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -14,5 +14,5 @@ import java.util.List;
 */
 public interface ServerProductService extends IService<ServerProduct> {
 
-    List<ServerProductListDTO> getList(ServerProductListQuery query);
+    List<ServerProductVO> getList(ServerProductListQuery query);
 }

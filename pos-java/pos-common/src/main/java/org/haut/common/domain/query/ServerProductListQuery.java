@@ -17,4 +17,9 @@ public class ServerProductListQuery {
      */
     private String productEncode;
 
+    /**
+     * 产品状态
+     */
+    private Integer productStatus;
+
 }

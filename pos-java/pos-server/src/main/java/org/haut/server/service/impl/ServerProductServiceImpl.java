@@ -3,9 +3,9 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.haut.common.domain.dto.server.ServerProductListDTO;
 
 import org.haut.common.domain.query.ServerProductListQuery;
+import org.haut.common.domain.vo.server.ServerProductVO;
 import org.haut.server.entity.ServerProduct;
 import org.haut.server.service.ServerProductService;
 import org.haut.server.mapper.ServerProductMapper;
@@ -32,15 +32,16 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
      * @return
      */
     @Override
-    public List<ServerProductListDTO> getList(ServerProductListQuery query) {
+    public List<ServerProductVO> getList(ServerProductListQuery query) {
         //构建条件查询器，当产品名称、产品编号不为空时，进行查询
         QueryWrapper<ServerProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(query.getProductName()),"product_name",query.getProductName())
-                .like(StringUtils.isNotBlank(query.getProductEncode()),"product_encode",query.getProductEncode());
+                .like(StringUtils.isNotBlank(query.getProductEncode()),"product_encode",query.getProductEncode())
+               .eq("product_status",query.getProductStatus());
         //查询数据库
         List<ServerProduct> serverProducts = serverProductMapper.selectList(queryWrapper);
-        //转化为DTO
-        return BeanUtil.copyToList(serverProducts, ServerProductListDTO.class);
+        //转化为VO
+        return BeanUtil.copyToList(serverProducts, ServerProductVO.class);
     }
 
 

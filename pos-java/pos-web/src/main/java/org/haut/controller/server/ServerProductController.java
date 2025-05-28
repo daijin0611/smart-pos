@@ -4,9 +4,11 @@ import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.domain.dto.server.ServerProductCreateDTO;
 import org.haut.common.domain.dto.server.ServerProductInfoDTO;
-import org.haut.common.domain.dto.server.ServerProductListDTO;
+import org.haut.common.domain.dto.server.ServerProductUpdateDTO;
 import org.haut.common.domain.query.ServerProductListQuery;
+import org.haut.common.domain.vo.server.ServerProductVO;
 import org.haut.server.entity.ServerProduct;
 import org.haut.server.service.ServerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ public class ServerProductController {
 
     @GetMapping("/query-list")
     @Operation(description = "获取服务产品列表", summary = "获取服务产品列表")
-    public JsonVO<List<ServerProductListDTO>> getList(ServerProductListQuery query){
+    public JsonVO<List<ServerProductVO>> getList(ServerProductListQuery query){
         log.info(query.toString());
         return JsonVO.success(serverProductService.getList(query));
     }
@@ -42,9 +44,7 @@ public class ServerProductController {
 
     @PostMapping("/add-product")
     @Operation(description = "添加服务产品", summary = "添加服务产品")
-    public JsonVO<String> addServerProduct(@Validated @RequestBody ServerProductInfoDTO product) {
-        // 将 ServerProductInfoDTO 转换为 ServerProduct 实体类
-        product.setId(null);
+    public JsonVO<String> addServerProduct(@Validated @RequestBody ServerProductCreateDTO product) {
         serverProductService.save(BeanUtil.toBean(product, ServerProduct.class));
         return JsonVO.success("添加成功");
     }
@@ -52,7 +52,7 @@ public class ServerProductController {
 
     @PutMapping("/update-product")
     @Operation(description = "更新服务产品", summary = "更新服务产品")
-    public JsonVO<String> updateServerProduct(@Validated @RequestBody ServerProductInfoDTO product) {
+    public JsonVO<String> updateServerProduct(@Validated @RequestBody ServerProductUpdateDTO product) {
         // 将 ServerProductInfoDTO 转换为 ServerProduct 实体类并更新
         serverProductService.updateById(BeanUtil.toBean(product, ServerProduct.class));
         return JsonVO.success("更新成功");

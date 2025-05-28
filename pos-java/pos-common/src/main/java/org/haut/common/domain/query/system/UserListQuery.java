@@ -15,7 +15,6 @@ public class UserListQuery {
     /**
      * 手机号
      */
-    @NotNull
     private String userNumber;
 
     /**

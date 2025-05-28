@@ -42,4 +42,8 @@ public class GlobalExceptionHandler {
         return JsonVO.fail(errorMsg);
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public JsonVO<String> handleRuntimeException(RuntimeException ex) {
+        return JsonVO.fail(ex.getMessage());
+    }
 }

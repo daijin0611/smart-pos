@@ -54,7 +54,7 @@ public class ServerProductInfoDTO {
     private Integer isDiscount;
 
     @Schema(description = "该服务产品的提成类型")
-    private String commissionType;
+    private Integer commissionType;
 
     @Schema(description = "该服务产品的提成比例")
     private BigDecimal productCommissionValue;

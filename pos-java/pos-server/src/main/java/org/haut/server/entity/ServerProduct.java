@@ -71,7 +71,7 @@ public class ServerProduct {
     /**
      * 提成类型
      */
-    private String commissioinType;
+    private Integer commissioinType;
 
     /**
      * 提成值（比例）
@@ -82,6 +82,12 @@ public class ServerProduct {
      * 提成价格（固定）
      */
     private BigDecimal productCommissionPrice;
+
+    /**
+     * 产品状态（启用、禁用）
+     */
+    private Integer productStatus;
+}
 
 
 //    equals 方法：
@@ -159,4 +165,3 @@ public class ServerProduct {
 //        sb.append("]");
 //        return sb.toString();
 //    }
-}
