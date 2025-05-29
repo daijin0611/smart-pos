@@ -37,7 +37,7 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
         QueryWrapper<ServerProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(query.getProductName()),"product_name",query.getProductName())
                 .like(StringUtils.isNotBlank(query.getProductEncode()),"product_encode",query.getProductEncode())
-               .eq("product_status",query.getProductStatus());
+               .eq(query.getProductStatus() != null,"product_status",query.getProductStatus());
         //查询数据库
         List<ServerProduct> serverProducts = serverProductMapper.selectList(queryWrapper);
         //转化为VO
