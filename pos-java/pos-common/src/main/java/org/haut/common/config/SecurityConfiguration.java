@@ -1,10 +1,13 @@
 package org.haut.common.config;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.ResultStatus;
+import org.haut.common.domain.vo.system.AuthorizeVO;
+import org.haut.common.utils.JwtUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -25,6 +29,9 @@ import java.io.IOException;
  */
 @Configuration
 public class SecurityConfiguration {
+
+    @Resource
+    JwtUtils jwtUtils;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -60,9 +67,21 @@ public class SecurityConfiguration {
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
+        // TODO:登录逻辑待完善
         // 处理登录成功逻辑
         response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(JsonVO.create(null, ResultStatus.LOGIN_SUCCESS).asJsonString());
+        User user = (User) authentication.getPrincipal();
+        // 这里的1和"jojo"是示例值，实际应用中应从UserDetails中获取用户ID和用户名
+        String token = jwtUtils.createJwt(user,1, "jojo");
+        // 返回JWT令牌
+        AuthorizeVO authorizeVO = AuthorizeVO.builder()
+                .username("jojo")
+                .role("admin")
+                .token(token)
+                .expire(jwtUtils.expireTime())
+                .build();
+
+        response.getWriter().write(JsonVO.create(authorizeVO, ResultStatus.LOGIN_SUCCESS).asJsonString());
     }
 
     public void onLogoutSuccess(HttpServletRequest request,
