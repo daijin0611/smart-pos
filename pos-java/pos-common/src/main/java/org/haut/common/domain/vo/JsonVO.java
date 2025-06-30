@@ -1,5 +1,7 @@
 package org.haut.common.domain.vo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -96,5 +98,19 @@ public class JsonVO<T> implements Serializable {
      */
     public static <T> JsonVO<T> fail(T data) {
         return create(data, ResultStatus.FAIL);
+    }
+
+    public static final ObjectMapper objectMapper = new ObjectMapper();
+
+    /**
+     * 生成JSON数据
+     * @return
+     */
+    public String asJsonString(){
+        try {
+            return objectMapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

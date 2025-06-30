@@ -13,6 +13,7 @@ package org.haut.common.domain.vo;
 public enum ResultStatus {
     /***/
     UNAUTHORIZED("暂未登录或TOKEN已经过期", 401),
+    LOGIN_SUCCESS("登录成功"),
     FORBIDDEN("没有相关权限", 403),
     SERVER_ERROR("服务器错误", 9994),
     PARAMS_INVALID("上传参数异常", 9995),
