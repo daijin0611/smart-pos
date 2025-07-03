@@ -11,6 +11,7 @@ import org.haut.common.filter.JwtAuthorizeFilter;
 import org.haut.common.utils.JwtUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,9 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * @author 丁铭瀚
@@ -37,7 +40,6 @@ public class SecurityConfiguration {
     /**
      * 配置安全过滤链
      * @param http HttpSecurity对象
-     *
      * @return SecurityFilterChain对象
      * @throws Exception 异常
      */
@@ -47,18 +49,23 @@ public class SecurityConfiguration {
         return http
                 // 配置HTTP请求的授权规则
                 .authorizeHttpRequests(conf -> conf
-                        .requestMatchers("/api/auth/**").permitAll() // 允许访问/auth下的所有接口
+                        .requestMatchers("/auth/**").permitAll() // 允许访问所有接口
                         .anyRequest().authenticated()
                 )
                 // 配置表单登录
                 .formLogin(conf -> conf
-                        .loginProcessingUrl("/api/auth/login") // 登录处理接口
-                        .failureHandler(this::onAuthenticationFailure)
-                        .successHandler(this::onAuthenticationSuccess)
+                        .loginProcessingUrl("/auth/login") // 登录处理接口
+                        .failureHandler(this::onAuthenticationFailure) // 认证失败处理
+                        .successHandler(this::onAuthenticationSuccess) // 认证成功处理
+                )
+                // 配置未授权处理
+                .exceptionHandling(conf -> conf
+                        .authenticationEntryPoint(this::onUnAuthenticated)// 未认证处理
+                        .accessDeniedHandler(this::onAccessDeny)// 无权限访问处理
                 )
                 // 配置登出处理
                 .logout(conf -> conf
-                        .logoutUrl("/api/auth/logout")
+                        .logoutUrl("/auth/logout")
                         .logoutSuccessHandler(this::onLogoutSuccess)
                 )
                 // 禁用CSRF保护
@@ -72,16 +79,64 @@ public class SecurityConfiguration {
                 .build();
     }
 
-    public void onAuthenticationFailure(HttpServletRequest request,
+    /**
+     * 处理没有权限访问的逻辑
+     * @param request
+     * @param response
+     * @param accessDeniedException
+     * @throws IOException
+     * @throws ServletException
+     */
+    public void onAccessDeny(HttpServletRequest request,
+                             HttpServletResponse response,
+                             AccessDeniedException accessDeniedException) throws IOException, ServletException {
+        response.setContentType("application/json;charset=utf-8");
+        response.getWriter().write(JsonVO.create(null, ResultStatus.FORBIDDEN).asJsonString());
+    }
+
+
+    /**
+     * 处理未认证的逻辑
+     * @param request
+     * @param response
+     * @param authException
+     * @throws IOException
+     * @throws ServletException
+     */
+    public void onUnAuthenticated(HttpServletRequest request,
                                         HttpServletResponse response,
-                                        AuthenticationException authenticationException) throws IOException, ServletException {
+                                        AuthenticationException authException) throws IOException{
         response.setContentType("application/json;charset=utf-8");
         response.getWriter().write(JsonVO.create(null, ResultStatus.UNAUTHORIZED).asJsonString());
     }
 
+
+    /**
+     * 处理认证失败的逻辑
+     * @param request
+     * @param response
+     * @param exception
+     * @throws IOException
+     * @throws ServletException
+     */
+    public void onAuthenticationFailure(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        AuthenticationException exception) throws IOException{
+        response.setContentType("application/json;charset=utf-8");
+        response.getWriter().write(JsonVO.create(null, ResultStatus.USERNAME_OR_PASSWORD_ERROR).asJsonString());
+    }
+
+    /**
+     * 处理认证成功的逻辑
+     * @param request
+     * @param response
+     * @param authentication
+     * @throws IOException
+     * @throws ServletException
+     */
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+                                        Authentication authentication) throws IOException{
         // TODO:登录逻辑待完善
         // 处理登录成功逻辑
         response.setContentType("application/json;charset=utf-8");
@@ -99,10 +154,26 @@ public class SecurityConfiguration {
         response.getWriter().write(JsonVO.create(authorizeVO, ResultStatus.LOGIN_SUCCESS).asJsonString());
     }
 
+    /**
+     * 处理登出成功的逻辑
+     * @param request
+     * @param response
+     * @param authentication
+     * @throws IOException
+     * @throws ServletException
+     */
     public void onLogoutSuccess(HttpServletRequest request,
                                 HttpServletResponse response,
-                                Authentication authentication) throws IOException, ServletException {
+                                Authentication authentication) throws IOException{
         response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(JsonVO.success(null).asJsonString());
+        PrintWriter writer = response.getWriter();
+        // 失效JWT令牌
+        String headerToken = request.getHeader("Authorization");
+        if (jwtUtils.invalidateJwt(headerToken)) {
+            writer.write(JsonVO.create(null, ResultStatus.SUCCESS).asJsonString());
+        }else {
+            // 如果失效失败，返回错误信息
+            writer.write(JsonVO.create(null, ResultStatus.FAIL).asJsonString());
+        }
     }
 }

@@ -1,6 +1,7 @@
 server:
   port: 8080
-
+  servlet:
+    context-path: /api # 设置应用的上下文路径为 /api
 spring:
   data: # 数据配置
     redis: # Redis配置

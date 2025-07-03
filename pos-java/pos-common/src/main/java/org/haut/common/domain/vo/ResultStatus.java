@@ -13,7 +13,7 @@ package org.haut.common.domain.vo;
 public enum ResultStatus {
     /***/
     UNAUTHORIZED("暂未登录或TOKEN已经过期", 401),
-    LOGIN_SUCCESS("登录成功"),
+    USERNAME_OR_PASSWORD_ERROR("用户名或密码错误", 401),
     FORBIDDEN("没有相关权限", 403),
     SERVER_ERROR("服务器错误", 9994),
     PARAMS_INVALID("上传参数异常", 9995),
@@ -21,7 +21,8 @@ public enum ResultStatus {
     API_UN_IMPL("功能尚未实现", 9997),
     SERVER_BUSY("服务器繁忙", 9998),
     FAIL("操作失败", 9999),
-    SUCCESS("操作成功");
+    SUCCESS("操作成功"),
+    LOGIN_SUCCESS("登录成功");
 
     private final String message;
     private final int code;
