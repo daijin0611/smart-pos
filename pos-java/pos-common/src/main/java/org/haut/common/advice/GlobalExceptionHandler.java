@@ -1,4 +1,4 @@
-package org.haut.advice;
+package org.haut.common.advice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.vo.JsonVO;

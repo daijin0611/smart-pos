@@ -46,6 +46,7 @@ spring:
     jwt:
       key: abcdefghijklmnopqrstuvwxyz1234567890  # JWT密钥
       expire: 7
+
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
