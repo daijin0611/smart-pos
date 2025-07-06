@@ -1,5 +1,6 @@
 package org.haut.common.domain.vo.system;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,21 +12,16 @@ import java.util.Date;
  */
 @Data
 @Builder
+@Schema(description = "授权信息")
 public class AuthorizeVO {
-    /**
-     * 用户ID
-     */
+    @Schema(description = "用户名")
     String username;
-    /**
-     * 用户角色
-     */
+    @Schema(description = "用户ID")
+    String userId;
+    @Schema(description = "用户角色")
     String role;
-    /**
-     * JWT令牌
-     */
+    @Schema(description = "用户令牌")
     String token;
-    /**
-     * JWT过期时间
-     */
+    @Schema(description = "令牌过期时间")
     Date expire;
 }
