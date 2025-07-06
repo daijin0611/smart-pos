@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.vip.RechargeHistoryListDTO;
-import org.haut.common.domain.query.RechargeHistoryQuery;
+import org.haut.common.domain.query.vip.RechargeHistoryQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

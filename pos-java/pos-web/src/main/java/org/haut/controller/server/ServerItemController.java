@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.server.ServerItemInfoDTO;
 import org.haut.common.domain.dto.server.ServerItemListDTO;
-import org.haut.common.domain.query.ServerItemListQuery;
+import org.haut.common.domain.query.server.ServerItemListQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.server.entity.ServerItem;
 import org.haut.server.service.ServerItemService;

@@ -2,7 +2,7 @@ package org.haut.server.service;
 
 import org.haut.common.domain.dto.server.CureTicketInfoDTO;
 import org.haut.common.domain.dto.server.CureTicketListDTO;
-import org.haut.common.domain.query.ServerCureTicketListQuery;
+import org.haut.common.domain.query.server.ServerCureTicketListQuery;
 import org.haut.server.entity.ServerCureTicket;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;

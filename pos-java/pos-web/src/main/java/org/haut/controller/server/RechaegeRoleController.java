@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.server.RechaegeRoleListDTO;
-import org.haut.common.domain.query.ServerRechaegeRoleListQuery;
+import org.haut.common.domain.query.server.ServerRechaegeRoleListQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.server.entity.ServerRechargeRole;
 import org.haut.server.service.ServerRechargeRoleService;
@@ -14,7 +14,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Tag(name = "充值提成规则管理", description = "充值提成规则管理")

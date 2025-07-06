@@ -1,4 +1,4 @@
-package org.haut.common.domain.query;
+package org.haut.common.domain.query.server;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

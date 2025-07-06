@@ -143,6 +143,7 @@ public class SecurityConfiguration {
         User user = (User) authentication.getPrincipal();
         // 这里的1和"jojo"是示例值，实际应用中应从UserDetails中获取用户ID和用户名
         String token = jwtUtils.createJwt(user,1, "jojo");
+
         // 返回JWT令牌
         AuthorizeVO authorizeVO = AuthorizeVO.builder()
                 .username("jojo")

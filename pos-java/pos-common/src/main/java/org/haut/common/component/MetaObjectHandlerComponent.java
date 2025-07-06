@@ -22,6 +22,8 @@ public class MetaObjectHandlerComponent implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-
+        log.info("开始更新填充...");
+        //更新时间
+        this.strictUpdateFill(metaObject, "updateTime", Date.class, new Date());
     }
 }

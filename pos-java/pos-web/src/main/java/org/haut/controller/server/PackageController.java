@@ -1,13 +1,11 @@
 package org.haut.controller.server;
 
-import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.server.PackageInfoDTO;
 import org.haut.common.domain.dto.server.PackageListDTO;
-import org.haut.common.domain.query.ServerPackageListQuery;
+import org.haut.common.domain.query.server.ServerPackageListQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.server.service.ServerPackageService;
 import org.springframework.beans.factory.annotation.Autowired;

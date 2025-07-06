@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
-import org.haut.common.domain.query.VipListQuery;
+import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.server.entity.VipInfo;
 import org.haut.server.service.VipInfoService;

@@ -10,6 +10,8 @@ import org.haut.server.entity.SysUser;
 import org.haut.server.service.SysUserService;
 import org.haut.server.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,6 +47,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         return BeanUtil.copyToList(sysUsers, UserInfoVO.class);
     }
 
+
+    /**
+     * 根据用户名查询用户
+     * @param username
+     * @return
+     * @throws UsernameNotFoundException
+     */
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
+    }
 }
 
 

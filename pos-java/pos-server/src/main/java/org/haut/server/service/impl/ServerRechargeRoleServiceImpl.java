@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.haut.common.domain.dto.server.RechaegeRoleListDTO;
-import org.haut.common.domain.query.ServerRechaegeRoleListQuery;
+import org.haut.common.domain.query.server.ServerRechaegeRoleListQuery;
 import org.haut.server.entity.ServerRechargeRole;
 import org.haut.server.service.ServerRechargeRoleService;
 import org.haut.server.mapper.ServerRechargeRoleMapper;

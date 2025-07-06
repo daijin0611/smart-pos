@@ -1,6 +1,4 @@
-package org.haut.common.domain.query;
-
-import jakarta.validation.constraints.NotNull;
+package org.haut.common.domain.query.vip;
 
 public class RechargeHistoryQuery {
 

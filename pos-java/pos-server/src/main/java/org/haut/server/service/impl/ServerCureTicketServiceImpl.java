@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.haut.common.domain.dto.server.CureTicketDetailInfoDTO;
 import org.haut.common.domain.dto.server.CureTicketInfoDTO;
 import org.haut.common.domain.dto.server.CureTicketListDTO;
-import org.haut.common.domain.query.ServerCureTicketListQuery;
+import org.haut.common.domain.query.server.ServerCureTicketListQuery;
 import org.haut.server.entity.ServerCureTicket;
 import org.haut.server.entity.ServerCureTicketDetail;
 import org.haut.server.entity.VipTicket;

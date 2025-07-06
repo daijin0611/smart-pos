@@ -1,4 +1,4 @@
-package org.haut.common.domain.query;
+package org.haut.common.domain.query.vip;
 
 import java.util.Date;
 

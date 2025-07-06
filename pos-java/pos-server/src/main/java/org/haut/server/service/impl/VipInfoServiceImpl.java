@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.haut.common.domain.dto.vip.VipAssetDTO;
 import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
-import org.haut.common.domain.query.VipListQuery;
+import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.server.entity.VipInfo;
 import org.haut.server.mapper.VipAssetMapper;
 import org.haut.server.service.VipInfoService;
