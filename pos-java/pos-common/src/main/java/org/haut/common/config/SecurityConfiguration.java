@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.system.AuthorizeVO;
+import org.haut.common.filter.CorsFilter;
 import org.haut.common.filter.JwtAuthorizeFilter;
 import org.haut.common.utils.JwtUtils;
 import org.springframework.context.annotation.Bean;
@@ -68,6 +69,7 @@ public class SecurityConfiguration {
                         .logoutUrl("/auth/logout")
                         .logoutSuccessHandler(this::onLogoutSuccess)
                 )
+                .cors(AbstractHttpConfigurer::disable)
                 // 禁用CSRF保护
                 .csrf(AbstractHttpConfigurer::disable)
                 // 使用无状态会话
