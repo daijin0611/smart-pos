@@ -5,6 +5,6 @@ import lombok.Data;
 /**
  * 通用常量
  */
-public interface Const {
-    Integer ORDER_CORS =  -102;
+public class Const {
+    public static final int ORDER_CORS = -102;
 }
