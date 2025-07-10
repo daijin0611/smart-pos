@@ -71,7 +71,7 @@ public class SysUserController {
      * @param userCode 用户编号
      * @return true:存在 false:不存在
      */
-    public boolean judgeUserCodeExist(String userCode){
+    private boolean judgeUserCodeExist(String userCode){
         long count = sysUserService.count(new QueryWrapper<SysUser>()
                .eq("user_code", userCode)
                .eq("is_delete", 0));
