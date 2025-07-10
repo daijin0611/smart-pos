@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 用户认证控制器
+ * 用户登录接口
  * @author 丁铭瀚
  * @version 1.0
  */
