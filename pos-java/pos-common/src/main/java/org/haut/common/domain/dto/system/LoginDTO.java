@@ -9,21 +9,19 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
-@Schema(description = "登录信息")
+@Schema(description = "用户登录信息")
 public class LoginDTO implements UserDetails {
 
-    private String username;
+    @Schema(description = "用户编号")
+    private String userCode;
+    @Schema(description = "密码")
     private String password;
-
-
-    /**
-     * 机构编码
-     */
+    @Schema(description = "组织编号")
     private String orgCode;
-    /**
-     * 角色名称
-     */
+    @Schema(description = "角色名称")
     private String roleName;
+    @Schema(description = "角色id")
+    private String roleId;
 
 
     @Override

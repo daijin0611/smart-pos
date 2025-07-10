@@ -1,7 +1,10 @@
 package org.haut.server.service;
 
 
+import org.haut.common.domain.dto.system.LoginDTO;
 import org.haut.common.domain.query.system.UserListQuery;
+import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.domain.vo.system.AuthorizeVO;
 import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.server.entity.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -18,4 +21,5 @@ public interface SysUserService extends IService<SysUser> , UserDetailsService {
 
     List<UserInfoVO> getList(UserListQuery query);
 
+    JsonVO<AuthorizeVO> login(LoginDTO loginDTO);
 }

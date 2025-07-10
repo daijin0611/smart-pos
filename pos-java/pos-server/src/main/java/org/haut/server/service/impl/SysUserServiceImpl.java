@@ -4,12 +4,16 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.haut.common.domain.dto.system.LoginDTO;
 import org.haut.common.domain.query.system.UserListQuery;
+import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.domain.vo.system.AuthorizeVO;
 import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.server.entity.SysUser;
 import org.haut.server.service.SysUserService;
 import org.haut.server.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -47,6 +51,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         return BeanUtil.copyToList(sysUsers, UserInfoVO.class);
     }
 
+    /**
+     * 用户登录
+     * @param loginDTO
+     * @return
+     */
+    @Override
+    public JsonVO<AuthorizeVO> login(LoginDTO loginDTO) {
+        return null;
+    }
+
 
     /**
      * 根据用户名查询用户
@@ -58,6 +72,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return null;
     }
+
+
+
+
 }
 
 

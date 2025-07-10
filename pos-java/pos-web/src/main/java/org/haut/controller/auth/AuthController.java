@@ -1,7 +1,11 @@
-package org.haut.controller.system;
+package org.haut.controller.auth;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.haut.common.domain.dto.system.LoginDTO;
+import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.domain.vo.system.AuthorizeVO;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @version 1.0
  */
 @RestController
-@RequestMapping("/system/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     /**
@@ -19,8 +23,9 @@ public class AuthController {
      */
     @Operation(description = "用户登录")
     @PostMapping("/login")
-    public void login() {
+    public JsonVO<AuthorizeVO> login(@RequestBody LoginDTO loginDTO) {
         // TODO登录逻辑
+        return null;
     }
 
     /**
