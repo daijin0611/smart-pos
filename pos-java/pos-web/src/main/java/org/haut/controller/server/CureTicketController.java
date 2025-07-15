@@ -8,7 +8,7 @@ import org.haut.common.domain.dto.server.CureTicketInfoDTO;
 import org.haut.common.domain.dto.server.CureTicketListDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.server.service.ServerCureTicketService;
+import org.haut.server.server.service.ServerCureTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

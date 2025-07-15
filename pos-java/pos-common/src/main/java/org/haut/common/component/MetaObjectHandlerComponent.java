@@ -15,14 +15,13 @@ import java.util.Date;
 public class MetaObjectHandlerComponent implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
-        log.info("开始插入填充...");
         //插入创建时间
         this.strictInsertFill(metaObject, "createTime", Date.class, new Date());
+        this.strictInsertFill(metaObject, "updateTime", Date.class, new Date());
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        log.info("开始更新填充...");
         //更新时间
         this.strictUpdateFill(metaObject, "updateTime", Date.class, new Date());
     }

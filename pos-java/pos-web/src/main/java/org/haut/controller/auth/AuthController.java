@@ -1,9 +1,9 @@
 package org.haut.controller.auth;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.haut.common.domain.dto.system.LoginDTO;
+import org.haut.common.domain.dto.auth.LoginDTO;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.common.domain.vo.system.AuthorizeVO;
+import org.haut.common.domain.vo.auth.AuthorizeVO;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

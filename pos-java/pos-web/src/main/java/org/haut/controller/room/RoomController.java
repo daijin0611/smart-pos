@@ -1,14 +1,13 @@
 package org.haut.controller.room;
 
-import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.server.entity.RoomBed;
-import org.haut.server.entity.RoomInfo;
-import org.haut.server.service.RoomBedService;
-import org.haut.server.service.RoomInfoService;
+import org.haut.server.room.entity.RoomBed;
+import org.haut.server.room.entity.RoomInfo;
+import org.haut.server.room.service.RoomBedService;
+import org.haut.server.room.service.RoomInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

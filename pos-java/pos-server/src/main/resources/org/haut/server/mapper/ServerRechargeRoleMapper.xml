@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.haut.server.mapper.ServerRechargeRoleMapper">
+<mapper namespace="org.haut.server.server.mapper.ServerRechargeRoleMapper">
 
-    <resultMap id="BaseResultMap" type="org.haut.server.entity.ServerRechargeRole">
+    <resultMap id="BaseResultMap" type="org.haut.server.server.entity.ServerRechargeRole">
             <id property="id" column="id" />
             <result property="createTime" column="create_time" />
             <result property="updateTime" column="update_time" />
@@ -17,7 +17,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,create_time,update_time,is_delete,remark,recharge_role_name,
+        id, create_time,update_time,is_delete,remark,recharge_role_name,
         recharge_price,commission_type,recharge_commission_value
     </sql>
+
 </mapper>

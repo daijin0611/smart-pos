@@ -7,7 +7,7 @@ import org.haut.common.domain.dto.server.PackageInfoDTO;
 import org.haut.common.domain.dto.server.PackageListDTO;
 import org.haut.common.domain.query.server.ServerPackageListQuery;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.server.service.ServerPackageService;
+import org.haut.server.server.service.ServerPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
         if (e instanceof HttpMediaTypeException) {
             return JsonVO.create(e.getMessage(), ResultStatus.CONTENT_TYPE_ERR);
         }
-        return JsonVO.create(e.getMessage(), ResultStatus.SERVER_ERROR);
+        return JsonVO.create(null, ResultStatus.SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -44,6 +44,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public JsonVO<String> handleRuntimeException(RuntimeException ex) {
-        return JsonVO.fail(ex.getMessage());
+        return JsonVO.fail(null);
     }
 }

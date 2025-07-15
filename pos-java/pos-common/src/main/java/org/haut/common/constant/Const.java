@@ -1,6 +1,5 @@
 package org.haut.common.constant;
 
-import lombok.Data;
 
 /**
  * 通用常量

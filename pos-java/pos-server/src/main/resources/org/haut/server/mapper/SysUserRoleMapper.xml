@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.haut.server.mapper.SysUserRoleMapper">
+<mapper namespace="org.haut.server.system.mapper.SysUserRoleMapper">
 
-    <resultMap id="BaseResultMap" type="org.haut.server.entity.SysUserRole">
+    <resultMap id="BaseResultMap" type="org.haut.server.system.entity.SysUserRole">
             <id property="userId" column="user_id" />
             <id property="roleId" column="role_id" />
     </resultMap>

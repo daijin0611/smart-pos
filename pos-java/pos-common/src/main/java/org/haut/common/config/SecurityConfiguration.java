@@ -6,8 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.ResultStatus;
-import org.haut.common.domain.vo.system.AuthorizeVO;
-import org.haut.common.filter.CorsFilter;
+import org.haut.common.domain.vo.auth.AuthorizeVO;
 import org.haut.common.filter.JwtAuthorizeFilter;
 import org.haut.common.utils.JwtUtils;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
@@ -50,7 +48,7 @@ public class SecurityConfiguration {
         return http
                 // 配置HTTP请求的授权规则
                 .authorizeHttpRequests(conf -> conf
-                        .requestMatchers("/auth/**").permitAll() // 允许访问所有接口
+                        .requestMatchers("/**").permitAll() // 允许访问所有接口
                         .anyRequest().authenticated()
                 )
                 // 配置表单登录

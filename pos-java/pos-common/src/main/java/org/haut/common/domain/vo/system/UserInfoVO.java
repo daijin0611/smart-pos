@@ -67,4 +67,7 @@ public class UserInfoVO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date userHealth;
 
+    @Schema(description = "组织机构id")
+    private Long orgId;
+
 }
