@@ -40,7 +40,9 @@
             u.user_marry,
             u.user_edu,
             u.user_health,
-            u.org_id
+            u.org_id,
+            u.create_time,
+            u.update_time
         FROM sys_user_role ur
         LEFT JOIN sys_user u ON ur.user_id = u.id
         WHERE ur.role_id = #{query.roleId}
@@ -63,7 +65,9 @@
             u.user_marry,
             u.user_edu,
             u.user_health,
-            u.org_id
+            u.org_id,
+            u.create_time,
+            u.update_time
         FROM sys_user_role ur
                  LEFT JOIN sys_user u ON ur.user_id = u.id
         WHERE ur.role_id != #{query.roleId}

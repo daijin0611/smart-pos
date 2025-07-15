@@ -29,7 +29,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/system/role")
 @RequiredArgsConstructor
-@Tag(name = "系统角色管理", description = "系统角色管理")
+@Tag(name = "角色管理", description = "系统角色管理")
 public class SysRoleController {
     private final SysRoleService sysRoleService;
     private final SysUserRoleService sysUserRoleService;

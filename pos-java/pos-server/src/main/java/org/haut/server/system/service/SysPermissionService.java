@@ -1,7 +1,11 @@
 package org.haut.server.system.service;
 
+import org.haut.common.domain.query.system.PermissionListQuery;
+import org.haut.common.domain.vo.system.PermissionInfoVO;
 import org.haut.server.system.entity.SysPermission;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author daiji
@@ -10,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface SysPermissionService extends IService<SysPermission> {
 
+    List<PermissionInfoVO> queryList(PermissionListQuery query);
 }

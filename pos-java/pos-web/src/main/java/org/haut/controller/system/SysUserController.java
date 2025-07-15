@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/system/user")
-@Tag(name = "人事", description = "人事")
+@Tag(name = "人事管理", description = "系统人事管理")
 @Slf4j
 public class SysUserController {
 
