@@ -16,11 +16,11 @@ import java.util.Date;
 @Schema(description = "授权信息")
 public class AuthorizeVO {
     @Schema(description = "真实姓名")
-    String username;
+    String userName;
     @Schema(description = "用户id")
-    String userId;
-    @Schema(description = "用户角色")
-    String role;
+    Long userId;
+    @Schema(description = "用户编号")
+    String userCode;
     @Schema(description = "用户令牌")
     String token;
     @Schema(description = "令牌过期时间")

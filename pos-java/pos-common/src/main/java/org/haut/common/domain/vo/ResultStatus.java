@@ -22,7 +22,8 @@ public enum ResultStatus {
     SERVER_BUSY("服务器繁忙", 9998),
     FAIL("操作失败", 9999),
     SUCCESS("操作成功"),
-    LOGIN_SUCCESS("登录成功");
+    LOGIN_SUCCESS("登录成功"),
+    LOGOUT_SUCCESS("登出成功");
 
     private final String message;
     private final int code;

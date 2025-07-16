@@ -54,7 +54,7 @@ public class JwtAuthorizeFilter extends OncePerRequestFilter {
                 // 将认证信息存入SecurityContextHolder中
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 // 将用户名存入请求属性中，便于后续使用
-                request.setAttribute("username", user.getUsername());
+                request.setAttribute("userCode", user.getUsername());
             }
             // 继续过滤链
             filterChain.doFilter(request, response);

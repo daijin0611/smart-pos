@@ -6,15 +6,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import jakarta.annotation.Resource;
 import org.haut.common.constant.RedisKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 public class JwtUtils {
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
     /**
      * JWT密钥
@@ -95,19 +96,22 @@ public class JwtUtils {
 
     /**
      * 生成JWT令牌
-     * @param userDetails
-     * @param id
-     * @param username
+     *
+     * @param userDetails 用户详情
+     * @param userId 用户ID
+     * @param userCode 用户编号
+     * @param orgId 组织ID
      * @return
      */
-    public String createJwt(UserDetails userDetails, Long id, String username) {
+    public String createJwt(UserDetails userDetails, Long userId, String userCode, Long orgId) {
         //加密算法
         Algorithm algorithm = Algorithm.HMAC256(key);
         Date expire = expireTime();
         return JWT.create()
                 .withJWTId(UUID.randomUUID().toString()) // JWT ID
-                .withClaim("id", id)// 用户ID
-                .withClaim("username", username) // 用户名
+                .withClaim("userId", userId)// 用户ID
+                .withClaim("userCode", userCode) // 用户名
+                .withClaim("orgId", orgId) // 组织ID
                 .withClaim("authorities", userDetails
                         .getAuthorities()
                         .stream()
@@ -135,12 +139,10 @@ public class JwtUtils {
     public UserDetails toUser(DecodedJWT jwt) {
         Map<String, Claim> claims = jwt.getClaims();
         // 从JWT中获取用户ID、用户名和权限
-        String username = claims.get("username").asString();
-        int id = claims.get("id").asInt();
-        String password = claims.get("password").asString();
+        String username = claims.get("userCode").asString();
         return User
                 .withUsername(username)
-                .password("******")
+                .password(encoder.encode("dummyPassword")) // 密码可以是任意值，因为JWT不需要验证密码
                 .authorities(claims.get("authorities").asArray(String.class))
                 .build();
     }

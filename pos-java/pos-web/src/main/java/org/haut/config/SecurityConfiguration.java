@@ -9,8 +9,6 @@ import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.auth.AuthorizeVO;
 import org.haut.filter.JwtAuthorizeFilter;
 import org.haut.common.utils.JwtUtils;
-import org.haut.server.system.mapper.SysOrgMapper;
-import org.haut.server.system.service.SysOrgService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
@@ -39,8 +37,7 @@ public class SecurityConfiguration {
     JwtUtils jwtUtils;
     @Resource
     JwtAuthorizeFilter jwtAuthorizeFilter;
-    @Resource
-    SysOrgService sysOrgService;
+
     /**
      * 配置安全过滤链
      * @param http HttpSecurity对象
@@ -53,7 +50,7 @@ public class SecurityConfiguration {
         return http
                 // 配置HTTP请求的授权规则
                 .authorizeHttpRequests(conf -> conf
-                        .requestMatchers("/**").permitAll() // 允许访问所有接口
+                        .requestMatchers("/auth/**").permitAll() // 允许访问所有接口
                         .anyRequest().authenticated()
                 )
                 // 配置表单登录
@@ -148,12 +145,13 @@ public class SecurityConfiguration {
         User user = (User) authentication.getPrincipal();
         SysUser sysUser = UserContext.getCurrentUser();
         // 这里的1和"jojo"是示例值，实际应用中应从UserDetails中获取用户ID和用户名
-        String token = jwtUtils.createJwt(user,sysUser.getId().longValue(), sysUser.getUserCode());
+        String token = jwtUtils.createJwt(user, sysUser.getId(), sysUser.getUserCode(), sysUser.getOrgId());
 
         // 返回JWT令牌
         AuthorizeVO authorizeVO = AuthorizeVO.builder()
-                .username(sysUser.getUserName())
-                .role("admin")
+                .userName(sysUser.getUserName())
+                .userCode(sysUser.getUserCode())
+                .userId(sysUser.getId())
                 .token(token)
                 .expire(jwtUtils.expireTime())
                 .build();
@@ -177,7 +175,7 @@ public class SecurityConfiguration {
         // 失效JWT令牌
         String headerToken = request.getHeader("Authorization");
         if (jwtUtils.invalidateJwt(headerToken)) {
-            writer.write(JsonVO.create(null, ResultStatus.SUCCESS).asJsonString());
+            writer.write(JsonVO.create(null, ResultStatus.LOGOUT_SUCCESS).asJsonString());
         }else {
             // 如果失效失败，返回错误信息
             writer.write(JsonVO.create(null, ResultStatus.FAIL).asJsonString());
