@@ -1,7 +1,10 @@
 package org.haut.server.system.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.haut.server.system.entity.SysPermission;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
 * @author daiji
@@ -11,6 +14,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface SysPermissionMapper extends BaseMapper<SysPermission> {
 
+    List<SysPermission> queryListByRoleId(Long roleId);
 }
 
 

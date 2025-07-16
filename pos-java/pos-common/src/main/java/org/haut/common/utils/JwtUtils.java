@@ -100,7 +100,7 @@ public class JwtUtils {
      * @param username
      * @return
      */
-    public String createJwt(UserDetails userDetails, int id, String username) {
+    public String createJwt(UserDetails userDetails, Long id, String username) {
         //加密算法
         Algorithm algorithm = Algorithm.HMAC256(key);
         Date expire = expireTime();
@@ -108,7 +108,6 @@ public class JwtUtils {
                 .withJWTId(UUID.randomUUID().toString()) // JWT ID
                 .withClaim("id", id)// 用户ID
                 .withClaim("username", username) // 用户名
-                .withClaim("password", "123456") // 用户密码（注意：实际应用中不要将密码存入JWT）
                 .withClaim("authorities", userDetails
                         .getAuthorities()
                         .stream()

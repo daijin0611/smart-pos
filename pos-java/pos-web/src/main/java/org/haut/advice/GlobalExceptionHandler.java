@@ -1,4 +1,4 @@
-package org.haut.common.advice;
+package org.haut.advice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.vo.JsonVO;
@@ -34,6 +34,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public JsonVO<String> handleValidationException(MethodArgumentNotValidException ex) {
+        log.error(ex.getMessage(), ex);
         String errorMsg = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -44,6 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public JsonVO<String> handleRuntimeException(RuntimeException ex) {
+        log.error(ex.getMessage(), ex);
         return JsonVO.fail(null);
     }
 }

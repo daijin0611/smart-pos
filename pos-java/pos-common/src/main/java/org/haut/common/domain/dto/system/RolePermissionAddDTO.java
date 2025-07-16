@@ -7,12 +7,12 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(description = "角色添加用户DTO")
-public class RoleUserAddDTO {
+@Schema(description = "角色添加权限DTO")
+public class RolePermissionAddDTO {
     @Schema(description = "角色ID")
     @NotNull
     private Long roleId;
-    @Schema(description = "用户ID")
+    @Schema(description = "权限ID")
     @NotNull
-    private List<Long> userIds;
+    private List<Long> permissionIds;
 }

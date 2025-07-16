@@ -16,9 +16,11 @@ import org.haut.server.system.mapper.SysRoleMapper;
 import org.haut.server.system.mapper.SysUserRoleMapper;
 import org.haut.server.system.service.SysUserService;
 import org.haut.server.system.mapper.SysUserMapper;
+import org.haut.server.system.utils.UserContext;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -36,6 +38,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     private final SysOrgMapper sysOrgMapper;
     private final SysUserRoleMapper sysUserRoleMapper;
     private final SysRoleMapper sysRoleMapper;
+    private final BCryptPasswordEncoder encoder;
     /**
      * 查询用户列表,条件查询
      *
@@ -71,6 +74,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         if (sysUser == null) {
             throw new UsernameNotFoundException("用户名或密码错误");
         }
+        UserContext.setCurrentUser(sysUser);
 
         List<SysUserRole> sysUserRole = sysUserRoleMapper.selectList(Wrappers.lambdaQuery(SysUserRole.class)
                 .eq(SysUserRole::getUserId, sysUser.getId()));
@@ -84,7 +88,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         // 第三个参数是权限列表（这里假设只有一个角色）
         return User.withUsername(userCode)
                 .roles(sysRole.stream().map(SysRole::getRoleCode).toArray(String[]::new))
-                .password(sysUser.getUserPassword())
+                .password(encoder.encode(sysUser.getUserPassword()))
                 .build();
 
     }

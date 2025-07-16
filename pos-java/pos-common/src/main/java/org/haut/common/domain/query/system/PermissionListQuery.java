@@ -7,9 +7,9 @@ import lombok.Data;
 @Schema(description = "权限列表查询对象")
 public class PermissionListQuery {
 
-    @Schema(description = "权限名称", example = "权限名称")
-    private String permName;
+    @Schema(description = "权限名称", example = "人事管理")
+    private String name;
     @Schema(description = "权限状态(0 正常，1 停用)", example = "0")
-    private Integer permStatus;
+    private Integer status;
 
 }

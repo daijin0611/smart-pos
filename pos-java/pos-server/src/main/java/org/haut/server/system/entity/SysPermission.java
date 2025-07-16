@@ -39,24 +39,32 @@ public class SysPermission {
     private Integer isDelete;
 
     /**
+     * 资源路径
+     */
+    @TableField("resource_path")
+    private String path;
+
+    /**
+     * 权限名称
+     */
+    @TableField("perm_name")
+    private String name;
+
+    /**
+     * 组件名称
+     */
+    @TableField("component_name")
+    private String component;
+
+    /**
      * 权限标识
      */
     private String permCode;
 
     /**
-     * 权限类型
+     * 权限状态(0 启用，1 停用)
      */
-    private String permType;
-
-    /**
-     * 资源路径
-     */
-    private String resourcePath;
-
-    /**
-     * 操作类型
-     */
-    private String operation;
+    private Integer permStatus;
 
     /**
      * 父权限ID
@@ -68,13 +76,4 @@ public class SysPermission {
      */
     private String remark;
 
-    /**
-     * 权限名称
-     */
-    private String permName;
-
-    /**
-     * 权限状态(0 启用，1 停用)
-     */
-    private String permStatus;
 }

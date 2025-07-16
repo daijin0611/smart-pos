@@ -1,6 +1,7 @@
 package org.haut.server.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,8 @@ import org.haut.server.system.service.SysPermissionService;
 import org.haut.server.system.mapper.SysPermissionMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
 * @author daiji
@@ -25,14 +27,48 @@ import java.util.List;
 public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, SysPermission>
     implements SysPermissionService{
     private final SysPermissionMapper sysPermissionMapper;
+
+    /**
+     * 查询权限列表
+     * @param query
+     * @return
+     */
     @Override
     public List<PermissionInfoVO> queryList(PermissionListQuery query) {
-        List<SysPermission> sysPermissions = sysPermissionMapper.selectList(Wrappers.lambdaQuery(SysPermission.class)
-                .eq(StringUtils.isNotBlank(query.getPermName()), SysPermission::getPermName, query.getPermName())
-                .eq(query.getPermStatus() != null, SysPermission::getPermStatus, query.getPermStatus())
-        );
+        LambdaQueryWrapper<SysPermission> queryWrapper = Wrappers.lambdaQuery(SysPermission.class)
+                .like(StringUtils.isNotBlank(query.getName()), SysPermission::getName, query.getName())
+                .eq(query.getStatus() != null, SysPermission::getPermStatus, query.getStatus());
+        List<SysPermission> sysPermissions = sysPermissionMapper.selectList(queryWrapper);
+        return BeanUtil.copyToList(sysPermissions, PermissionInfoVO.class);
+    }
+
+    /**
+     * 查询角色的权限列表
+     * @param roleId
+     * @return
+     */
+    @Override
+    public List<PermissionInfoVO> queryTree(Long roleId) {
+        List<SysPermission> sysPermissions = sysPermissionMapper.queryListByRoleId(roleId);
         List<PermissionInfoVO> permissionInfoVOS = BeanUtil.copyToList(sysPermissions, PermissionInfoVO.class);
-        return List.of();
+        return buildTree(permissionInfoVOS, 0L);
+    }
+
+    /**
+     * 递归构建权限树
+     * @param permissionInfoVOS
+     * @param parentId
+     * @return
+     */
+    private List<PermissionInfoVO> buildTree(List<PermissionInfoVO> permissionInfoVOS, Long parentId) {
+        List<PermissionInfoVO> children = new ArrayList<>();
+        for (PermissionInfoVO permissionInfoVO : permissionInfoVOS){
+            if (Objects.equals(permissionInfoVO.getParentId(), parentId)){
+                permissionInfoVO.setChildren(buildTree(permissionInfoVOS, permissionInfoVO.getId()));
+                children.add(permissionInfoVO);
+            }
+        }
+        return children;
     }
 }
 

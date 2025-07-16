@@ -1,4 +1,4 @@
-package org.haut.common.config;
+package org.haut.config;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
@@ -7,8 +7,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.auth.AuthorizeVO;
-import org.haut.common.filter.JwtAuthorizeFilter;
+import org.haut.filter.JwtAuthorizeFilter;
 import org.haut.common.utils.JwtUtils;
+import org.haut.server.system.mapper.SysOrgMapper;
+import org.haut.server.system.service.SysOrgService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,6 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import org.haut.server.system.entity.SysUser;
+import org.haut.server.system.utils.UserContext;
 
 /**
  * @author 丁铭瀚
@@ -35,7 +39,8 @@ public class SecurityConfiguration {
     JwtUtils jwtUtils;
     @Resource
     JwtAuthorizeFilter jwtAuthorizeFilter;
-
+    @Resource
+    SysOrgService sysOrgService;
     /**
      * 配置安全过滤链
      * @param http HttpSecurity对象
@@ -141,12 +146,13 @@ public class SecurityConfiguration {
         // 处理登录成功逻辑
         response.setContentType("application/json;charset=utf-8");
         User user = (User) authentication.getPrincipal();
+        SysUser sysUser = UserContext.getCurrentUser();
         // 这里的1和"jojo"是示例值，实际应用中应从UserDetails中获取用户ID和用户名
-        String token = jwtUtils.createJwt(user,1, "jojo");
+        String token = jwtUtils.createJwt(user,sysUser.getId().longValue(), sysUser.getUserCode());
 
         // 返回JWT令牌
         AuthorizeVO authorizeVO = AuthorizeVO.builder()
-                .username("jojo")
+                .username(sysUser.getUserName())
                 .role("admin")
                 .token(token)
                 .expire(jwtUtils.expireTime())

@@ -15,4 +15,6 @@ import java.util.List;
 public interface SysPermissionService extends IService<SysPermission> {
 
     List<PermissionInfoVO> queryList(PermissionListQuery query);
+
+    List<PermissionInfoVO> queryTree(Long roleId);
 }

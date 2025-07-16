@@ -15,9 +15,9 @@ import java.util.Date;
 @Builder
 @Schema(description = "授权信息")
 public class AuthorizeVO {
-    @Schema(description = "用户名")
+    @Schema(description = "真实姓名")
     String username;
-    @Schema(description = "用户ID")
+    @Schema(description = "用户id")
     String userId;
     @Schema(description = "用户角色")
     String role;

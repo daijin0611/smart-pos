@@ -1,4 +1,4 @@
-package org.haut.common.config;
+package org.haut.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

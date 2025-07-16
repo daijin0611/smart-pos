@@ -1,4 +1,4 @@
-package org.haut.common.filter;
+package org.haut.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
