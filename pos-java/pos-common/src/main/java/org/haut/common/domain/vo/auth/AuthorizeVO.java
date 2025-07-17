@@ -1,5 +1,6 @@
 package org.haut.common.domain.vo.auth;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -24,5 +25,6 @@ public class AuthorizeVO {
     @Schema(description = "用户令牌")
     String token;
     @Schema(description = "令牌过期时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     Date expire;
 }

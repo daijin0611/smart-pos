@@ -8,7 +8,7 @@ spring:
       host: 39.107.119.113  # Redis主机地址
       port: 6379  # Redis端口号
       password:   # 访问Redis所需密码
-      database: 0  # 使用的数据库编号
+      database: 1  # 使用的数据库编号
       lettuce: #Lettuce客户端配置
         pool: # 连接池配置
           max-active: 8  # 最大活跃连接数

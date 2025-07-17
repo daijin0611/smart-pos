@@ -22,7 +22,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
 * @author daiji
@@ -78,16 +80,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
         List<SysUserRole> sysUserRole = sysUserRoleMapper.selectList(Wrappers.lambdaQuery(SysUserRole.class)
                 .eq(SysUserRole::getUserId, sysUser.getId()));
-
-        List<SysRole> sysRole = sysRoleMapper.selectByIds(sysUserRole.stream().map(SysUserRole::getRoleId).toList());
-
+        List<SysRole> sysRoleList = new ArrayList<>();
+        String[] roles;
+        if (!sysUserRole.isEmpty()) {
+            sysRoleList = sysRoleMapper.selectByIds(sysUserRole.stream().map(SysUserRole::getRoleId).toList());
+            roles = sysRoleList.stream().map(SysRole::getRoleCode).toArray(String[]::new);
+        }else {
+            // 如果用户没有角色，返回一个空的角色数组
+            roles = new String[0];
+        }
 
         // 构建Spring Security所需的User对象
         // 第一个参数是用户名
         // 第二个参数是加密后的密码
         // 第三个参数是权限列表（这里假设只有一个角色）
         return User.withUsername(userCode)
-                .roles(sysRole.stream().map(SysRole::getRoleCode).toArray(String[]::new))
+                .roles(roles)
                 .password(encoder.encode(sysUser.getUserPassword()))
                 .build();
 

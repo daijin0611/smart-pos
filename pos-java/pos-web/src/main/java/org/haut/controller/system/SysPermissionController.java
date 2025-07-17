@@ -52,7 +52,7 @@ public class SysPermissionController {
     }
 
     @PutMapping("/update-permission-status")
-    @Operation(description = "更新角色状态(0 正常， 1 停用)", summary = "更新权限状态")
+    @Operation(description = "更新权限状态(0 正常， 1 停用)", summary = "更新权限状态")
     public JsonVO<String> updatePermissionStatus(@RequestParam("id") Long id, @RequestParam("status") Integer status){
         LambdaUpdateWrapper<SysPermission> updateWrapper = Wrappers.lambdaUpdate(SysPermission.class)
                 .eq(SysPermission::getId, id)
