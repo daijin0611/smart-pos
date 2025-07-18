@@ -51,6 +51,9 @@ public class SecurityConfiguration {
                 // 配置HTTP请求的授权规则
                 .authorizeHttpRequests(conf -> conf
                         .requestMatchers("/auth/**").permitAll() // 允许访问所有接口
+                        .requestMatchers("/doc.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // 允许Swagger相关接口
+                        .requestMatchers("/webjars/**", "/favicon.ico").permitAll() // 允许Knife4j相关资源
+                        .requestMatchers("/knife4j/**").permitAll() // 允许Knife4j UI资源
                         .anyRequest().authenticated()
                 )
                 // 配置表单登录

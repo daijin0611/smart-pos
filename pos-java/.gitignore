@@ -2,7 +2,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-.lingma
+.lingma/
+.trae/
 
 ### IntelliJ IDEA ###
 .idea/
