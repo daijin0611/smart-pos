@@ -20,7 +20,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import org.haut.server.system.entity.SysUser;
@@ -50,7 +49,7 @@ public class SecurityConfiguration {
         return http
                 // 配置HTTP请求的授权规则
                 .authorizeHttpRequests(conf -> conf
-                        .requestMatchers("/auth/**").permitAll() // 允许访问所有接口
+                        .requestMatchers("/auth/login").permitAll() // 允许访问所有接口
                         .requestMatchers("/doc.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // 允许Swagger相关接口
                         .requestMatchers("/webjars/**", "/favicon.ico").permitAll() // 允许Knife4j相关资源
                         .requestMatchers("/knife4j/**").permitAll() // 允许Knife4j UI资源

@@ -36,6 +36,12 @@ public class SysPermissionController {
         return JsonVO.success(sysPermissionService.queryList(query));
     }
 
+    @GetMapping("/query-tree-by-user/{userId}")
+    @Operation(description = "根据用户ID查询权限树", summary = "根据用户ID查询权限列表")
+    public JsonVO<List<PermissionInfoVO>> queryByUserId(@PathVariable("userId") Long userId) {
+        return JsonVO.success(sysPermissionService.queryByUserId(userId));
+    }
+
 
     @PostMapping("/add-permission")
     @Operation(description = "添加权限", summary = "添加权限")

@@ -10,5 +10,5 @@ public class UnAllocatedListQuery {
 
     @Schema(description = "角色id")
     @NotNull
-    private  String roleId;
+    private Long roleId;
 }

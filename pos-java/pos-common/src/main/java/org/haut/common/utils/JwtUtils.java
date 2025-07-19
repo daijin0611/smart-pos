@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.extern.slf4j.Slf4j;
 import org.haut.common.constant.RedisKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @author 丁铭瀚
  * @version 1.0
  */
+@Slf4j
 @Component
 public class JwtUtils {
     @Autowired
@@ -155,6 +157,7 @@ public class JwtUtils {
     private String convertToken(String headerToken) {
         //判断请求头是否包含Bearer前缀
         if (headerToken == null || !headerToken.startsWith("Bearer ")) {
+            log.warn("JWT令牌为空或格式不正确");
             return null;
         }
         return headerToken.substring(7);
@@ -176,6 +179,9 @@ public class JwtUtils {
      * @return 如果JWT ID在黑名单中，则返回true，否则返回false
      */
     private boolean isInvalidToken(String jwtId) {
-        return redisTemplate.hasKey(RedisKey.JWT_BLACK_LIST + jwtId);
+        Boolean isInvalid = redisTemplate.hasKey(RedisKey.JWT_BLACK_LIST + jwtId);
+        if (isInvalid) log.info("JWT令牌已失效，ID: {}", jwtId);
+        else log.info("JWT令牌未失效，ID: {}", jwtId);
+        return isInvalid;
     }
 }

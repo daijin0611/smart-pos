@@ -27,4 +27,12 @@
         left join pos.sys_role_permission srp on sys_permission.id = srp.permission_id
         where srp.role_id = #{roleId}
     </select>
+    <select id="queryListByUserId" resultMap="BaseResultMap" parameterType="long">
+        select *
+        from sys_permission sp
+        left join pos.sys_role_permission srp on sp.id = srp.permission_id
+        where srp.role_id in (
+            select role_id from pos.sys_user_role where user_id = #{userId}
+        )
+    </select>
 </mapper>

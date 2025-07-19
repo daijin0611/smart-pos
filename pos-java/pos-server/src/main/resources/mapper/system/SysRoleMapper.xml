@@ -48,28 +48,28 @@
         WHERE ur.role_id = #{query.roleId}
     </select>
     <select id="getUnAllocatedUserList" resultType="org.haut.common.domain.vo.system.UserInfoVO">
-        SELECT
-            u.id,
-            u.user_code,
-            u.user_password,
-            u.user_name,
-            u.user_number,
-            u.user_position,
-            u.user_sex,
-            u.user_birthday,
-            u.user_dept,
-            u.user_entry_date,
-            u.user_status,
-            u.user_id_card,
-            u.user_address,
-            u.user_marry,
-            u.user_edu,
-            u.user_health,
-            u.org_id,
-            u.create_time,
-            u.update_time
-        FROM sys_user_role ur
-                 LEFT JOIN sys_user u ON ur.user_id = u.id
+        SELECT u.id,
+               u.user_code,
+               u.user_password,
+               u.user_name,
+               u.user_number,
+               u.user_position,
+               u.user_sex,
+               u.user_birthday,
+               u.user_dept,
+               u.user_entry_date,
+               u.user_status,
+               u.user_id_card,
+               u.user_address,
+               u.user_marry,
+               u.user_edu,
+               u.user_health,
+               u.org_id,
+               u.create_time,
+               u.update_time
+        FROM sys_user u
+                 LEFT JOIN sys_user_role ur ON ur.user_id = u.id
         WHERE ur.role_id != #{query.roleId}
+           OR ur.role_id IS NULL
     </select>
 </mapper>

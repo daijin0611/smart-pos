@@ -29,6 +29,18 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     private final SysPermissionMapper sysPermissionMapper;
 
     /**
+     * 根据用户ID查询权限列表
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<PermissionInfoVO> queryByUserId(Long userId) {
+        List<SysPermission> sysPermissions = sysPermissionMapper.queryListByUserId(userId);
+        List<PermissionInfoVO> permissionInfoVOS = BeanUtil.copyToList(sysPermissions, PermissionInfoVO.class);
+        return buildTree(permissionInfoVOS, 0L);
+    }
+
+    /**
      * 查询权限列表
      * @param query
      * @return
