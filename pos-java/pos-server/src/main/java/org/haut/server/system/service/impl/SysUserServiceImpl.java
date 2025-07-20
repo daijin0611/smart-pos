@@ -1,11 +1,13 @@
 package org.haut.server.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.query.system.UserListQuery;
 import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.server.system.entity.SysRole;
@@ -22,9 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
 * @author daiji
@@ -48,16 +48,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
      * @return
      */ 
     @Override
-    public List<UserInfoVO> getList(UserListQuery query) {
-        //构建条件查询器，当用户名、用户编号、用户状态不为空时，进行查询
-        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like(StringUtils.isNotBlank(query.getUserName()),"user_name",query.getUserName())
-                .like(StringUtils.isNotBlank(query.getUserNumber()),"user_number",query.getUserNumber())
-                .eq(StringUtils.isNotBlank(query.getUserNumber()),"user_status",query.getUserStatus());
-        //查询数据库
-        List<SysUser> sysUsers = sysUserMapper.selectList(queryWrapper);
-        //转化为DTO
-        return BeanUtil.copyToList(sysUsers, UserInfoVO.class);
+    public Page<SysUser> getList(UserListQuery query) {
+        LambdaQueryWrapper<SysUser> queryWrapper = Wrappers.lambdaQuery(SysUser.class)
+                .like(StringUtils.isNotBlank(query.getUserName()), SysUser::getUserName, query.getUserName())
+                .eq(StringUtils.isNotBlank(query.getUserStatus()), SysUser::getUserStatus, query.getUserStatus())
+                .like(StringUtils.isNotBlank(query.getUserNumber()), SysUser::getUserNumber, query.getUserNumber());
+        Page<SysUser> page = new Page<>(query.getPageNum(), query.getPageSize());
+        return sysUserMapper.selectPage(page, queryWrapper);
     }
 
 

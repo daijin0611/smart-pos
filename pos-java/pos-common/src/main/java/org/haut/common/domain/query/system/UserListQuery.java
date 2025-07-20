@@ -1,7 +1,6 @@
 package org.haut.common.domain.query.system;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -24,4 +23,16 @@ public class UserListQuery {
      */
     @Schema(description = "在职状态")
     private String userStatus;
+
+    /**
+     * 分页页码
+     */
+    @Schema(description = "分页页码")
+    private Integer pageNum = 1;
+
+    /**
+     * 分页大小
+     */
+    @Schema(description = "分页大小")
+    private Integer pageSize = 20;
 }

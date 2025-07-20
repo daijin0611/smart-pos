@@ -3,6 +3,7 @@ package org.haut.controller.system;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -30,7 +31,7 @@ public class SysUserController {
 
     @GetMapping("/query-list")
     @Operation(description = "获取用户列表", summary = "获取用户列表")
-    public JsonVO<List<UserInfoVO>> getList(UserListQuery query){
+    public JsonVO<Page<SysUser>> getList(UserListQuery query){
         log.info(query.toString());
         return JsonVO.success(sysUserService.getList(query));
     }

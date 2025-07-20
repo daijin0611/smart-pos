@@ -1,6 +1,7 @@
 package org.haut.server.system.service;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.haut.common.domain.query.system.UserListQuery;
 import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.server.system.entity.SysUser;
@@ -16,5 +17,5 @@ import java.util.List;
 */
 public interface SysUserService extends IService<SysUser> , UserDetailsService {
 
-    List<UserInfoVO> getList(UserListQuery query);
+    Page<SysUser> getList(UserListQuery query);
 }
