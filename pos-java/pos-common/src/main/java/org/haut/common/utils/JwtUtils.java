@@ -157,7 +157,7 @@ public class JwtUtils {
     private String convertToken(String headerToken) {
         //判断请求头是否包含Bearer前缀
         if (headerToken == null || !headerToken.startsWith("Bearer ")) {
-            log.warn("JWT令牌为空或格式不正确");
+//            log.warn("JWT令牌为空或格式不正确");
             return null;
         }
         return headerToken.substring(7);

@@ -74,8 +74,7 @@ public class SysUserController {
      */
     private boolean judgeUserCodeExist(String userCode){
         long count = sysUserService.count(new QueryWrapper<SysUser>()
-               .eq("user_code", userCode)
-               .eq("is_delete", 0));
+               .eq("user_code", userCode));
         return count > 0;
     }
 }

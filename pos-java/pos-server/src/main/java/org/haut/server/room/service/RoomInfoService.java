@@ -1,7 +1,10 @@
 package org.haut.server.room.service;
 
+import org.haut.common.domain.vo.room.RoomInfoVO;
 import org.haut.server.room.entity.RoomInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author daiji
@@ -9,5 +12,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2025-05-18 23:48:22
 */
 public interface RoomInfoService extends IService<RoomInfo> {
+
+    List<RoomInfoVO> getAllRooms();
 
 }

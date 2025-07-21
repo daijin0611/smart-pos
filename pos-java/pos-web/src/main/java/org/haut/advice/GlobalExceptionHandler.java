@@ -3,6 +3,7 @@ package org.haut.advice;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.ResultStatus;
+import org.haut.common.exception.BusinessException;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -47,5 +48,17 @@ public class GlobalExceptionHandler {
     public JsonVO<String> handleRuntimeException(RuntimeException ex) {
         log.error(ex.getMessage(), ex);
         return JsonVO.fail(null);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public JsonVO<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.error(ex.getMessage(), ex);
+        return JsonVO.fail(ex.getMessage());
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public JsonVO<String> handleBusinessException(BusinessException ex) {
+        log.error(ex.getMessage(), ex);
+        return JsonVO.fail(ex.getMessage());
     }
 }

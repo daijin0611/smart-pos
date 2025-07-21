@@ -1,7 +1,10 @@
 package org.haut.server.room.mapper;
 
+import org.haut.common.domain.vo.room.RoomInfoVO;
 import org.haut.server.room.entity.RoomInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
 * @author daiji
@@ -11,6 +14,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface RoomInfoMapper extends BaseMapper<RoomInfo> {
 
+    List<RoomInfoVO> getAllRooms();
 }
 
 

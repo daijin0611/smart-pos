@@ -17,12 +17,11 @@ import org.haut.server.server.service.ServerCureTicketService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,8 +37,7 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
     @Override
     public List<CureTicketListDTO> getCureTicketWithVipTickets(ServerCureTicketListQuery query) {
         QueryWrapper<ServerCureTicket> cureTicketQuery = new QueryWrapper<>();
-        cureTicketQuery.eq("is_delete", 0)
-                .like(BeanUtil.isNotEmpty(query.getCureTicketName()), "cure_ticket_name", query.getCureTicketName())
+        cureTicketQuery.like(BeanUtil.isNotEmpty(query.getCureTicketName()), "cure_ticket_name", query.getCureTicketName())
                 .like(BeanUtil.isNotEmpty(query.getCureTicketEncode()), "cure_ticket_encode", query.getCureTicketEncode());
         List<ServerCureTicket> cureTicketList = baseMapper.selectList(cureTicketQuery);
         if (CollectionUtils.isEmpty(cureTicketList)) {
@@ -50,8 +48,7 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
                 .map(ServerCureTicket::getId)
                 .collect(Collectors.toList());
         QueryWrapper<ServerCureTicketDetail> detailQuery = new QueryWrapper<>();
-        detailQuery.in("cure_ticket_id", cureTicketIds)
-                .eq("is_delete", 0);
+        detailQuery.in("cure_ticket_id", cureTicketIds);
         List<ServerCureTicketDetail> detailList = serverCureTicketDetailMapper.selectList(detailQuery);
 
         List<Long> vipTicketIds = detailList.stream()
@@ -92,12 +89,11 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
     @Override
     public CureTicketInfoDTO getCureTicketInfoById(Long id) {
         ServerCureTicket cureTicketEntity = baseMapper.selectById(id);
-        if (cureTicketEntity == null || cureTicketEntity.getIsDelete() == 1) {
+        if (cureTicketEntity == null) {
             return null;
         }
         QueryWrapper<ServerCureTicketDetail> detailQuery = new QueryWrapper<>();
-        detailQuery.eq("cure_ticket_id", id)
-                .eq("is_delete", 0);
+        detailQuery.eq("cure_ticket_id", id);
         List<ServerCureTicketDetail> detailList = serverCureTicketDetailMapper.selectList(detailQuery);
 
         List<Long> vipTicketIds = detailList.stream()
@@ -133,7 +129,6 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
         // 保存主表时将主键置空，避免重复插入
         ServerCureTicket cureTicketEntity = BeanUtil.toBean(cureTicket, ServerCureTicket.class);
         cureTicketEntity.setId(null);
-        cureTicketEntity.setIsDelete(0);
         baseMapper.insert(cureTicketEntity);
         Long cureTicketId = cureTicketEntity.getId();
 
@@ -147,33 +142,34 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
         detailList.forEach(detailDTO -> {
             ServerCureTicketDetail detailEntity = BeanUtil.toBean(detailDTO, ServerCureTicketDetail.class);
             detailEntity.setCureTicketId(cureTicketId);
-            detailEntity.setIsDelete(0);
             serverCureTicketDetailMapper.insert(detailEntity);
         });
     }
 
     @Override
-    public void updateCureTicket(CureTicketInfoDTO cureTicket) {
-        Long cureTicketId = cureTicket.getCureTicketId();
-        ServerCureTicket existCureTicket = baseMapper.selectById(cureTicketId);
-        if (existCureTicket == null || existCureTicket.getIsDelete() == 1) {
-            throw new IllegalArgumentException("疗程券不存在或已删除");
-        }
-        ServerCureTicket cureTicketEntity = BeanUtil.toBean(cureTicket, ServerCureTicket.class);
-        baseMapper.updateById(cureTicketEntity);
+    @Transactional(rollbackFor = Exception.class)
+    public void updateCureTicket(CureTicketInfoDTO updateDTO) {
+        ServerCureTicket cureTicket = new ServerCureTicket();
+        BeanUtils.copyProperties(updateDTO, cureTicket);
+        baseMapper.updateById(cureTicket);
 
-        QueryWrapper<ServerCureTicketDetail> detailQuery = new QueryWrapper<>();
-        detailQuery.eq("cure_ticket_id", cureTicketId);
-        serverCureTicketDetailMapper.delete(detailQuery);
+        // 删除原有的详情记录
+        QueryWrapper<ServerCureTicketDetail> deleteWrapper = new QueryWrapper<>();
+        deleteWrapper.eq("cure_ticket_id", updateDTO.getCureTicketId());
+        serverCureTicketDetailMapper.delete(deleteWrapper);
 
-        List<CureTicketDetailInfoDTO> detailList = cureTicket.getCureTicketDetailInfoDTOList();
-        if (!CollectionUtils.isEmpty(detailList)) {
-            detailList.forEach(detailDTO -> {
-                ServerCureTicketDetail detailEntity = BeanUtil.toBean(detailDTO, ServerCureTicketDetail.class);
-                detailEntity.setCureTicketId(cureTicketId);
-                detailEntity.setIsDelete(0);
-                serverCureTicketDetailMapper.insert(detailEntity);
-            });
+        // 插入新的详情记录
+        List<CureTicketDetailInfoDTO> detailUpdateDTOList = updateDTO.getCureTicketDetailInfoDTOList();
+        if (!CollectionUtils.isEmpty(detailUpdateDTOList)) {
+            List<ServerCureTicketDetail> detailList = detailUpdateDTOList.stream()
+                    .map(detailUpdateDTO -> {
+                        ServerCureTicketDetail detail = new ServerCureTicketDetail();
+                        BeanUtils.copyProperties(detailUpdateDTO, detail);
+                        detail.setCureTicketId(updateDTO.getCureTicketId());
+                        return detail;
+                    })
+                    .collect(Collectors.toList());
+            serverCureTicketDetailMapper.insert(detailList);
         }
     }
 

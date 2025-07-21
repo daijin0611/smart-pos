@@ -37,8 +37,7 @@ public class ServerPackageServiceImpl extends ServiceImpl<ServerPackageMapper, S
         // 构建主表查询条件
         QueryWrapper<ServerPackage> wrapper = new QueryWrapper<>();
         wrapper.like(query.getPackageName() != null, "package_name", query.getPackageName())
-                .like(query.getPackageEncode() != null, "package_encode", query.getPackageEncode())
-                .eq("is_delete", 0);  // 过滤未删除
+                .like(query.getPackageEncode() != null, "package_encode", query.getPackageEncode());
 
         // 查询主表
         List<ServerPackage> packageEntities = baseMapper.selectList(wrapper);
@@ -49,8 +48,7 @@ public class ServerPackageServiceImpl extends ServiceImpl<ServerPackageMapper, S
         // 批量查询详情表（通过 packageId 关联）
         List<Long> packageIds = packageEntities.stream().map(ServerPackage::getId).collect(Collectors.toList());
         QueryWrapper<ServerPackageDetail> detailWrapper = new QueryWrapper<>();
-        detailWrapper.in("package_id", packageIds)
-                .eq("is_delete", 0);
+        detailWrapper.in("package_id", packageIds);
         List<ServerPackageDetail> detailEntities = packageDetailMapper.selectList(detailWrapper);
 
         // 组装结果（主表 + 详情）
@@ -78,14 +76,13 @@ public class ServerPackageServiceImpl extends ServiceImpl<ServerPackageMapper, S
     public PackageInfoDTO getPackageInfoById(Long id) {
         // 查询主表
         ServerPackage packageEntity = baseMapper.selectById(id);
-        if (packageEntity == null || packageEntity.getIsDelete() == 1) {
+        if (packageEntity == null) {
             return null;
         }
 
         // 查询详情表
         QueryWrapper<ServerPackageDetail> detailWrapper = new QueryWrapper<>();
-        detailWrapper.eq("package_id", id)
-                .eq("is_delete", 0);
+        detailWrapper.eq("package_id", id);
         List<ServerPackageDetail> detailEntities = packageDetailMapper.selectList(detailWrapper);
 
         // 组装详情DTO
@@ -104,7 +101,6 @@ public class ServerPackageServiceImpl extends ServiceImpl<ServerPackageMapper, S
         // 1. 保存主表
         ServerPackage packageEntity = BeanUtil.toBean(packageInfo, ServerPackage.class);
         packageEntity.setCreateTime(new Date());
-        packageEntity.setIsDelete(0);
         baseMapper.insert(packageEntity);
         Long packageId = packageEntity.getId();
 
@@ -115,7 +111,6 @@ public class ServerPackageServiceImpl extends ServiceImpl<ServerPackageMapper, S
                 ServerPackageDetail detailEntity = BeanUtil.toBean(detail, ServerPackageDetail.class);
                 detailEntity.setPackageId(packageId);
                 detailEntity.setCreateTime(new Date());
-                detailEntity.setIsDelete(0);
                 packageDetailMapper.insert(detailEntity);
             });
         }
@@ -128,7 +123,7 @@ public class ServerPackageServiceImpl extends ServiceImpl<ServerPackageMapper, S
         Long packageId = packageInfo.getId();
         // 1. 校验主表是否存在
         ServerPackage existPackage = baseMapper.selectById(packageId);
-        if (existPackage == null || existPackage.getIsDelete() == 1) {
+        if (existPackage == null) {
             throw new IllegalArgumentException("套餐不存在");
         }
 
@@ -149,7 +144,6 @@ public class ServerPackageServiceImpl extends ServiceImpl<ServerPackageMapper, S
                 ServerPackageDetail detailEntity = BeanUtil.toBean(detail, ServerPackageDetail.class);
                 detailEntity.setPackageId(packageId);
                 detailEntity.setUpdateTime(new Date());
-                detailEntity.setIsDelete(0);
                 packageDetailMapper.insert(detailEntity);
             });
         }
