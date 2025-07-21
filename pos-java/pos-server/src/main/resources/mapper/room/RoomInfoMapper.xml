@@ -11,11 +11,13 @@
             <result property="isDelete" column="is_delete" />
             <result property="remark" column="remark" />
             <result property="roomName" column="room_name" />
+        <result property="orgId" column="org_id"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,create_time,update_time,is_delete,remark,room_name
     </sql>
+
     <select id="getAllRooms" resultType="org.haut.common.domain.vo.room.RoomInfoVO">
         select
             ri.id,
@@ -25,7 +27,7 @@
             count(case when rb.status = 0 then 1 end) as free_bed_count
         from room_info ri
                  left join pos.room_bed rb on ri.id = rb.room_info_id
-        where ri.is_delete = 0
+        where ri.is_delete = 0 and ri.org_id = #{orgId}
         group by ri.id
     </select>
 

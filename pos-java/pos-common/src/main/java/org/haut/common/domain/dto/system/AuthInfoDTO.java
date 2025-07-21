@@ -8,11 +8,7 @@ import lombok.Data;
 @Data
 @Schema(description = "登录信息")
 @Builder
-public class LoginInfoDTO {
-    @Schema(description = "用户编号")
-    private String userCode;
-    @Schema(description = "用户姓名")
-    private String userName;
+public class AuthInfoDTO {
     @Schema(description = "用户ID")
     private Long userId;
     @Schema(description = "组织ID")

@@ -14,7 +14,7 @@ import java.util.List;
 */
 public interface RoomInfoMapper extends BaseMapper<RoomInfo> {
 
-    List<RoomInfoVO> getAllRooms();
+    List<RoomInfoVO> getAllRooms(Long orgId);
 }
 
 

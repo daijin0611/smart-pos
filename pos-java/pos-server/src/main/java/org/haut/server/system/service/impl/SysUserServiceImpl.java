@@ -73,6 +73,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         if (sysUser == null) {
             throw new UsernameNotFoundException("用户名或密码错误");
         }
+
         UserContext.setCurrentUser(sysUser);
 
         List<SysUserRole> sysUserRole = sysUserRoleMapper.selectList(Wrappers.lambdaQuery(SysUserRole.class)

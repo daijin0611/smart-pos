@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.constant.RedisKey;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -148,6 +149,18 @@ public class JwtUtils {
                 .authorities(claims.get("authorities").asArray(String.class))
                 .build();
     }
+
+    public AuthInfoDTO toAuthInfo(DecodedJWT jwt) {
+        Map<String, Claim> claims = jwt.getClaims();
+        // 从JWT中获取用户ID、用户名和权限
+        Long userId = claims.get("userId").asLong();
+        Long orgId = claims.get("orgId").asLong();
+        return AuthInfoDTO.builder()
+                .userId(userId)
+                .orgId(orgId)
+                .build();
+    }
+
 
     /**
      * 从请求头中获取JWT令牌

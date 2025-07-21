@@ -45,5 +45,9 @@ public class RoomInfo {
      */
     private String roomName;
 
+    /**
+     * 机构id
+     */
+    private Long orgId;
 
 }

@@ -2,7 +2,9 @@ package org.haut.server.room.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.vo.room.RoomInfoVO;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.room.entity.RoomInfo;
 import org.haut.server.room.service.RoomInfoService;
 import org.haut.server.room.mapper.RoomInfoMapper;
@@ -22,7 +24,8 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
     private final RoomInfoMapper roomInfoMapper;
     @Override
     public List<RoomInfoVO> getAllRooms() {
-        return roomInfoMapper.getAllRooms();
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        return roomInfoMapper.getAllRooms(auth.getOrgId());
     }
 }
 

@@ -6,6 +6,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.JwtUtils;
 import org.haut.server.system.utils.UserContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

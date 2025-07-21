@@ -18,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import java.io.IOException;
@@ -154,6 +155,7 @@ public class SecurityConfiguration {
                 .userName(sysUser.getUserName())
                 .userCode(sysUser.getUserCode())
                 .userId(sysUser.getId())
+                .orgId(sysUser.getOrgId())
                 .token(token)
                 .expire(jwtUtils.expireTime())
                 .build();

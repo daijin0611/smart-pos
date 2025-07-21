@@ -24,6 +24,8 @@ public class AuthorizeVO {
     String userCode;
     @Schema(description = "用户令牌")
     String token;
+    @Schema(description = "机构id")
+    Long orgId;
     @Schema(description = "令牌过期时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     Date expire;
