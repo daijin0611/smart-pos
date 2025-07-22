@@ -1,7 +1,5 @@
 package org.haut.server.system.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,7 +7,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.query.system.UserListQuery;
-import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.server.system.entity.SysRole;
 import org.haut.server.system.entity.SysUser;
 import org.haut.server.system.entity.SysUserRole;
@@ -18,7 +15,6 @@ import org.haut.server.system.mapper.SysRoleMapper;
 import org.haut.server.system.mapper.SysUserRoleMapper;
 import org.haut.server.system.service.SysUserService;
 import org.haut.server.system.mapper.SysUserMapper;
-import org.haut.server.system.utils.UserContext;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -73,8 +69,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         if (sysUser == null) {
             throw new UsernameNotFoundException("用户名或密码错误");
         }
-
-        UserContext.setCurrentUser(sysUser);
 
         List<SysUserRole> sysUserRole = sysUserRoleMapper.selectList(Wrappers.lambdaQuery(SysUserRole.class)
                 .eq(SysUserRole::getUserId, sysUser.getId()));

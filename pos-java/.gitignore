@@ -4,6 +4,7 @@ target/
 !**/src/test/**/target/
 .lingma/
 .trae/
+.vercel/
 
 ### IntelliJ IDEA ###
 .idea/
