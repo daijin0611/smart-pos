@@ -21,5 +21,11 @@ public class ServerProductListQuery {
      * 产品状态
      */
     private Integer productStatus;
+    
+    /**
+     * 组织ID
+     */
+    @Schema(hidden = true)
+    private Long orgId;
 
 }

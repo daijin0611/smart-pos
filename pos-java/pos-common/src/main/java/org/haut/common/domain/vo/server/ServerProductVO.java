@@ -50,4 +50,7 @@ public class ServerProductVO {
 
     @Schema(description = "产品状态(0-启用，1-禁用)", example = "0")
     private Integer productStatus;
+    
+    @Schema(description = "组织ID", example = "1")
+    private Long orgId;
 }

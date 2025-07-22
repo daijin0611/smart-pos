@@ -45,7 +45,7 @@ public class ServerProductUpdateDTO {
 
     @Schema(description = "提成类型", example = "1")
     @NotNull(message = "提成类型不能为空")
-    private Integer commissioinType;
+    private Integer commissionType;
 
 
     @DecimalMin(value = "0.00", message = "提成比例不能小于0")

@@ -61,4 +61,7 @@ public class ServerProductInfoDTO {
 
     @Schema(description = "该服务产品的提成固定值")
     private BigDecimal productCommissionPrice;
+    
+    @Schema(description = "组织ID", example = "1")
+    private Long orgId;
 }

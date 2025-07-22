@@ -45,9 +45,9 @@ public class ServerProductCreateDTO {
     @Max(value = 1, message = "是否打折值不合法")
     private Integer isDiscount;
 
-    @Schema(description = "提成类型", example = "1")
+    @Schema(description = "提成类型（0 固定提成, 1 比例提成）", example = "1")
     @NotNull(message = "提成类型不能为空")
-    private Integer commissioinType;
+    private Integer commissionType;
 
 
     @DecimalMin(value = "0.00", message = "提成比例不能小于0")
@@ -64,4 +64,5 @@ public class ServerProductCreateDTO {
     @Max(value = 1, message = "产品状态值不合法")
     @Schema(description = "产品状态(0-启用，1-禁用)", example = "0")
     private Integer productStatus;
+
 }

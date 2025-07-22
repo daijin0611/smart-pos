@@ -1,20 +1,21 @@
 package org.haut.controller.server;
 
-import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.server.ServerProductCreateDTO;
-import org.haut.common.domain.dto.server.ServerProductInfoDTO;
 import org.haut.common.domain.dto.server.ServerProductUpdateDTO;
 import org.haut.common.domain.query.server.ServerProductListQuery;
+import org.haut.common.domain.vo.server.ServerProductInfoVO;
 import org.haut.common.domain.vo.server.ServerProductVO;
-import org.haut.server.server.entity.ServerProduct;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.server.service.ServerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.exception.BusinessException;
+
 
 import java.util.List;
 
@@ -30,32 +31,45 @@ public class ServerProductController {
     @Operation(description = "获取服务产品列表", summary = "获取服务产品列表")
     public JsonVO<List<ServerProductVO>> getList(ServerProductListQuery query){
         log.info(query.toString());
+        // 调用服务层方法获取列表
         return JsonVO.success(serverProductService.getList(query));
     }
 
     @GetMapping("/query-info")
     @Operation(description = "根据服务产品id查询详细信息", summary = "根据服务产品id查询详细信息")
-    public JsonVO<ServerProductInfoDTO> getProductById(@RequestParam Long id) {
+    public JsonVO<ServerProductInfoVO> getProductById(@RequestParam Long id) {
         log.info("产品id：{}", id);
-        // 将 ServerProduct 转化为 ServerProductInfoDTO
-        ServerProductInfoDTO productInfoDTO = BeanUtil.toBean(serverProductService.getById(id), ServerProductInfoDTO.class);
-        return JsonVO.success(productInfoDTO);
+        try {
+            // 调用服务层方法获取产品详情
+            Long orgId = AuthContextHolder.getAuth().getOrgId();
+            ServerProductInfoVO productInfoVO = serverProductService.getProductById(id, orgId);
+            return JsonVO.success(productInfoVO);
+        } catch (BusinessException e) {
+            throw new BusinessException(e.getMessage());
+        }
     }
 
-    @PostMapping("/add-product")
     @Operation(description = "添加服务产品", summary = "添加服务产品")
+    @PostMapping("/add-product")
     public JsonVO<String> addServerProduct(@Validated @RequestBody ServerProductCreateDTO product) {
-        serverProductService.save(BeanUtil.toBean(product, ServerProduct.class));
-        return JsonVO.success("添加成功");
+        String result = serverProductService.addProduct(product);
+        if ("添加成功".equals(result)) {
+            return JsonVO.success(result);
+        } else {
+            return JsonVO.fail(result);
+        }
     }
 
 
     @PutMapping("/update-product")
     @Operation(description = "更新服务产品", summary = "更新服务产品")
     public JsonVO<String> updateServerProduct(@Validated @RequestBody ServerProductUpdateDTO product) {
-        // 将 ServerProductInfoDTO 转换为 ServerProduct 实体类并更新
-        serverProductService.updateById(BeanUtil.toBean(product, ServerProduct.class));
-        return JsonVO.success("更新成功");
+        String result = serverProductService.updateProduct(product);
+        if ("更新成功".equals(result)) {
+            return JsonVO.success(result);
+        } else {
+            return JsonVO.fail(result);
+        }
     }
 
 }
