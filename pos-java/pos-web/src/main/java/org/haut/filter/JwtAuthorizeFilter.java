@@ -7,12 +7,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.haut.common.utils.JwtUtils;
+import org.haut.common.utils.UserContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
 /**
@@ -38,24 +40,26 @@ public class JwtAuthorizeFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
-        // 获取请求头中的Authorization字段
-        String header = request.getHeader("Authorization");
-        // 将请求头解析为JWT令牌
-        DecodedJWT decodedJWT = jwtUtils.resoleJwt(header);
-        if (decodedJWT != null) {
-            UserDetails user = jwtUtils.toUser(decodedJWT);
-            // 创建认证令牌
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            // 将认证信息存入SecurityContextHolder中
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            // 将用户名存入请求属性中，便于后续使用
-            request.setAttribute("userCode", user.getUsername());
+        try {
+            // 获取请求头中的Authorization字段
+            String header = request.getHeader("Authorization");
+            // 将请求头解析为JWT令牌
+            DecodedJWT decodedJWT = jwtUtils.resoleJwt(header);
+            if (decodedJWT != null) {
+                UserDetails user = jwtUtils.toUser(decodedJWT);
+                // 创建认证令牌
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                // 将认证信息存入SecurityContextHolder中
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                // 将用户名存入请求属性中，便于后续使用
+                request.setAttribute("userCode", user.getUsername());
+            }
+            // 继续过滤链
+            filterChain.doFilter(request, response);
+        } finally {
+            UserContextHolder.clearUser();
         }
-        // 继续过滤链
-        filterChain.doFilter(request, response);
-
     }
 }

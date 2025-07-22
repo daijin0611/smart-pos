@@ -41,7 +41,6 @@ spring:
       max-wait: 60000  # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException
       min-idle: 10  # 最小空闲连接数
       test-while-idle: true  # 连接空闲时进行连接有效性检查
-      min-evictable-idle-time-millis: 300000  # 连接在连接池中的最小生存时间（毫秒），达到此值后连接将被释放
       stat-view-servlet:
         enabled: true
         url-pattern: /druid/*   #druid监控页面地址

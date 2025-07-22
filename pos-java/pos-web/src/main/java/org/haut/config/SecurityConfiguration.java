@@ -4,9 +4,11 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.haut.common.domain.dto.system.UserDTO;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.auth.AuthorizeVO;
+import org.haut.common.utils.UserContextHolder;
 import org.haut.filter.JwtAuthorizeFilter;
 import org.haut.common.utils.JwtUtils;
 import org.springframework.context.annotation.Bean;
@@ -18,13 +20,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import org.haut.server.system.entity.SysUser;
-import org.haut.server.system.utils.UserContext;
+
 
 /**
  * @author 丁铭瀚
@@ -146,7 +146,7 @@ public class SecurityConfiguration {
         // 处理登录成功逻辑
         response.setContentType("application/json;charset=utf-8");
         User user = (User) authentication.getPrincipal();
-        SysUser sysUser = UserContext.getCurrentUser();
+        UserDTO sysUser = UserContextHolder.getUser();
         // 这里的1和"jojo"是示例值，实际应用中应从UserDetails中获取用户ID和用户名
         String token = jwtUtils.createJwt(user, sysUser.getId(), sysUser.getUserCode(), sysUser.getOrgId());
 
