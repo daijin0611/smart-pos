@@ -3,6 +3,8 @@ package org.haut.server.room.mapper;
 import org.haut.server.room.entity.RoomBed;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import java.util.List;
+
 /**
 * @author daiji
 * @description 针对表【room_bed(床位表)】的数据库操作Mapper
@@ -11,6 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface RoomBedMapper extends BaseMapper<RoomBed> {
 
+    List<RoomBed> getAllBeads(Long orgId);
 }
 
 

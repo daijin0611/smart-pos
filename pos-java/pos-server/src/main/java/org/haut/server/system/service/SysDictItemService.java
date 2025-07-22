@@ -3,7 +3,10 @@ package org.haut.server.system.service;
 import org.haut.server.system.entity.SysDictItem;
 import org.haut.common.domain.dto.system.DictItemCreateDTO;
 import org.haut.common.domain.dto.system.DictItemUpdateDTO;
+import org.haut.common.domain.vo.system.DictItemVO;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author daiji
@@ -23,5 +26,12 @@ public interface SysDictItemService extends IService<SysDictItem> {
      * @param dto 字典项修改DTO
      */
     void updateDictItem(DictItemUpdateDTO dto);
+
+    /**
+     * 根据字典类型编码查询字典项
+     * @param dictCode 字典类型编码
+     * @return 字典项列表
+     */
+    List<DictItemVO> queryItemsByDictCode(String dictCode);
 
 }

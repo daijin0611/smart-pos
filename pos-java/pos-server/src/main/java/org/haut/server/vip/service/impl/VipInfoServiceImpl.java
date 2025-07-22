@@ -1,13 +1,17 @@
 package org.haut.server.vip.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.VipAssetDTO;
 import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
 import org.haut.common.domain.query.vip.VipListQuery;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.vip.entity.VipInfo;
 import org.haut.server.vip.mapper.VipAssetMapper;
 import org.haut.server.vip.service.VipInfoService;
@@ -37,11 +41,16 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
 
     @Override
     public List<VipListDTO> getList(VipListQuery query) {
-        //构造条件查询器，当会员卡号、会员名、会员手机号不为空时，进行查询
-        QueryWrapper<VipInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like(StringUtils.isNotBlank(query.getVipCardNumber()),"info_card_number",query.getVipCardNumber())
-                .like(StringUtils.isNotBlank(query.getVipName()),"info_name",query.getVipName())
-                .like(StringUtils.isNotBlank(query.getVipPhone()),"info_phone_number",query.getVipPhone());
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        LambdaQueryWrapper<VipInfo> queryWrapper = Wrappers.lambdaQuery(VipInfo.class)
+                .eq(VipInfo::getOrgId,auth.getOrgId());
+        // 条件查询
+        if (query.getQueryField() != null) {
+            queryWrapper
+            .like(query.getQueryField().matches("^\\d+$"),VipInfo::getInfoPhoneNumber, query.getQueryField())
+            .like(query.getQueryField().matches("^[\\u4e00-\\u9fa5a-zA-Z]+$"),VipInfo::getInfoName, query.getQueryField())
+            .like(query.getQueryField().matches("^[\\u4e00-\\u9fa5a-zA-Z0-9]+$"),VipInfo::getInfoCardNumber, query.getQueryField());
+        }
         //查询数据库
         List<VipInfo> vipInfos = vipInfoMapper.selectList(queryWrapper);
         //转化为DTO
@@ -69,8 +78,5 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         }
         return dto;
     }
+
 }
-
-
-
-

@@ -16,10 +16,11 @@
             <result property="infoPhoneNumber" column="info_phone_munber" />
             <result property="infoLastConsumptionTime" column="info_last_consumption_time" />
             <result property="infoLastRechargeTime" column="info_laset_recharge_time" />
+            <result property="orgId" column="org_id" />
     </resultMap>
 
     <sql id="Base_Column_List">
         id,create_time,update_time,is_delete,remark,info_name,
-        info_gender,info_card_number,info_phone_munber,info_last_consumption_time,info_laset_recharge_time
+        info_gender,info_card_number,info_phone_munber,info_last_consumption_time,info_laset_recharge_time,org_id
     </sql>
 </mapper>

@@ -23,6 +23,7 @@
             ri.id,
             ri.room_name,
             ri.remark,
+            ri.org_id,
             count(rb.id) as bed_count,
             count(case when rb.status = 0 then 1 end) as free_bed_count
         from room_info ri

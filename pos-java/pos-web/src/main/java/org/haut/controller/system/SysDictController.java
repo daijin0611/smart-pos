@@ -8,6 +8,7 @@ import org.haut.server.system.service.SysDictTypeService;
 import org.haut.server.system.service.SysDictItemService;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.system.DictTypeVO;
+import org.haut.common.domain.vo.system.DictItemVO;
 import org.haut.common.domain.dto.system.DictTypeCreateDTO;
 import org.haut.common.domain.dto.system.DictTypeUpdateDTO;
 import org.haut.common.domain.query.system.DictListQuery;
@@ -45,6 +46,14 @@ public class SysDictController {
         return JsonVO.success();
     }
 
+    @GetMapping("/query-items-by-code")
+    @Operation(summary = "根据字典类型编码查询字典项", description = "根据字典类型编码查询该类型下的所有字典项")
+    public JsonVO<List<DictItemVO>> queryItemsByDictCode(@RequestParam String dictCode) {
+        return JsonVO.success(sysDictItemService.queryItemsByDictCode(dictCode));
+    }
+
+    
+
     @PostMapping("/add-item")
     @Operation(summary = "新增字典项", description = "在指定字典类型下创建新的字典项")
     public JsonVO<Void> addDictItem(@Valid @RequestBody DictItemCreateDTO dto) {
@@ -59,5 +68,5 @@ public class SysDictController {
         return JsonVO.success();
     }
 
-
+    
 }

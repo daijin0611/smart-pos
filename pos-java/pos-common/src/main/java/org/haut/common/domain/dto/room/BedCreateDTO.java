@@ -20,4 +20,7 @@ public class BedCreateDTO {
     @NotNull(message = "房间ID不能为空")
     private Long roomId;
 
+    @Schema(description = "备注", example = "豪华VIP包间")
+    private String remark;
+
 }

@@ -13,10 +13,19 @@
             <result property="bedName" column="bed_name" />
             <result property="roomInfoId" column="room_info_id" />
             <result property="status" column="status" />
+        <result property="orgId" column="org_id" />
     </resultMap>
 
     <sql id="Base_Column_List">
         id,create_time,update_time,is_delete,remark,bed_name,
-        room_info_id,status
+        room_info_id,status,org_id
     </sql>
+
+    <select id="getAllBeads" resultType="org.haut.server.room.entity.RoomBed">
+        select <include refid="Base_Column_List"/>
+        from room_bed
+        where org_id = #{orgId}
+        AND is_delete = 0
+        AND status != 2
+    </select>
 </mapper>

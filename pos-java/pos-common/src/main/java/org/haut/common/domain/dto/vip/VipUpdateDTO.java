@@ -1,16 +1,12 @@
 package org.haut.common.domain.dto.vip;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
-@Data
-@Schema(description = "会员详细信息对象")
-public class VipInfoDTO {
+public class VipUpdateDTO {
 
     @Schema(description = "会员ID", example = "1")
     @NotNull(message = "ID不能为空")
@@ -69,7 +65,5 @@ public class VipInfoDTO {
 
     @Schema(description = "会员资产余额", example = "100.00")
     private Double assetBalance;
-
-
 
 }

@@ -49,4 +49,9 @@ public class VipListDTO {
      */
     private String remark;
 
+    /**
+     * 组织id
+     */
+    private Long orgId;
+
 }

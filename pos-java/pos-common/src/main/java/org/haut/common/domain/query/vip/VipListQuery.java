@@ -9,17 +9,20 @@ import lombok.Data;
 public class VipListQuery {
 
     /**
-     * 会员卡号
+     * 查询字段
      */
-    private String vipCardNumber;
+    @Schema(description = "查询字段", example = "vipName")
+    private String queryField;
 
     /**
-     * 真实姓名
+     * 当前页码
      */
-    private String vipName;
+    @Schema(description = "当前页码", example = "1")
+    private Integer pageNum = 1;
 
     /**
-     * 手机号
+     * 每页条数
      */
-    private String vipPhone;
+    @Schema(description = "每页条数", example = "10")
+    private Integer pageSize = 10;
 }

@@ -57,4 +57,8 @@ public class RoomBed {
      */
     private Integer status = 0;
 
+    /**
+     * 结构id
+     */
+    private Long orgId;
 }

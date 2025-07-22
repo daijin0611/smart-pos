@@ -11,12 +11,14 @@ import org.haut.server.system.mapper.SysDictItemMapper;
 import org.haut.server.system.mapper.SysDictTypeMapper;
 import org.haut.common.domain.dto.system.DictItemCreateDTO;
 import org.haut.common.domain.dto.system.DictItemUpdateDTO;
+import org.haut.common.domain.vo.system.DictItemVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.haut.common.constant.DictConstants;
 
 import java.util.Date;
+import java.util.List;
 
 /**
 * @author daiji
@@ -89,6 +91,29 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
         
         // 更新到数据库
         this.updateById(dictItem);
+    }
+
+    @Override
+    public List<DictItemVO> queryItemsByDictCode(String dictCode) {
+        // 检查字典类型是否存在
+        LambdaQueryWrapper<SysDictType> typeWrapper = Wrappers.lambdaQuery(SysDictType.class)
+                .eq(SysDictType::getDictCode, dictCode);
+        if (sysDictTypeMapper.selectCount(typeWrapper) == 0) {
+            throw new IllegalArgumentException(DictConstants.DICT_TYPE_NOT_FOUND);
+        }
+
+        // 查询该字典类型下的所有字典项
+        LambdaQueryWrapper<SysDictItem> wrapper = Wrappers.lambdaQuery(SysDictItem.class)
+                .eq(SysDictItem::getDictCode, dictCode)
+                .orderByAsc(SysDictItem::getSort);
+        List<SysDictItem> dictItems = this.list(wrapper);
+
+        // 转换为VO
+        return dictItems.stream().map(dictItem -> {
+            DictItemVO dictItemVO = BeanUtil.copyProperties(dictItem, DictItemVO.class);
+            dictItemVO.setDictItemId(dictItem.getId());
+            return dictItemVO;
+        }).toList();
     }
 
 }

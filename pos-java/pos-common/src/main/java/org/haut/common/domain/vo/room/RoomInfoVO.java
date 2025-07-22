@@ -38,4 +38,9 @@ public class RoomInfoVO {
      */
     private Integer freeBedCount;
 
+    /**
+     * 组织id
+     */
+    private Long orgId;
+
 }

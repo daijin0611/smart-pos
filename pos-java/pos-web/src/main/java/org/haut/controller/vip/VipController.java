@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.domain.dto.vip.VipCreateDTO;
 import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
 import org.haut.common.domain.query.vip.VipListQuery;
@@ -43,8 +44,8 @@ public class VipController {
 
     @PostMapping("/add-vip")
     @Operation(description = "添加会员", summary = "添加会员")
-    public JsonVO<String> addVip(@Validated @RequestBody VipInfoDTO vip) {
-        vipInfoService.save(BeanUtil.toBean(vip, VipInfo.class));
+    public JsonVO<String> addVip(@Validated @RequestBody VipCreateDTO dto) {
+        vipInfoService.save(BeanUtil.toBean(dto, VipInfo.class));
         return JsonVO.success("添加成功");
     }
 

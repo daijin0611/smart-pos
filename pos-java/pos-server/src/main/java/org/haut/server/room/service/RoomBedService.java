@@ -3,6 +3,8 @@ package org.haut.server.room.service;
 import org.haut.server.room.entity.RoomBed;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
 * @author daiji
 * @description 针对表【room_bed(床位表)】的数据库操作Service
@@ -10,4 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface RoomBedService extends IService<RoomBed> {
 
+    List<RoomBed> getAllBeds();
 }

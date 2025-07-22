@@ -1,5 +1,7 @@
 package org.haut.server.room.service;
 
+import org.haut.common.domain.dto.room.RoomCreateDTO;
+import org.haut.common.domain.dto.room.RoomUpdateDTO;
 import org.haut.common.domain.vo.room.RoomInfoVO;
 import org.haut.server.room.entity.RoomInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -15,4 +17,7 @@ public interface RoomInfoService extends IService<RoomInfo> {
 
     List<RoomInfoVO> getAllRooms();
 
+    void addRoom(RoomCreateDTO dto);
+
+    void updateRoom(RoomUpdateDTO dto);
 }
