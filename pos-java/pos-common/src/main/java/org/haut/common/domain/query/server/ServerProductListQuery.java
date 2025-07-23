@@ -10,22 +10,31 @@ public class ServerProductListQuery {
     /**
      * 产品名称
      */
+    @Schema(description = "产品名称")
     private String productName;
 
     /**
      * 产品编码
      */
+    @Schema(description = "产品编码")
     private String productEncode;
 
     /**
      * 产品状态
      */
-    private Integer productStatus;
-    
+    @Schema(description = "产品状态（0 正常，1 停用）")
+    private Integer productStatus = 0;
+
     /**
-     * 组织ID
+     * 页码
      */
-    @Schema(hidden = true)
-    private Long orgId;
+    @Schema(description = "页码", example = "1")
+    private Integer pageNum = 1;
+
+    /**
+     * 页大小
+     */
+    @Schema(description = "页大小", example = "10")
+    private Integer pageSize = 20;
 
 }

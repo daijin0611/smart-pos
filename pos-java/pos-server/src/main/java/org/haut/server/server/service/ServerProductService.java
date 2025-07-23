@@ -1,14 +1,14 @@
 package org.haut.server.server.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.haut.common.domain.dto.server.ServerProductCreateDTO;
 import org.haut.common.domain.dto.server.ServerProductUpdateDTO;
 import org.haut.common.domain.query.server.ServerProductListQuery;
+import org.haut.common.domain.vo.PageDTO;
 import org.haut.common.domain.vo.server.ServerProductInfoVO;
 import org.haut.common.domain.vo.server.ServerProductVO;
 import org.haut.server.server.entity.ServerProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
 
 /**
 * @author Cdh
@@ -22,7 +22,7 @@ public interface ServerProductService extends IService<ServerProduct> {
      * @param query 查询条件
      * @return 服务产品列表
      */
-    List<ServerProductVO> getList(ServerProductListQuery query);
+    PageDTO<ServerProductInfoVO> getList(ServerProductListQuery query);
 
     /**
      * 根据ID获取服务产品详情
@@ -45,4 +45,6 @@ public interface ServerProductService extends IService<ServerProduct> {
      * @return 操作结果消息
      */
     String updateProduct(ServerProductUpdateDTO product);
+
+    String updateProductStatus(Long id, Integer status);
 }

@@ -1,14 +1,16 @@
 package org.haut.server.server.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.dto.server.ServerProductCreateDTO;
 import org.haut.common.domain.dto.server.ServerProductUpdateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.server.ServerProductListQuery;
+import org.haut.common.domain.vo.PageDTO;
 import org.haut.common.domain.vo.server.ServerProductInfoVO;
 import org.haut.common.domain.vo.server.ServerProductVO;
 import org.haut.common.exception.BusinessException;
@@ -18,8 +20,6 @@ import org.haut.server.server.service.ServerProductService;
 import org.haut.server.server.mapper.ServerProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
 * @author Cdh
@@ -39,24 +39,17 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
      * @return
      */
     @Override
-    public List<ServerProductVO> getList(ServerProductListQuery query) {
+    public PageDTO<ServerProductInfoVO> getList(ServerProductListQuery query) {
         // 如果查询条件中没有设置orgId，则从当前用户认证信息中获取
-        if (query.getOrgId() == null) {
-            AuthInfoDTO auth = AuthContextHolder.getAuth();
-            query.setOrgId(auth.getOrgId());
-        }
-        
-        //构建条件查询器
-        QueryWrapper<ServerProduct> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like(StringUtils.isNotBlank(query.getProductName()),"product_name",query.getProductName())
-                .like(StringUtils.isNotBlank(query.getProductEncode()),"product_encode",query.getProductEncode())
-                .eq(query.getProductStatus() != null,"product_status",query.getProductStatus())
-                // 必须使用orgId作为查询条件，确保只查询当前门店的产品
-                .eq("org_id", query.getOrgId());
-        //查询数据库
-        List<ServerProduct> serverProducts = serverProductMapper.selectList(queryWrapper);
-        //转化为VO
-        return BeanUtil.copyToList(serverProducts, ServerProductVO.class);
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        Page<ServerProduct> page = new Page<>(query.getPageNum(), query.getPageSize());
+        LambdaQueryWrapper<ServerProduct> wrapper = Wrappers.lambdaQuery(ServerProduct.class)
+                .like(StringUtils.isNotBlank(query.getProductEncode()), ServerProduct::getProductEncode, query.getProductEncode())
+                .like(StringUtils.isNotBlank(query.getProductName()), ServerProduct::getProductName, query.getProductName())
+                .eq(query.getProductStatus() != null, ServerProduct::getProductStatus, query.getProductStatus())
+                .eq(auth.getOrgId() != null, ServerProduct::getOrgId, auth.getOrgId());
+
+        return PageDTO.create(this.page(page, wrapper), ServerProductInfoVO.class);
     }
 
     @Override
@@ -149,6 +142,13 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
         }
     }
 
+    @Override
+    public String updateProductStatus(Long id, Integer status) {
+        boolean update = this.lambdaUpdate().set(ServerProduct::getProductStatus, status)
+                .eq(ServerProduct::getId, id)
+                .update();
+        return update ? "更新成功" : "更新失败";
+    }
 
 }
 

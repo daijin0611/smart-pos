@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.server.ServerProductCreateDTO;
 import org.haut.common.domain.dto.server.ServerProductUpdateDTO;
 import org.haut.common.domain.query.server.ServerProductListQuery;
+import org.haut.common.domain.vo.PageDTO;
 import org.haut.common.domain.vo.server.ServerProductInfoVO;
-import org.haut.common.domain.vo.server.ServerProductVO;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.server.service.ServerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +16,18 @@ import org.springframework.web.bind.annotation.*;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.exception.BusinessException;
 
-
-import java.util.List;
-
 @RestController
 @RequestMapping("/server/product")
 @Tag(name = "服务产品管理", description = "服务产品管理")
 @Slf4j
 public class ServerProductController {
 
-    @Autowired private ServerProductService serverProductService;
+    @Autowired
+    private ServerProductService serverProductService;
 
     @GetMapping("/query-list")
     @Operation(description = "获取服务产品列表", summary = "获取服务产品列表")
-    public JsonVO<List<ServerProductVO>> getList(ServerProductListQuery query){
+    public JsonVO<PageDTO<ServerProductInfoVO>> getList(ServerProductListQuery query){
         log.info(query.toString());
         // 调用服务层方法获取列表
         return JsonVO.success(serverProductService.getList(query));
@@ -60,11 +58,21 @@ public class ServerProductController {
         }
     }
 
-
     @PutMapping("/update-product")
     @Operation(description = "更新服务产品", summary = "更新服务产品")
     public JsonVO<String> updateServerProduct(@Validated @RequestBody ServerProductUpdateDTO product) {
         String result = serverProductService.updateProduct(product);
+        if ("更新成功".equals(result)) {
+            return JsonVO.success(result);
+        } else {
+            return JsonVO.fail(result);
+        }
+    }
+
+    @Operation(description = "更新产品状态", summary = "更新产品状态")
+    @PutMapping("/update-status")
+    public JsonVO<String> updateProductStatus(@RequestParam Long id, @RequestParam Integer status) {
+        String result = serverProductService.updateProductStatus(id, status);
         if ("更新成功".equals(result)) {
             return JsonVO.success(result);
         } else {
