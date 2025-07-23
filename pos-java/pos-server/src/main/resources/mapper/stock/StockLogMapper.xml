@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.stock.mapper.StockLogMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.stock.entity.StockLog">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="orderCode" column="order_code" />
+            <result property="orderType" column="order_type" />
+            <result property="productId" column="product_id" />
+            <result property="productName" column="product_name" />
+            <result property="productCode" column="product_code" />
+            <result property="operator" column="operator" />
+            <result property="quantity" column="quantity" />
+            <result property="price" column="price" />
+            <result property="totalPrice" column="total_price" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,
+        order_code,order_type,product_id,product_name,product_code,
+        operator,quantity,price,total_price
+    </sql>
+</mapper>

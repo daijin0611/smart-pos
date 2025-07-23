@@ -54,6 +54,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/doc.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // 允许Swagger相关接口
                         .requestMatchers("/webjars/**", "/favicon.ico").permitAll() // 允许Knife4j相关资源
                         .requestMatchers("/knife4j/**").permitAll() // 允许Knife4j UI资源
+                        .requestMatchers("/static/**").permitAll() // 允许静态资源访问
                         .anyRequest().authenticated()
                 )
                 // 配置表单登录

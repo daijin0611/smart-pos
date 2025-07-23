@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.server.ServerProductCreateDTO;
 import org.haut.common.domain.dto.server.ServerProductUpdateDTO;
 import org.haut.common.domain.query.server.ServerProductListQuery;
-import org.haut.common.domain.vo.PageDTO;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.vo.server.ServerProductInfoVO;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.server.service.ServerProductService;

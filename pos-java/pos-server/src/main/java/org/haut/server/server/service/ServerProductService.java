@@ -1,12 +1,10 @@
 package org.haut.server.server.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.haut.common.domain.dto.server.ServerProductCreateDTO;
 import org.haut.common.domain.dto.server.ServerProductUpdateDTO;
 import org.haut.common.domain.query.server.ServerProductListQuery;
-import org.haut.common.domain.vo.PageDTO;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.vo.server.ServerProductInfoVO;
-import org.haut.common.domain.vo.server.ServerProductVO;
 import org.haut.server.server.entity.ServerProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
 

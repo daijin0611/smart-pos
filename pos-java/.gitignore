@@ -5,6 +5,7 @@ target/
 .lingma/
 .trae/
 .vercel/
+stock-demo/
 
 ### IntelliJ IDEA ###
 .idea/

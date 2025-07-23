@@ -1,4 +1,4 @@
-package org.haut.common.domain.vo;
+package org.haut.common.domain.dto;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,7 +10,6 @@ import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor

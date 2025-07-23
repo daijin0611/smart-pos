@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.stock.mapper.StockOutItemMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.stock.entity.StockOutItem">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="productId" column="product_id" />
+            <result property="productCode" column="product_code" />
+            <result property="productName" column="product_name" />
+            <result property="unit" column="unit" />
+            <result property="quantity" column="quantity" />
+            <result property="price" column="price" />
+            <result property="outOrderId" column="out_order_id" />
+            <result property="outOrderCode" column="out_order_code" />
+            <result property="orgId" column="org_id" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,
+        product_id,product_code,product_name,unit,quantity,
+        price,out_order_id,out_order_code,org_id
+    </sql>
+</mapper>
