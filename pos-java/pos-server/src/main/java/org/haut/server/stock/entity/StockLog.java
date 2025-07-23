@@ -9,6 +9,11 @@ import java.util.Date;
 
 /**
  * 库存日志表
+ * 用于记录库存变动的详细日志信息，包括操作类型、变动数量、操作员等
+ * 
+ * @author mhding
+ * @version 1.0
+ * @since 2025/07/23
  * @TableName stock_log
  */
 @TableName(value = "stock_log")
@@ -87,4 +92,9 @@ public class StockLog {
      * 总价
      */
     private BigDecimal totalPrice;
+
+    /**
+     * 结构id
+     */
+    private Long orgId;
 }

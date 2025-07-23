@@ -28,55 +28,19 @@ public class StockInOrderVO {
      * 入库单号
      */
     @Schema(description = "入库单号", example = "IN202412190001")
-    private String orderNo;
-
-    /**
-     * 供应商ID
-     */
-    @Schema(description = "供应商ID", example = "1")
-    private Long supplierId;
-
-    /**
-     * 供应商名称
-     */
-    @Schema(description = "供应商名称", example = "XX供应商")
-    private String supplierName;
-
-    /**
-     * 入库类型(1:采购入库 2:退货入库 3:调拨入库 4:其他入库)
-     */
-    @Schema(description = "入库类型(1:采购入库 2:退货入库 3:调拨入库 4:其他入库)", example = "1")
-    private Integer inType;
-
-    /**
-     * 入库类型描述
-     */
-    @Schema(description = "入库类型描述", example = "采购入库")
-    private String inTypeDesc;
-
-    /**
-     * 总数量
-     */
-    @Schema(description = "总数量", example = "100")
-    private Integer totalQuantity;
+    private String orderCode;
 
     /**
      * 总金额
      */
     @Schema(description = "总金额", example = "1000.00")
-    private BigDecimal totalAmount;
+    private BigDecimal totalPrice;
 
     /**
-     * 状态(0:待审核 1:已审核 2:已完成 3:已取消)
+     * 操作员
      */
-    @Schema(description = "状态(0:待审核 1:已审核 2:已完成 3:已取消)", example = "1")
-    private Integer status;
-
-    /**
-     * 状态描述
-     */
-    @Schema(description = "状态描述", example = "已审核")
-    private String statusDesc;
+    @Schema(description = "操作员", example = "admin")
+    private String operator;
 
     /**
      * 备注
@@ -85,24 +49,10 @@ public class StockInOrderVO {
     private String remark;
 
     /**
-     * 入库时间
+     * 删除状态(0 存在，1 删除)
      */
-    @Schema(description = "入库时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date inTime;
-
-    /**
-     * 审核时间
-     */
-    @Schema(description = "审核时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date auditTime;
-
-    /**
-     * 审核人
-     */
-    @Schema(description = "审核人", example = "admin")
-    private String auditBy;
+    @Schema(description = "删除状态(0 存在，1 删除)", example = "0")
+    private Integer isDelete;
 
     /**
      * 创建时间
@@ -131,6 +81,12 @@ public class StockInOrderVO {
     private String updateBy;
 
     /**
+     * 组织ID
+     */
+    @Schema(description = "组织ID", example = "1")
+    private Long orgId;
+
+    /**
      * 入库明细列表
      */
     @Schema(description = "入库明细列表")
@@ -148,6 +104,32 @@ public class StockInOrderVO {
          */
         @Schema(description = "明细ID", example = "1")
         private Long id;
+
+        /**
+         * 创建时间
+         */
+        @Schema(description = "创建时间")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        private Date createTime;
+
+        /**
+         * 更新时间
+         */
+        @Schema(description = "更新时间")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        private Date updateTime;
+
+        /**
+         * 删除状态(0 存在，1 删除)
+         */
+        @Schema(description = "删除状态(0 存在，1 删除)", example = "0")
+        private Integer isDelete;
+
+        /**
+         * 备注
+         */
+        @Schema(description = "备注", example = "正常入库")
+        private String remark;
 
         /**
          * 产品ID
@@ -168,12 +150,6 @@ public class StockInOrderVO {
         private String productName;
 
         /**
-         * 产品规格
-         */
-        @Schema(description = "产品规格", example = "500ml")
-        private String specification;
-
-        /**
          * 计量单位
          */
         @Schema(description = "计量单位", example = "瓶")
@@ -189,18 +165,24 @@ public class StockInOrderVO {
          * 单价
          */
         @Schema(description = "单价", example = "10.00")
-        private BigDecimal unitPrice;
+        private BigDecimal price;
 
         /**
-         * 小计金额
+         * 入库订单ID
          */
-        @Schema(description = "小计金额", example = "1000.00")
-        private BigDecimal subtotal;
+        @Schema(description = "入库订单ID", example = "1")
+        private Long inOrderId;
 
         /**
-         * 备注
+         * 入库订单编码
          */
-        @Schema(description = "备注", example = "正常入库")
-        private String remark;
+        @Schema(description = "入库订单编码", example = "IN202412190001")
+        private String inOrderCode;
+
+        /**
+         * 组织ID
+         */
+        @Schema(description = "组织ID", example = "1")
+        private Long orgId;
     }
 }

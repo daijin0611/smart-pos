@@ -8,7 +8,12 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 入库明细表
+ * 入库商品明细表
+ * 用于记录每个入库订单中具体商品的详细信息
+ * 
+ * @author mhding
+ * @version 1.0
+ * @since 2025/07/23
  * @TableName stock_in_item
  */
 @TableName(value = "stock_in_item")

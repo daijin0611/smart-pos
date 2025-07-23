@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  *
  * @author mhding
  * @version 1.0
- * @since 2024/12/19
+ * @since 2025/07/23
  */
 @Mapper
 public interface StockInItemMapper extends BaseMapper<StockInItem> {

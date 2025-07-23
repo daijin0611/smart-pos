@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.haut.common.domain.dto.stock.StockOrderQueryDTO;
+import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockLogVO;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.server.stock.service.StockLogService;
@@ -36,7 +36,7 @@ public class StockLogController {
      */
     @GetMapping("/query-page")
     @Operation(summary = "获取库存日志分页列表", description = "根据查询条件获取库存日志分页列表")
-    public JsonVO<Page<StockLogVO>> queryPage(StockOrderQueryDTO query) {
+    public JsonVO<Page<StockLogVO>> queryPage(StockOrderQuery query) {
         log.info("查询库存日志分页列表，查询条件：{}", query);
         // TODO: 实现分页查询逻辑
         return JsonVO.success(new Page<>());
@@ -50,7 +50,7 @@ public class StockLogController {
      */
     @GetMapping("/query-list")
     @Operation(summary = "获取库存日志列表", description = "根据查询条件获取库存日志列表")
-    public JsonVO<List<StockLogVO>> queryList(StockOrderQueryDTO query) {
+    public JsonVO<List<StockLogVO>> queryList(StockOrderQuery query) {
         log.info("查询库存日志列表，查询条件：{}", query);
         // TODO: 实现列表查询逻辑
         return JsonVO.success(List.of());
@@ -114,7 +114,7 @@ public class StockLogController {
      */
     @GetMapping("/export")
     @Operation(summary = "导出库存日志", description = "根据查询条件导出库存日志到Excel")
-    public JsonVO<String> export(StockOrderQueryDTO query) {
+    public JsonVO<String> export(StockOrderQuery query) {
         log.info("导出库存日志，查询条件：{}", query);
         // TODO: 实现导出逻辑
         return JsonVO.success("导出成功");

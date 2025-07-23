@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  *
  * @author mhding
  * @version 1.0
- * @since 2024/12/19
+ * @since 2025/07/23
  */
 @Service
 public class StockInItemServiceImpl extends ServiceImpl<StockInItemMapper, StockInItem>

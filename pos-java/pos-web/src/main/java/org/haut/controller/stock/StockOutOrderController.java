@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.stock.StockOutOrderCreateDTO;
-import org.haut.common.domain.dto.stock.StockOrderQueryDTO;
+import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockOutOrderVO;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.server.stock.service.StockOutOrderService;
@@ -38,7 +38,7 @@ public class StockOutOrderController {
      */
     @GetMapping("/query-page")
     @Operation(summary = "获取出库订单分页列表", description = "根据查询条件获取出库订单分页列表")
-    public JsonVO<Page<StockOutOrderVO>> queryPage(StockOrderQueryDTO query) {
+    public JsonVO<Page<StockOutOrderVO>> queryPage(StockOrderQuery query) {
         log.info("查询出库订单分页列表，查询条件：{}", query);
         // TODO: 实现分页查询逻辑
         return JsonVO.success(new Page<>());
@@ -52,7 +52,7 @@ public class StockOutOrderController {
      */
     @GetMapping("/query-list")
     @Operation(summary = "获取出库订单列表", description = "根据查询条件获取出库订单列表")
-    public JsonVO<List<StockOutOrderVO>> queryList(StockOrderQueryDTO query) {
+    public JsonVO<List<StockOutOrderVO>> queryList(StockOrderQuery query) {
         log.info("查询出库订单列表，查询条件：{}", query);
         // TODO: 实现列表查询逻辑
         return JsonVO.success(List.of());

@@ -7,7 +7,12 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 库存产品表
+ * 库存商品表
+ * 用于记录商品的库存信息，包括商品编码、当前库存数量、最小库存等
+ * 
+ * @author mhding
+ * @version 1.0
+ * @since 2025/07/23
  * @TableName stock_product
  */
 @TableName(value = "stock_product")
@@ -51,4 +56,10 @@ public class StockProduct {
      * 库存数量
      */
     private Integer quantity;
+
+    /**
+     * 机构ID（关联机构表）
+     */
+    private Long orgId;
+
 }

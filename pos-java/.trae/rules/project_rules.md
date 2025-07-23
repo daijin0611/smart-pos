@@ -82,6 +82,7 @@
 **领域模型命名规范**
   - VO：接口响应参数使用`xxxVO`命名，位置在`@root\pos-common\src\main\java\org\haut\common\domain\vo\**(对应模块)`，外层使用`JsonVO`进行包裹，`JsonVO`位置在`@root\pos-common\src\main\java\org\haut\common\domain\vo\JsonVO.java`
   - DTO：接口请求非查询类参数使用`xxxDTO`命名，位置`@root\pos-common\src\main\java\org\haut\common\domain\dto\**(对应模块)`
+    - PageDTO：分页查询结果DTO，将查询结果进行分页封装，位置`@root\pos-common\src\main\java\org\haut\common\domain\dto\PageDTO.java`
   - Entity：数据库实体类使用`xxxEntity`命名，位置`@root\pos-server\src\main\java\org\haut\server\stock\entity\**(对应模块)`
   - Query：接口请求查询类参数使用`xxxQuery`命名，位置`@root\pos-common\src\main\java\org\haut\common\domain\query\**(对应模块)`
 
@@ -89,7 +90,7 @@
   - 项目已开启mybatis-plus逻辑删除功能
   - 如果有关于数据库的问题，先使用MCP工具进行数据库的查询并分析相关信息
   - 创建java类时添加上作者相关信息，如：@author、@version、@since等，该项目作者是：mhding
-  - 每个类都需要添加注释，包括类的作用、作者、版本、创建日期等
+  - 每个类都需要添加注释，包括类的作用、作者、版本、创建日期等，注意日期必须使用联网搜索的日期。
   
 这是一个结构清晰、技术栈现代化的**POS收银系统**项目，采用了主流的Spring Boot生态技术栈，具有良好的模块化设计和代码规范。
         

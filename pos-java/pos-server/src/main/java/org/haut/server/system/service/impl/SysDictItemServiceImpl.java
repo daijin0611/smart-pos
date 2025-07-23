@@ -15,7 +15,7 @@ import org.haut.common.domain.vo.system.DictItemVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.haut.common.constant.DictConstants;
+import org.haut.common.constant.DictConst;
 
 import java.util.Date;
 import java.util.List;
@@ -39,7 +39,7 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
         LambdaQueryWrapper<SysDictType> typeWrapper = Wrappers.lambdaQuery(SysDictType.class)
                 .eq(SysDictType::getDictCode, dto.getDictCode());
         if (sysDictTypeMapper.selectCount(typeWrapper) == 0) {
-            throw new IllegalArgumentException(DictConstants.DICT_TYPE_NOT_FOUND);
+            throw new IllegalArgumentException(DictConst.DICT_TYPE_NOT_FOUND);
         }
 
         // 检查字典项标签在同一字典类型下是否已存在
@@ -47,7 +47,7 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
                 .eq(SysDictItem::getDictCode, dto.getDictCode())
                 .eq(SysDictItem::getItemLabel, dto.getItemLabel());
         if (this.count(wrapper) > 0) {
-            throw new IllegalArgumentException(DictConstants.DICT_ITEM_LABEL_EXISTS);
+            throw new IllegalArgumentException(DictConst.DICT_ITEM_LABEL_EXISTS);
         }
 
         // 创建字典项实体
@@ -65,14 +65,14 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
         // 检查字典项是否存在
         SysDictItem existingDictItem = this.getById(dto.getDictItemId());
         if (existingDictItem == null) {
-            throw new IllegalArgumentException(DictConstants.DICT_ITEM_NOT_FOUND);
+            throw new IllegalArgumentException(DictConst.DICT_ITEM_NOT_FOUND);
         }
 
         // 检查关联的字典类型是否存在
         LambdaQueryWrapper<SysDictType> typeWrapper = Wrappers.lambdaQuery(SysDictType.class)
                 .eq(SysDictType::getDictCode, dto.getDictCode());
         if (sysDictTypeMapper.selectCount(typeWrapper) == 0) {
-            throw new IllegalArgumentException(DictConstants.DICT_TYPE_NOT_FOUND);
+            throw new IllegalArgumentException(DictConst.DICT_TYPE_NOT_FOUND);
         }
 
         // 检查字典项标签在同一字典类型下是否已被其他字典项使用
@@ -81,7 +81,7 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
                 .eq(SysDictItem::getItemLabel, dto.getItemLabel())
                 .ne(SysDictItem::getId, dto.getDictItemId());
         if (this.count(wrapper) > 0) {
-            throw new IllegalArgumentException(DictConstants.DICT_ITEM_LABEL_EXISTS);
+            throw new IllegalArgumentException(DictConst.DICT_ITEM_LABEL_EXISTS);
         }
 
         // 更新字典项实体
@@ -99,7 +99,7 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
         LambdaQueryWrapper<SysDictType> typeWrapper = Wrappers.lambdaQuery(SysDictType.class)
                 .eq(SysDictType::getDictCode, dictCode);
         if (sysDictTypeMapper.selectCount(typeWrapper) == 0) {
-            throw new IllegalArgumentException(DictConstants.DICT_TYPE_NOT_FOUND);
+            throw new IllegalArgumentException(DictConst.DICT_TYPE_NOT_FOUND);
         }
 
         // 查询该字典类型下的所有字典项

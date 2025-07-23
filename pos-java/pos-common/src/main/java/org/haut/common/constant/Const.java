@@ -6,4 +6,7 @@ package org.haut.common.constant;
  */
 public class Const {
     public static final int ORDER_CORS = -102;
+
+    public static final String STOCK_OUT = "出库";
+    public static final String STOCK_IN = "入库";
 }

@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.constant.RedisKey;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
+import org.haut.common.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -155,6 +156,10 @@ public class JwtUtils {
         // 从JWT中获取用户ID、用户名和权限
         Long userId = claims.get("userId").asLong();
         Long orgId = claims.get("orgId").asLong();
+        if (userId == null || orgId == null) {
+            log.warn("JWT令牌中缺少用户ID或组织ID");
+            throw new BusinessException("JWT令牌中缺少用户ID或组织ID");
+        }
         return AuthInfoDTO.builder()
                 .userId(userId)
                 .orgId(orgId)

@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  *
  * @author mhding
  * @version 1.0
- * @since 2024/12/19
+ * @since 2025/07/23
  */
 public interface StockOutOrderService extends IService<StockOutOrder> {
 

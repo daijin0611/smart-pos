@@ -1,4 +1,4 @@
-package org.haut.common.domain.dto.stock;
+package org.haut.common.domain.query.stock;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,20 +7,20 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 库存订单查询DTO
+ * 库存订单查询Query
  *
  * @author mhding
  * @date 2024/12/19
  */
 @Data
 @Schema(description = "库存订单查询对象")
-public class StockOrderQueryDTO {
+public class StockOrderQuery {
 
     /**
      * 订单号
      */
     @Schema(description = "订单号", example = "IN202412190001")
-    private String orderNo;
+    private String orderCode;
 
     /**
      * 订单类型(1:入库 2:出库)
@@ -29,22 +29,10 @@ public class StockOrderQueryDTO {
     private Integer orderType;
 
     /**
-     * 业务类型(入库:1采购 2退货 3调拨 4其他; 出库:1销售 2退货 3调拨 4其他)
+     * 操作员
      */
-    @Schema(description = "业务类型", example = "1")
-    private Integer businessType;
-
-    /**
-     * 状态(0:待审核 1:已审核 2:已完成 3:已取消)
-     */
-    @Schema(description = "状态(0:待审核 1:已审核 2:已完成 3:已取消)", example = "1")
-    private Integer status;
-
-    /**
-     * 供应商/客户名称
-     */
-    @Schema(description = "供应商/客户名称", example = "XX供应商")
-    private String partnerName;
+    @Schema(description = "操作员", example = "admin")
+    private String operator;
 
     /**
      * 开始日期

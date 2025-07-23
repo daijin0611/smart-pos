@@ -8,7 +8,12 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 出库明细表
+ * 出库商品明细表
+ * 用于记录每个出库订单中具体商品的详细信息
+ * 
+ * @author mhding
+ * @version 1.0
+ * @since 2025/07/23
  * @TableName stock_out_item
  */
 @TableName(value = "stock_out_item")

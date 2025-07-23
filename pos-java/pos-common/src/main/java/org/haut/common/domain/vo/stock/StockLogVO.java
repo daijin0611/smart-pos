@@ -24,16 +24,48 @@ public class StockLogVO {
     private Long id;
 
     /**
+     * 创建时间
+     */
+    @Schema(description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    @Schema(description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
+
+    /**
+     * 删除状态(0 存在，1 删除)
+     */
+    @Schema(description = "删除状态(0 存在，1 删除)", example = "0")
+    private Integer isDelete;
+
+    /**
+     * 备注
+     */
+    @Schema(description = "备注", example = "库存变动")
+    private String remark;
+
+    /**
+     * 订单编码
+     */
+    @Schema(description = "订单编码", example = "IN202412190001")
+    private String orderCode;
+
+    /**
+     * 订单类型（入库/出库）
+     */
+    @Schema(description = "订单类型", example = "入库")
+    private String orderType;
+
+    /**
      * 产品ID
      */
     @Schema(description = "产品ID", example = "1")
     private Long productId;
-
-    /**
-     * 产品编码
-     */
-    @Schema(description = "产品编码", example = "P001")
-    private String productCode;
 
     /**
      * 产品名称
@@ -42,76 +74,32 @@ public class StockLogVO {
     private String productName;
 
     /**
-     * 操作类型(1:入库 2:出库 3:盘点 4:调整)
+     * 产品编码
      */
-    @Schema(description = "操作类型(1:入库 2:出库 3:盘点 4:调整)", example = "1")
-    private Integer operationType;
+    @Schema(description = "产品编码", example = "P001")
+    private String productCode;
 
     /**
-     * 操作类型描述
+     * 操作员
      */
-    @Schema(description = "操作类型描述", example = "入库")
-    private String operationTypeDesc;
+    @Schema(description = "操作员", example = "admin")
+    private String operator;
 
     /**
-     * 业务单号
+     * 数量
      */
-    @Schema(description = "业务单号", example = "IN202412190001")
-    private String businessNo;
-
-    /**
-     * 变动数量(正数为增加，负数为减少)
-     */
-    @Schema(description = "变动数量", example = "100")
-    private Integer changeQuantity;
-
-    /**
-     * 变动前库存
-     */
-    @Schema(description = "变动前库存", example = "50")
-    private Integer beforeStock;
-
-    /**
-     * 变动后库存
-     */
-    @Schema(description = "变动后库存", example = "150")
-    private Integer afterStock;
+    @Schema(description = "数量", example = "100")
+    private Integer quantity;
 
     /**
      * 单价
      */
     @Schema(description = "单价", example = "10.00")
-    private BigDecimal unitPrice;
+    private BigDecimal price;
 
     /**
-     * 金额
+     * 总价
      */
-    @Schema(description = "金额", example = "1000.00")
-    private BigDecimal amount;
-
-    /**
-     * 备注
-     */
-    @Schema(description = "备注", example = "采购入库")
-    private String remark;
-
-    /**
-     * 操作时间
-     */
-    @Schema(description = "操作时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date operationTime;
-
-    /**
-     * 操作人
-     */
-    @Schema(description = "操作人", example = "admin")
-    private String operationBy;
-
-    /**
-     * 创建时间
-     */
-    @Schema(description = "创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
+    @Schema(description = "总价", example = "1000.00")
+    private BigDecimal totalPrice;
 }

@@ -9,6 +9,11 @@ import java.util.Date;
 
 /**
  * 出库订单表
+ * 用于记录商品出库的订单信息，包括订单编码、总价、操作员等
+ * 
+ * @author mhding
+ * @version 1.0
+ * @since 2025/07/23
  * @TableName stock_out_order
  */
 @TableName(value = "stock_out_order")

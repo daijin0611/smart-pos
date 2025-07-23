@@ -21,40 +21,19 @@ import java.util.List;
 public class StockInOrderCreateDTO {
 
     /**
-     * 入库单号
-     */
-    @Schema(description = "入库单号", example = "IN202412190001")
-    @NotBlank(message = "入库单号不能为空")
-    @Size(max = 50, message = "入库单号长度不能超过50")
-    private String orderNo;
-
-    /**
-     * 供应商ID
-     */
-    @Schema(description = "供应商ID", example = "1")
-    private Long supplierId;
-
-    /**
-     * 供应商名称
-     */
-    @Schema(description = "供应商名称", example = "XX供应商")
-    @Size(max = 100, message = "供应商名称长度不能超过100")
-    private String supplierName;
-
-    /**
-     * 入库类型(1:采购入库 2:退货入库 3:调拨入库 4:其他入库)
-     */
-    @Schema(description = "入库类型(1:采购入库 2:退货入库 3:调拨入库 4:其他入库)", example = "1")
-    @NotNull(message = "入库类型不能为空")
-    private Integer inType;
-
-    /**
      * 总金额
      */
     @Schema(description = "总金额", example = "1000.00")
     @NotNull(message = "总金额不能为空")
     @Positive(message = "总金额必须大于0")
-    private BigDecimal totalAmount;
+    private BigDecimal totalPrice;
+
+    /**
+     * 操作员
+     */
+    @Schema(description = "操作员", example = "admin")
+    @Size(max = 50, message = "操作员长度不能超过50")
+    private String operator;
 
     /**
      * 备注
@@ -85,6 +64,27 @@ public class StockInOrderCreateDTO {
         private Long productId;
 
         /**
+         * 产品名称
+         */
+        @Schema(description = "产品名称", example = "商品A")
+        @NotBlank(message = "产品名称不能为空")
+        private String productName;
+
+        /**
+         * 产品编码
+         */
+        @Schema(description = "产品编码", example = "PROD001")
+        @NotBlank(message = "产品编码不能为空")
+        private String productCode;
+
+        /**
+         * 产品规格
+         */
+        @Schema(description = "产品单位", example = "个")
+        @NotNull
+        private String unit;
+
+        /**
          * 入库数量
          */
         @Schema(description = "入库数量", example = "100")
@@ -98,15 +98,7 @@ public class StockInOrderCreateDTO {
         @Schema(description = "单价", example = "10.00")
         @NotNull(message = "单价不能为空")
         @Positive(message = "单价必须大于0")
-        private BigDecimal unitPrice;
-
-        /**
-         * 小计金额
-         */
-        @Schema(description = "小计金额", example = "1000.00")
-        @NotNull(message = "小计金额不能为空")
-        @Positive(message = "小计金额必须大于0")
-        private BigDecimal subtotal;
+        private BigDecimal price;
 
         /**
          * 备注

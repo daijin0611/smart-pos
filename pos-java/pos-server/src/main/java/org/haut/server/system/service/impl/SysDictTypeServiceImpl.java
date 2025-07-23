@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.hutool.core.bean.BeanUtil;
-import org.haut.common.constant.DictConstants;
+import org.haut.common.constant.DictConst;
 import org.haut.server.system.entity.SysDictType;
 import org.haut.server.system.entity.SysDictItem;
 import org.haut.server.system.service.SysDictTypeService;
@@ -75,7 +75,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
         LambdaQueryWrapper<SysDictType> wrapper = Wrappers.lambdaQuery(SysDictType.class)
                 .eq(SysDictType::getDictCode, dto.getDictCode());
         if (this.count(wrapper) > 0) {
-            throw new IllegalArgumentException(DictConstants.DICT_CODE_EXISTS);
+            throw new IllegalArgumentException(DictConst.DICT_CODE_EXISTS);
         }
 
         // 创建字典类型实体
@@ -93,7 +93,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
         // 检查字典类型是否存在
         SysDictType existingDictType = this.getById(dto.getDictTypeId());
         if (existingDictType == null) {
-            throw new IllegalArgumentException(DictConstants.DICT_TYPE_NOT_FOUND);
+            throw new IllegalArgumentException(DictConst.DICT_TYPE_NOT_FOUND);
         }
 
         // 检查字典编码是否已被其他字典类型使用
@@ -101,7 +101,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
                 .eq(SysDictType::getDictCode, dto.getDictCode())
                 .ne(SysDictType::getId, dto.getDictTypeId());
         if (this.count(wrapper) > 0) {
-            throw new IllegalArgumentException(DictConstants.DICT_CODE_EXISTS);
+            throw new IllegalArgumentException(DictConst.DICT_CODE_EXISTS);
         }
 
         // 更新字典类型实体

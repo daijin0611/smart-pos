@@ -26,27 +26,7 @@ public class StockOutOrderCreateDTO {
     @Schema(description = "出库单号", example = "OUT202412190001")
     @NotBlank(message = "出库单号不能为空")
     @Size(max = 50, message = "出库单号长度不能超过50")
-    private String orderNo;
-
-    /**
-     * 客户ID
-     */
-    @Schema(description = "客户ID", example = "1")
-    private Long customerId;
-
-    /**
-     * 客户名称
-     */
-    @Schema(description = "客户名称", example = "XX客户")
-    @Size(max = 100, message = "客户名称长度不能超过100")
-    private String customerName;
-
-    /**
-     * 出库类型(1:销售出库 2:退货出库 3:调拨出库 4:其他出库)
-     */
-    @Schema(description = "出库类型(1:销售出库 2:退货出库 3:调拨出库 4:其他出库)", example = "1")
-    @NotNull(message = "出库类型不能为空")
-    private Integer outType;
+    private String orderCode;
 
     /**
      * 总金额
@@ -54,7 +34,14 @@ public class StockOutOrderCreateDTO {
     @Schema(description = "总金额", example = "1000.00")
     @NotNull(message = "总金额不能为空")
     @Positive(message = "总金额必须大于0")
-    private BigDecimal totalAmount;
+    private BigDecimal totalPrice;
+
+    /**
+     * 操作员
+     */
+    @Schema(description = "操作员", example = "admin")
+    @Size(max = 50, message = "操作员长度不能超过50")
+    private String operator;
 
     /**
      * 备注
@@ -62,6 +49,12 @@ public class StockOutOrderCreateDTO {
     @Schema(description = "备注", example = "销售出库")
     @Size(max = 500, message = "备注长度不能超过500")
     private String remark;
+
+    /**
+     * 组织ID
+     */
+    @Schema(description = "组织ID", example = "1")
+    private Long orgId;
 
     /**
      * 出库明细列表
@@ -98,15 +91,7 @@ public class StockOutOrderCreateDTO {
         @Schema(description = "单价", example = "20.00")
         @NotNull(message = "单价不能为空")
         @Positive(message = "单价必须大于0")
-        private BigDecimal unitPrice;
-
-        /**
-         * 小计金额
-         */
-        @Schema(description = "小计金额", example = "1000.00")
-        @NotNull(message = "小计金额不能为空")
-        @Positive(message = "小计金额必须大于0")
-        private BigDecimal subtotal;
+        private BigDecimal price;
 
         /**
          * 备注
