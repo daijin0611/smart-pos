@@ -1,7 +1,7 @@
 package org.haut.server.stock.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.haut.server.stock.entity.StockProduct;
+import org.haut.common.domain.entity.stock.StockProduct;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author mhding
  * @version 1.0
  * @since 2025/07/23
- * @Entity org.haut.server.stock.entity.StockProduct
+ * @Entity org.haut.common.domain.entity.stock.StockProduct
  */
 @Mapper
 public interface StockProductMapper extends BaseMapper<StockProduct> {

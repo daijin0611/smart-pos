@@ -1,10 +1,10 @@
 package org.haut.server.stock.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.stock.StockInOrderCreateDTO;
 import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockInOrderVO;
-import org.haut.server.stock.entity.StockInOrder;
+import org.haut.common.domain.entity.stock.StockInOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -20,5 +20,7 @@ public interface StockInOrderService extends IService<StockInOrder> {
 
     void addOrder(StockInOrderCreateDTO dto);
 
-    Page<StockInOrderVO> queryPage(StockOrderQuery query);
+    PageDTO<StockInOrderVO> queryPage(StockOrderQuery query);
+
+    StockInOrderVO getOneByCode(String orderCode);
 }

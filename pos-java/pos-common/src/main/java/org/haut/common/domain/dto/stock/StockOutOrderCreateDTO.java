@@ -21,14 +21,6 @@ import java.util.List;
 public class StockOutOrderCreateDTO {
 
     /**
-     * 出库单号
-     */
-    @Schema(description = "出库单号", example = "OUT202412190001")
-    @NotBlank(message = "出库单号不能为空")
-    @Size(max = 50, message = "出库单号长度不能超过50")
-    private String orderCode;
-
-    /**
      * 总金额
      */
     @Schema(description = "总金额", example = "1000.00")
@@ -51,12 +43,6 @@ public class StockOutOrderCreateDTO {
     private String remark;
 
     /**
-     * 组织ID
-     */
-    @Schema(description = "组织ID", example = "1")
-    private Long orgId;
-
-    /**
      * 出库明细列表
      */
     @Schema(description = "出库明细列表")
@@ -76,6 +62,27 @@ public class StockOutOrderCreateDTO {
         @Schema(description = "产品ID", example = "1")
         @NotNull(message = "产品ID不能为空")
         private Long productId;
+
+        /**
+         * 产品名称
+         */
+        @Schema(description = "产品名称", example = "产品名称")
+        @NotBlank(message = "产品名称不能为空")
+        private String productName;
+
+        /**
+         * 产品编码
+         */
+        @Schema(description = "产品编码", example = "P001")
+        @NotBlank(message = "产品编码不能为空")
+        private String productCode;
+
+        /**
+         * 单位
+         */
+        @Schema(description = "单位", example = "件")
+        @NotBlank(message = "单位不能为空")
+        private String unit;
 
         /**
          * 出库数量

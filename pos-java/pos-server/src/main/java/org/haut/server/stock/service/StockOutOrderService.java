@@ -1,7 +1,13 @@
 package org.haut.server.stock.service;
 
-import org.haut.server.stock.entity.StockOutOrder;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.validation.Valid;
+import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.dto.stock.StockOutOrderCreateDTO;
+import org.haut.common.domain.entity.stock.StockOutOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.haut.common.domain.query.stock.StockOrderQuery;
+import org.haut.common.domain.vo.stock.StockOutOrderVO;
 
 /**
  * 出库订单服务接口
@@ -14,4 +20,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface StockOutOrderService extends IService<StockOutOrder> {
 
+    PageDTO<StockOutOrderVO> queryPage(StockOrderQuery query);
+
+    void addOrder(StockOutOrderCreateDTO dto);
 }

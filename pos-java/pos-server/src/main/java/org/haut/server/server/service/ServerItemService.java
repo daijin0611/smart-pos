@@ -2,7 +2,7 @@ package org.haut.server.server.service;
 
 import org.haut.common.domain.dto.server.ServerItemListDTO;
 import org.haut.common.domain.query.server.ServerItemListQuery;
-import org.haut.server.server.entity.ServerItem;
+import org.haut.common.domain.entity.server.ServerItem;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

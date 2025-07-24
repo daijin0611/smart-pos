@@ -1,6 +1,6 @@
 package org.haut.server.server.service;
 
-import org.haut.server.server.entity.ServerPackageDetail;
+import org.haut.common.domain.entity.server.ServerPackageDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

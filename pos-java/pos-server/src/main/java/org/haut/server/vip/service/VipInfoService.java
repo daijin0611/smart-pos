@@ -3,7 +3,7 @@ package org.haut.server.vip.service;
 import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
 import org.haut.common.domain.query.vip.VipListQuery;
-import org.haut.server.vip.entity.VipInfo;
+import org.haut.common.domain.entity.vip.VipInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

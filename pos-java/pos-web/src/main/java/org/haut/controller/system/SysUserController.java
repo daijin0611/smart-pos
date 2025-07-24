@@ -13,11 +13,10 @@ import org.haut.common.domain.dto.system.UserUpdateDTO;
 import org.haut.common.domain.query.system.UserListQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.system.UserInfoVO;
-import org.haut.server.system.entity.SysUser;
+import org.haut.common.domain.entity.system.SysUser;
 import org.haut.server.system.service.SysUserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/system/user")

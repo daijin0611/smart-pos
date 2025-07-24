@@ -1,13 +1,12 @@
 package org.haut.controller.system;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.system.OrgInfoVO;
-import org.haut.server.system.entity.SysOrg;
+import org.haut.common.domain.entity.system.SysOrg;
 import org.haut.server.system.service.SysOrgService;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;

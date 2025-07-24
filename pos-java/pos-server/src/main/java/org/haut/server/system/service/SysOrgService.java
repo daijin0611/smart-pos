@@ -2,7 +2,7 @@ package org.haut.server.system.service;
 
 import org.haut.common.domain.query.system.OrgListQuery;
 import org.haut.common.domain.vo.system.OrgInfoVO;
-import org.haut.server.system.entity.SysOrg;
+import org.haut.common.domain.entity.system.SysOrg;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

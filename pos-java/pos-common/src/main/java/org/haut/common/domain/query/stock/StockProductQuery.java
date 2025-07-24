@@ -14,22 +14,17 @@ import lombok.Data;
 public class StockProductQuery {
 
     /**
-     * 产品ID
+     * 产品名称
      */
-    @Schema(description = "产品ID", example = "1")
-    private Long productId;
+    @Schema(description = "产品名称", example = "服务器")
+    private String productName;
 
     /**
-     * 库存数量范围 - 最小值
+     * 产品编号
      */
-    @Schema(description = "库存数量最小值", example = "10")
-    private Integer minQuantity;
+    @Schema(description = "产品编号", example = "PROD202412190001")
+    private String productCode;
 
-    /**
-     * 库存数量范围 - 最大值
-     */
-    @Schema(description = "库存数量最大值", example = "1000")
-    private Integer maxQuantity;
 
     /**
      * 页码

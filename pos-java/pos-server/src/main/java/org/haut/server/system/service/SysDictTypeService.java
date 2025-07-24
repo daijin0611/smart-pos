@@ -1,6 +1,6 @@
 package org.haut.server.system.service;
 
-import org.haut.server.system.entity.SysDictType;
+import org.haut.common.domain.entity.system.SysDictType;
 import org.haut.common.domain.vo.system.DictTypeVO;
 import org.haut.common.domain.dto.system.DictTypeCreateDTO;
 import org.haut.common.domain.dto.system.DictTypeUpdateDTO;

@@ -1,7 +1,7 @@
 package org.haut.server.stock.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.haut.server.stock.entity.StockOutOrder;
+import org.haut.common.domain.entity.stock.StockOutOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author mhding
  * @version 1.0
  * @since 2025/07/23
- * @Entity org.haut.server.stock.entity.StockOutOrder
+ * @Entity org.haut.common.domain.entity.stock.StockOutOrder
  */
 @Mapper
 public interface StockOutOrderMapper extends BaseMapper<StockOutOrder> {

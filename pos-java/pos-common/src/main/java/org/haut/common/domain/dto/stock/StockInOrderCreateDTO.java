@@ -80,7 +80,7 @@ public class StockInOrderCreateDTO {
         /**
          * 产品规格
          */
-        @Schema(description = "产品单位", example = "个")
+        @Schema(description = "产品单位（直接存中文名即可）", example = "个")
         @NotNull
         private String unit;
 

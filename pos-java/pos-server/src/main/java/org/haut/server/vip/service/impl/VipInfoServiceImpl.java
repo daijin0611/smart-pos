@@ -2,8 +2,6 @@ package org.haut.server.vip.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
@@ -12,7 +10,7 @@ import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.common.utils.AuthContextHolder;
-import org.haut.server.vip.entity.VipInfo;
+import org.haut.common.domain.entity.vip.VipInfo;
 import org.haut.server.vip.mapper.VipAssetMapper;
 import org.haut.server.vip.service.VipInfoService;
 import org.haut.server.vip.mapper.VipInfoMapper;

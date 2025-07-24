@@ -1,6 +1,5 @@
 package org.haut.controller.room;
 
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +11,11 @@ import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.room.RoomInfoVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
-import org.haut.server.room.entity.RoomBed;
-import org.haut.server.room.entity.RoomInfo;
+import org.haut.common.domain.entity.room.RoomBed;
+import org.haut.common.domain.entity.room.RoomInfo;
 import org.haut.server.room.service.RoomBedService;
 import org.haut.server.room.service.RoomInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

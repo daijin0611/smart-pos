@@ -1,7 +1,7 @@
 package org.haut.server.vip.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.haut.server.vip.entity.VipTicket;
+import org.haut.common.domain.entity.vip.VipTicket;
 import org.haut.server.vip.service.VipTicketService;
 import org.haut.server.vip.mapper.VipTicketMapper;
 import org.springframework.stereotype.Service;

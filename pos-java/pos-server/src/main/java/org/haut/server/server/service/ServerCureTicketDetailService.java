@@ -1,6 +1,6 @@
 package org.haut.server.server.service;
 
-import org.haut.server.server.entity.ServerCureTicketDetail;
+import org.haut.common.domain.entity.server.ServerCureTicketDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

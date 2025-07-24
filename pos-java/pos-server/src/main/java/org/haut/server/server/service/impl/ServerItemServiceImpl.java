@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.haut.common.domain.dto.server.ServerItemListDTO;
 import org.haut.common.domain.query.server.ServerItemListQuery;
-import org.haut.server.server.entity.ServerItem;
+import org.haut.common.domain.entity.server.ServerItem;
 import org.haut.server.server.mapper.ServerItemMapper;
 import org.haut.server.server.service.ServerItemService;
 import org.springframework.beans.factory.annotation.Autowired;

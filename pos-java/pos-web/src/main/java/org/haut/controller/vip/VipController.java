@@ -9,7 +9,7 @@ import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.server.vip.entity.VipInfo;
+import org.haut.common.domain.entity.vip.VipInfo;
 import org.haut.server.vip.service.VipInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

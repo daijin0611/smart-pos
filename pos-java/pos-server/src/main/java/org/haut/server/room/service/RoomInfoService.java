@@ -3,7 +3,7 @@ package org.haut.server.room.service;
 import org.haut.common.domain.dto.room.RoomCreateDTO;
 import org.haut.common.domain.dto.room.RoomUpdateDTO;
 import org.haut.common.domain.vo.room.RoomInfoVO;
-import org.haut.server.room.entity.RoomInfo;
+import org.haut.common.domain.entity.room.RoomInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

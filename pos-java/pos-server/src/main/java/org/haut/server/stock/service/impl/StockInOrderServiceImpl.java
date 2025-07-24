@@ -9,17 +9,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.constant.Const;
 import org.haut.common.constant.PrefixConst;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.stock.StockInOrderCreateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.stock.StockOrderQuery;
+import org.haut.common.domain.vo.stock.StockInItemVO;
 import org.haut.common.domain.vo.stock.StockInOrderVO;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
 import org.haut.server.server.mapper.ServerProductMapper;
-import org.haut.server.stock.entity.StockInItem;
-import org.haut.server.stock.entity.StockInOrder;
-import org.haut.server.stock.entity.StockLog;
-import org.haut.server.stock.entity.StockProduct;
+import org.haut.common.domain.entity.stock.StockInItem;
+import org.haut.common.domain.entity.stock.StockInOrder;
+import org.haut.common.domain.entity.stock.StockLog;
+import org.haut.common.domain.entity.stock.StockProduct;
 import org.haut.server.stock.mapper.StockInItemMapper;
 import org.haut.server.stock.mapper.StockLogMapper;
 import org.haut.server.stock.mapper.StockProductMapper;
@@ -28,8 +30,12 @@ import org.haut.server.stock.mapper.StockInOrderMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 入库订单服务实现类
@@ -122,12 +128,58 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
 
     /**
      * 查询入库订单分页列表
+     *
      * @param query
      * @return
      */
     @Override
-    public Page<StockInOrderVO> queryPage(StockOrderQuery query) {
+    public PageDTO<StockInOrderVO> queryPage(StockOrderQuery query) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        LambdaQueryWrapper<StockInOrder> wrapper = Wrappers.lambdaQuery(StockInOrder.class)
+                .eq(StockInOrder::getOrgId, auth.getOrgId())
+                // 根据订单编号模糊查询
+                .like(query.getOrderCode() != null, StockInOrder::getOrderCode, query.getOrderCode())
+                // 根据操作员模糊查询
+                .like(query.getOperator() != null, StockInOrder::getOperator, query.getOperator())
+                // 根据创建时间范围查询
+                .ge(query.getStartDate() != null, StockInOrder::getCreateTime, query.getStartDate())
+                .le(query.getEndDate() != null, StockInOrder::getCreateTime, query.getEndDate())
+                // 按创建时间降序排序
+                .orderByDesc(StockInOrder::getCreateTime);
 
-        return null;
+        // 执行分页查询
+        Page<StockInOrder> page = this.page(
+            new Page<>(query.getPageNum(), query.getPageSize()),
+            wrapper
+        );
+        PageDTO<StockInOrderVO> stockInOrderVOPageDTO = PageDTO.create(page, StockInOrderVO.class);
+
+        List<Long> orderIds = page.getRecords().stream().map(StockInOrder::getId).toList();
+        // 查询入库明细
+        List<StockInItem> stockInItems = stockInItemMapper.selectList(Wrappers.lambdaQuery(StockInItem.class)
+                .in(StockInItem::getInOrderId, orderIds));
+        Map<Long, List<StockInItem>> itemMap = stockInItems.stream()
+                .collect(Collectors.groupingBy(StockInItem::getInOrderId));
+        stockInOrderVOPageDTO.getRows().forEach(stockInOrderVO -> {
+            if (itemMap.containsKey(stockInOrderVO.getId())) {
+                List<StockInItemVO> items = BeanUtil.copyToList(itemMap.get(stockInOrderVO.getId()), StockInItemVO.class);
+                stockInOrderVO.setItems(items);
+            }
+        });
+
+        // 构建分页结果
+        return stockInOrderVOPageDTO;
+    }
+
+    @Override
+    public StockInOrderVO getOneByCode(String orderCode) {
+        LambdaQueryWrapper<StockInItem> wrapper = Wrappers.lambdaQuery(StockInItem.class)
+                        .eq(StockInItem::getInOrderCode, orderCode);
+        List<StockInItem> stockInItems = stockInItemMapper.selectList(wrapper);
+
+        StockInOrder order = this.lambdaQuery().eq(StockInOrder::getOrderCode, orderCode).one();
+        StockInOrderVO orderVO = BeanUtil.copyProperties(order, StockInOrderVO.class);
+        orderVO.setItems(BeanUtil.copyToList(stockInItems, StockInItemVO.class));
+        return orderVO;
     }
 }

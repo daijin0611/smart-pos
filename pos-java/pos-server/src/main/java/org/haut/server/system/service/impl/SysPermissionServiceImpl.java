@@ -6,16 +6,14 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.haut.common.domain.query.system.PermissionListQuery;
 import org.haut.common.domain.vo.system.PermissionInfoVO;
-import org.haut.server.system.entity.SysPermission;
+import org.haut.common.domain.entity.system.SysPermission;
 import org.haut.server.system.service.SysPermissionService;
 import org.haut.server.system.mapper.SysPermissionMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
 * @author daiji

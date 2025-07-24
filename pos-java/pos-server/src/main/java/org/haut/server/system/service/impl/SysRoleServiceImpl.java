@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.haut.common.domain.query.system.AllocatedListQuery;
 import org.haut.common.domain.query.system.UnAllocatedListQuery;
 import org.haut.common.domain.vo.system.UserInfoVO;
-import org.haut.server.system.entity.SysRole;
+import org.haut.common.domain.entity.system.SysRole;
 import org.haut.server.system.service.SysRoleService;
 import org.haut.server.system.mapper.SysRoleMapper;
 import org.springframework.stereotype.Service;

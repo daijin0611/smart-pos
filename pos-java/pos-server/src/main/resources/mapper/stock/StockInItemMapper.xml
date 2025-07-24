@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.haut.server.stock.mapper.StockInItemMapper">
 
-    <resultMap id="BaseResultMap" type="org.haut.server.stock.entity.StockInItem">
+    <resultMap id="BaseResultMap" type="org.haut.common.domain.entity.stock.StockInItem">
             <id property="id" column="id" />
             <result property="createTime" column="create_time" />
             <result property="updateTime" column="update_time" />
@@ -26,4 +26,15 @@
         product_id,product_code,product_name,unit,quantity,
         price,in_order_id,in_order_code,org_id
     </sql>
+    <select id="queryItemByOrderCodes" resultType="org.haut.common.domain.entity.stock.StockInItem">
+        select
+            <include refid="Base_Column_List" />
+        from
+            stock_in_item
+        where
+            in_order_code in
+            <foreach item="item" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </select>
 </mapper>

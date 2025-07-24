@@ -3,6 +3,7 @@ package org.haut.common.domain.query.stock;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -39,6 +40,7 @@ public class StockOrderQuery {
      */
     @Schema(description = "开始日期", example = "2024-12-01")
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
 
     /**
@@ -46,6 +48,7 @@ public class StockOrderQuery {
      */
     @Schema(description = "结束日期", example = "2024-12-31")
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
     /**

@@ -1,8 +1,10 @@
 package org.haut.server.stock.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.haut.server.stock.entity.StockInItem;
+import org.haut.common.domain.entity.stock.StockInItem;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
  * 入库明细数据访问层
@@ -17,4 +19,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 @Mapper
 public interface StockInItemMapper extends BaseMapper<StockInItem> {
 
+    List<StockInItem> queryItemByOrderCodes(List<String> codes);
 }

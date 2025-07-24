@@ -1,7 +1,10 @@
 package org.haut.server.stock.service;
 
-import org.haut.server.stock.entity.StockProduct;
+import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.entity.stock.StockProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.haut.common.domain.query.stock.StockProductQuery;
+import org.haut.common.domain.vo.stock.StockProductVO;
 
 /**
  * 库存产品服务接口
@@ -14,4 +17,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface StockProductService extends IService<StockProduct> {
 
+    PageDTO<StockProductVO> queryPage(StockProductQuery query);
 }

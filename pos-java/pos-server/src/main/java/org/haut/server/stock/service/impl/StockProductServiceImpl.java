@@ -1,10 +1,22 @@
 package org.haut.server.stock.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.haut.server.stock.entity.StockProduct;
+import lombok.RequiredArgsConstructor;
+import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
+import org.haut.common.domain.entity.server.ServerProduct;
+import org.haut.common.domain.entity.stock.StockProduct;
+import org.haut.common.domain.query.stock.StockProductQuery;
+import org.haut.common.domain.vo.stock.StockProductVO;
+import org.haut.common.utils.AuthContextHolder;
+import org.haut.server.server.mapper.ServerProductMapper;
 import org.haut.server.stock.service.StockProductService;
 import org.haut.server.stock.mapper.StockProductMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 库存产品服务实现类
@@ -16,7 +28,19 @@ import org.springframework.stereotype.Service;
  * @since 2025/07/23
  */
 @Service
+@RequiredArgsConstructor
 public class StockProductServiceImpl extends ServiceImpl<StockProductMapper, StockProduct>
     implements StockProductService {
+    private final ServerProductMapper serverProductMapper;
 
+    @Override
+    public PageDTO<StockProductVO> queryPage(StockProductQuery query) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        Page<StockProduct> page = new Page<>(query.getPageNum(), query.getPageSize());
+        List<StockProduct> records = this.page(page).getRecords();
+        List<Long> productIds = records.stream().map(StockProduct::getProductId).toList();
+        List<ServerProduct> serverProducts = serverProductMapper.selectByIds(productIds);
+        List<StockProductVO> stockProductVOS = BeanUtil.copyToList(serverProducts, StockProductVO.class);
+        return null;
+    }
 }

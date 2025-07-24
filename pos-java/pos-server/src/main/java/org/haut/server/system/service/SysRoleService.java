@@ -3,7 +3,7 @@ package org.haut.server.system.service;
 import org.haut.common.domain.query.system.AllocatedListQuery;
 import org.haut.common.domain.query.system.UnAllocatedListQuery;
 import org.haut.common.domain.vo.system.UserInfoVO;
-import org.haut.server.system.entity.SysRole;
+import org.haut.common.domain.entity.system.SysRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

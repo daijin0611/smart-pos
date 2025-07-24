@@ -7,7 +7,7 @@ import cn.hutool.core.bean.BeanUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.query.system.OrgListQuery;
 import org.haut.common.domain.vo.system.OrgInfoVO;
-import org.haut.server.system.entity.SysOrg;
+import org.haut.common.domain.entity.system.SysOrg;
 import org.haut.server.system.service.SysOrgService;
 import org.haut.server.system.mapper.SysOrgMapper;
 import org.springframework.stereotype.Service;

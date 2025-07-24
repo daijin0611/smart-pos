@@ -52,6 +52,10 @@ spring:
         enabled: true
         url-pattern: /*
         exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+      keep-alive: true
+      validation-query: SELECT 1
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
   security: # 安全配置
     jwt:
       key: abcdefghijklmnopqrstuvwxyz1234567890  # JWT密钥
@@ -94,6 +98,9 @@ springdoc:
     - group: 'vip'
       paths-to-match: '/vip/**'
       packages-to-scan: org.haut.controller.vip
+    - group: 'stock'
+      paths-to-match: '/stock/**'
+      packages-to-scan: org.haut.controller.stock
   default-flat-param-object: true
 # knife4j的增强配置，不需要增强可以不配
 knife4j:

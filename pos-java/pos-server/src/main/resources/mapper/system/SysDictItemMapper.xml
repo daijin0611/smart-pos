@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.haut.server.system.mapper.SysDictItemMapper">
 
-    <resultMap id="BaseResultMap" type="org.haut.server.system.entity.SysDictItem">
+    <resultMap id="BaseResultMap" type="org.haut.common.domain.entity.system.SysDictItem">
             <id property="id" column="id" />
             <result property="createTime" column="create_time" />
             <result property="updateTime" column="update_time" />

@@ -3,12 +3,9 @@ package org.haut.server.system.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.haut.common.domain.query.system.UserListQuery;
-import org.haut.common.domain.vo.system.UserInfoVO;
-import org.haut.server.system.entity.SysUser;
+import org.haut.common.domain.entity.system.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
-import java.util.List;
 
 /**
 * @author daiji
