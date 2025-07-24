@@ -26,7 +26,7 @@ public class StockOrderQuery {
     /**
      * 订单类型(1:入库 2:出库)
      */
-    @Schema(description = "订单类型(1:入库 2:出库)", example = "1")
+    @Schema(description = "订单类型(1:入库 2:出库) 非日志查询情况不用传", example = "1")
     private Integer orderType;
 
     /**
@@ -55,11 +55,11 @@ public class StockOrderQuery {
      * 页码
      */
     @Schema(description = "页码", example = "1")
-    private Integer pageNum = 1;
+    private Long pageNum = 1L;
 
     /**
      * 每页大小
      */
     @Schema(description = "每页大小", example = "10")
-    private Integer pageSize = 10;
+    private Long pageSize = 10L;
 }

@@ -201,4 +201,17 @@ public class StockOutOrderServiceImpl extends ServiceImpl<StockOutOrderMapper, S
         
         log.info("出库订单创建成功，订单号：{}", code);
     }
+
+    @Override
+    public StockOutOrderVO getOneByCode(String orderCode) {
+        StockOutOrder order = this.lambdaQuery().eq(StockOutOrder::getOrderCode, orderCode).one();
+        if (order == null) {
+            throw new BusinessException("出库订单不存在");
+        }
+        List<StockOutItem> items = stockOutItemMapper.selectList(Wrappers.lambdaQuery(StockOutItem.class)
+                .eq(StockOutItem::getOutOrderCode, orderCode));
+        StockOutOrderVO vo = BeanUtil.toBean(order, StockOutOrderVO.class);
+        vo.setItems(BeanUtil.copyToList(items, StockOutItemVO.class));
+        return vo;
+    }
 }

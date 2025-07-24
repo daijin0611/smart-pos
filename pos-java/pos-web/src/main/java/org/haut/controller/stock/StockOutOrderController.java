@@ -46,17 +46,18 @@ public class StockOutOrderController {
 
 
     /**
-     * 根据ID获取出库订单详情
+     * 根据订单编号获取出库订单详情
      *
-     * @param id 订单ID
+     * @param orderCode 订单编号
      * @return 订单详情
      */
     @GetMapping("/query-one")
-    @Operation(summary = "获取出库订单详情", description = "根据订单ID获取出库订单详情，包含明细信息")
-    public JsonVO<StockOutOrderVO> queryOne(@RequestParam("id") Long id) {
-        log.info("查询出库订单详情，订单ID：{}", id);
-        // TODO: 实现详情查询逻辑
-        return JsonVO.success(new StockOutOrderVO());
+    @Operation(
+        summary = "根据订单编号获取出库订单详情",
+        description = "根据订单编号获取出库订单详情，包含明细信息。主要在库存流水页面查看原单使用")
+    public JsonVO<StockOutOrderVO> queryOne(@RequestParam("orderCode") String orderCode) {
+        log.info("查询出库订单详情，订单编号：{}", orderCode);
+        return JsonVO.success(stockOutOrderService.getOneByCode(orderCode));
     }
 
     /**

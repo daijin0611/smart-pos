@@ -1,8 +1,14 @@
 package org.haut.server.server.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.haut.common.domain.entity.server.ServerProduct;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.haut.common.domain.entity.stock.StockProduct;
+import org.haut.common.domain.query.stock.StockProductPageQuery;
+import org.haut.common.domain.vo.stock.StockProductVO;
 
 /**
 * @author Cdh
@@ -13,6 +19,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 @Mapper
 public interface ServerProductMapper extends BaseMapper<ServerProduct> {
 
+    Page<StockProductVO> stockQueryPage(
+            @Param("page") Page<StockProduct> page,
+            @Param("query") StockProductPageQuery query,
+            @Param("orgId") Long orgId
+            );
 }
 
 

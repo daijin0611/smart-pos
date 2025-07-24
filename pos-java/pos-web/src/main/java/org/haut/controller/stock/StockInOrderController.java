@@ -49,10 +49,11 @@ public class StockInOrderController {
      * @return 订单详情
      */
     @GetMapping("/query-one/{orderCode}")
-    @Operation(summary = "获取入库订单详情", description = "根据订单ID获取入库订单详情，包含明细信息")
+    @Operation(
+        summary = "根据订单编号获取入库订单详情",
+        description = "根据订单编号获取入库订单详情，包含明细信息。主要在库存流水页面查看原单使用")
     public JsonVO<StockInOrderVO> queryOne(@PathVariable String orderCode) {
         log.info("查询入库订单详情，订单编号：{}", orderCode);
-        // TODO: 实现详情查询逻辑
         return JsonVO.success(stockInOrderService.getOneByCode(orderCode));
     }
 

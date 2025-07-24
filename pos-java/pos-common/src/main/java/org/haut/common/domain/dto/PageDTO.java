@@ -77,4 +77,6 @@ public class PageDTO<T> {
     public static <T, D> PageDTO<D> create(Page<T> page, Class<D> clazz) {
         return create(page, t -> BeanUtil.copyProperties(t, clazz));
     }
+
+
 }

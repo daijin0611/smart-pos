@@ -3,7 +3,7 @@ package org.haut.server.stock.service;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.entity.stock.StockProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.haut.common.domain.query.stock.StockProductQuery;
+import org.haut.common.domain.query.stock.StockProductPageQuery;
 import org.haut.common.domain.vo.stock.StockProductVO;
 
 /**
@@ -17,5 +17,5 @@ import org.haut.common.domain.vo.stock.StockProductVO;
  */
 public interface StockProductService extends IService<StockProduct> {
 
-    PageDTO<StockProductVO> queryPage(StockProductQuery query);
+    PageDTO<StockProductVO> queryPage(StockProductPageQuery query);
 }

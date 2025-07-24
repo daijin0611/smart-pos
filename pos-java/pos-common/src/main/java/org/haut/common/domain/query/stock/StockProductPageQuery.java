@@ -10,13 +10,13 @@ import lombok.Data;
  * @date 2024/12/19
  */
 @Data
-@Schema(description = "库存产品查询对象")
-public class StockProductQuery {
+@Schema(description = "库存产品分页查询对象")
+public class StockProductPageQuery {
 
     /**
      * 产品名称
      */
-    @Schema(description = "产品名称", example = "服务器")
+    @Schema(description = "产品名称", example = "工具")
     private String productName;
 
     /**
@@ -30,11 +30,11 @@ public class StockProductQuery {
      * 页码
      */
     @Schema(description = "页码", example = "1")
-    private Integer pageNum = 1;
+    private Long pageNum = 1L;
 
     /**
      * 每页大小
      */
     @Schema(description = "每页大小", example = "10")
-    private Integer pageSize = 10;
+    private Long pageSize = 10L;
 }
