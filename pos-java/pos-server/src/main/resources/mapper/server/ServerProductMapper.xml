@@ -30,7 +30,7 @@
     <select id="stockQueryPage" resultType="org.haut.common.domain.vo.stock.StockProductVO">
         select
             sep.*,
-            IFNULL(stp.quantity) as quantity
+            IFNULL(stp.quantity, 0) as quantity
         from server_product sep
         left join stock_product stp on sep.id = stp.product_id AND stp.is_delete = 0
         where sep.is_delete = 0 AND sep.org_id = #{orgId}

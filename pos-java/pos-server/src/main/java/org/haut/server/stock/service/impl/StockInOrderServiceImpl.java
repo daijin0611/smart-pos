@@ -15,9 +15,11 @@ import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockInItemVO;
 import org.haut.common.domain.vo.stock.StockInOrderVO;
+import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
 import org.haut.server.server.mapper.ServerProductMapper;
+import org.haut.common.domain.entity.server.ServerProduct;
 import org.haut.common.domain.entity.stock.StockInItem;
 import org.haut.common.domain.entity.stock.StockInOrder;
 import org.haut.common.domain.entity.stock.StockLog;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -71,8 +74,21 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
         order.setOrderCode(orderCode);
         this.save(order);
 
-        // 创建入库明细
+
         List<StockInItem> stockInItems = BeanUtil.copyToList(dto.getItems(), StockInItem.class);
+        // 校验产品是否存在
+        List<Long> productIds = stockInItems.stream().map(StockInItem::getProductId).toList();
+        // 更新库存
+        LambdaQueryWrapper<StockProduct> queryWrapper = Wrappers.lambdaQuery(StockProduct.class)
+                .eq(StockProduct::getOrgId, auth.getOrgId())
+                .in(StockProduct::getProductId, productIds);
+        List<StockProduct> stockProducts = stockProductMapper.selectList(queryWrapper);
+
+        // 现有库存产品转换为Map，方便后续查找
+        Map<Long, StockProduct> stockProductMap = stockProducts.stream()
+                .collect(Collectors.toMap(StockProduct::getProductId, stockProduct -> stockProduct));
+
+        // 创建入库明细
         stockInItems.forEach(item -> {
             item.setInOrderCode(orderCode);
             item.setOrgId(auth.getOrgId());
@@ -80,37 +96,32 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
         });
         stockInItemMapper.insert(stockInItems);
 
-        // 更新库存
-        List<Long> productIds = stockInItems.stream().map(StockInItem::getProductId).toList();
-        LambdaQueryWrapper<StockProduct> queryWrapper = Wrappers.lambdaQuery(StockProduct.class)
-            .eq(StockProduct::getOrgId, auth.getOrgId())
-            .in(StockProduct::getProductId, productIds);
-        List<StockProduct> stockProducts = stockProductMapper.selectList(queryWrapper);
+
+
+        // 创建一个新的库存产品列表，用于存储更新后的库存数据
+        List<StockProduct> stockProductListToUpdate = new ArrayList<>();
+
         // 将入库明细的数量累加到库存产品中
         for (StockInItem item : stockInItems) {
-            boolean found = false;
-            for (StockProduct stockProduct : stockProducts) {
-                // 如果库存产品的ID与入库明细的产品ID匹配，则累加数量
-                if (stockProduct.getProductId().equals(item.getProductId())) {
-                    int currentQuantity = stockProduct.getQuantity();
-                    int addedQuantity = item.getQuantity();
-                    stockProduct.setQuantity(stockProduct.getQuantity() + item.getQuantity());
-                    int newQuantity = currentQuantity + addedQuantity;
-                    found = true;
-                    log.info("添加前数量{}\n，添加数量：{}\n，添加后数量：{}\n", currentQuantity, addedQuantity, newQuantity);
-                }
-            }
-            if (!found) {
-                // 如果没有找到对应的库存产品，则创建一个新的库存产品
-                StockProduct newStockProduct = new StockProduct();
-                newStockProduct.setQuantity(item.getQuantity());
-                newStockProduct.setOrgId(auth.getOrgId());
-                newStockProduct.setProductId(item.getProductId());
-                stockProducts.add(newStockProduct);
-                log.info("新建库存产品，产品ID：{}，数量：{}", item.getProductId(), item.getQuantity());
+            StockProduct product = stockProductMap.get(item.getProductId());
+
+            // 如果库存产品不存在，则创建新的库存产品
+            if (product == null) {
+                stockProductListToUpdate.add(new StockProduct()
+                        .setOrgId(auth.getOrgId())
+                        .setProductId(item.getProductId())
+                        .setQuantity(0)
+                );
+            }else {
+                int currentQuantity = product.getQuantity();
+                int addQuantity = item.getQuantity();
+                stockProductListToUpdate.add(product.setQuantity(currentQuantity + addQuantity));
+                int newQuantity = product.getQuantity();
+                log.info("更新库存产品：{}，原数量：{}，新增数量：{}，新数量：{}",
+                        item.getProductName(), currentQuantity, addQuantity, newQuantity);
             }
         }
-        stockProductMapper.insertOrUpdate(stockProducts);
+        stockProductMapper.insertOrUpdate(stockProductListToUpdate);
 
         // 记录入库订单创建日志
         List<StockLog> stockLogs = BeanUtil.copyToList(stockInItems, StockLog.class);
@@ -121,6 +132,7 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
             log.setOperator(dto.getOperator());
             BigDecimal totalPrice = log.getPrice().multiply(BigDecimal.valueOf(log.getQuantity()));
             log.setTotalPrice(totalPrice);
+            log.setId(null);
         });
         stockLogMapper.insert(stockLogs);
         log.info("入库订单创建成功，订单号：{}", orderCode);

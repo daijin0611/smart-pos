@@ -45,6 +45,7 @@ public class StockProductController {
 
     /**
      * 获取库存产品列表
+     * 产品信息 + 库存数量（没有库存则为0）
      *
      * @param query 查询条件
      * @return 产品列表

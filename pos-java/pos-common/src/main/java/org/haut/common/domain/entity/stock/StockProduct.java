@@ -3,6 +3,7 @@ package org.haut.common.domain.entity.stock;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.util.Date;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 @TableName(value = "stock_product")
 @Data
 @Schema(description = "库存产品表")
+@Accessors(chain = true)
 public class StockProduct {
     /**
      * 主键 自增
