@@ -23,9 +23,11 @@
     </sql>
     <select id="queryListByRoleId" resultMap="BaseResultMap" parameterType="long">
         select *
-        from sys_permission
-        left join pos.sys_role_permission srp on sys_permission.id = srp.permission_id
+        from sys_permission sp
+        left join pos.sys_role_permission srp on sp.id = srp.permission_id
         where srp.role_id = #{roleId}
+        AND sp.is_delete = 0
+        AND sp.perm_status = 0
     </select>
     <select id="queryListByUserId" resultMap="BaseResultMap" parameterType="long">
         select *
@@ -34,5 +36,7 @@
         where srp.role_id in (
             select role_id from pos.sys_user_role where user_id = #{userId}
         )
+        AND sp.is_delete = 0
+        AND sp.perm_status = 0
     </select>
 </mapper>

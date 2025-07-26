@@ -19,4 +19,6 @@ public interface SysPermissionService extends IService<SysPermission> {
     List<PermissionInfoVO> queryTree(Long roleId);
 
     List<PermissionInfoVO> queryByUserId(Long userId);
+
+    List<PermissionInfoVO> queryTree(PermissionListQuery query);
 }

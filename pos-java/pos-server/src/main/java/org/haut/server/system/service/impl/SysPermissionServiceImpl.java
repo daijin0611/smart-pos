@@ -38,6 +38,16 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
         return buildTree(permissionInfoVOS, 0L);
     }
 
+    @Override
+    public List<PermissionInfoVO> queryTree(PermissionListQuery query) {
+        List<SysPermission> sysPermissions = sysPermissionMapper.selectList(Wrappers.lambdaQuery(SysPermission.class)
+                .eq(query.getStatus() != null, SysPermission::getPermStatus, 0)
+                .like(StringUtils.isNotBlank(query.getName()), SysPermission::getName, query.getName())
+        );
+        List<PermissionInfoVO> permissionInfoVOS = BeanUtil.copyToList(sysPermissions, PermissionInfoVO.class);
+        return buildTree(permissionInfoVOS, 0L);
+    }
+
     /**
      * 查询权限列表
      * @param query

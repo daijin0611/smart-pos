@@ -3,6 +3,7 @@ package org.haut.controller.system;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,12 @@ public class SysPermissionController {
     @Operation(description = "获取权限列表", summary = "获取权限列表")
     public JsonVO<List<PermissionInfoVO>> queryList(PermissionListQuery query){
         return JsonVO.success(sysPermissionService.queryList(query));
+    }
+
+    @GetMapping("/query-tree")
+    @Operation(description = "获取权限树", summary = "获取权限树")
+    public JsonVO<List<PermissionInfoVO>> queryTree(PermissionListQuery query) {
+        return JsonVO.success(sysPermissionService.queryTree(query));
     }
 
     @GetMapping("/query-tree-by-user/{userId}")
