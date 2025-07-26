@@ -32,7 +32,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
      * @return
      */
     @Override
-    public List<PermissionInfoVO> queryByUserId(Long userId) {
+    public List<PermissionInfoVO> queryTreeByUserId(Long userId) {
         List<SysPermission> sysPermissions = sysPermissionMapper.queryListByUserId(userId);
         List<PermissionInfoVO> permissionInfoVOS = BeanUtil.copyToList(sysPermissions, PermissionInfoVO.class);
         return buildTree(permissionInfoVOS, 0L);
@@ -68,7 +68,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
      * @return
      */
     @Override
-    public List<PermissionInfoVO> queryTree(Long roleId) {
+    public List<PermissionInfoVO> queryTreeByRoleId(Long roleId) {
         List<SysPermission> sysPermissions = sysPermissionMapper.queryListByRoleId(roleId);
         List<PermissionInfoVO> permissionInfoVOS = BeanUtil.copyToList(sysPermissions, PermissionInfoVO.class);
         return buildTree(permissionInfoVOS, 0L);

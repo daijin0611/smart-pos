@@ -108,9 +108,5 @@ public class SysRoleController {
     }
 
 
-    @GetMapping("/query-tree")
-    @Operation(description = "根据角色id获取权限树", summary = "根据角色id获取权限树")
-    public JsonVO<List<PermissionInfoVO>> queryTree(@RequestParam Long roleId){
-        return JsonVO.success(sysPermissionService.queryTree(roleId));
-    }
+
 }

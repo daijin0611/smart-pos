@@ -3,7 +3,6 @@ package org.haut.controller.system;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -44,11 +43,16 @@ public class SysPermissionController {
     }
 
     @GetMapping("/query-tree-by-user/{userId}")
-    @Operation(description = "根据用户ID查询权限树", summary = "根据用户ID查询权限列表")
+    @Operation(description = "根据用户ID查询权限树", summary = "根据用户ID查询权限树")
     public JsonVO<List<PermissionInfoVO>> queryByUserId(@PathVariable("userId") Long userId) {
-        return JsonVO.success(sysPermissionService.queryByUserId(userId));
+        return JsonVO.success(sysPermissionService.queryTreeByUserId(userId));
     }
 
+    @GetMapping("/query-tree-by-role/{roleId}")
+    @Operation(description = "根据角色id获取权限树", summary = "根据角色id获取权限树")
+    public JsonVO<List<PermissionInfoVO>> queryTree(@PathVariable("roleId") Long roleId){
+        return JsonVO.success(sysPermissionService.queryTreeByRoleId(roleId));
+    }
 
     @PostMapping("/add-permission")
     @Operation(description = "添加权限", summary = "添加权限")
