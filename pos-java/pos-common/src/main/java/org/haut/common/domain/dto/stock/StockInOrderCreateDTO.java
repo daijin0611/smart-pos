@@ -1,10 +1,7 @@
 package org.haut.common.domain.dto.stock;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -46,7 +43,7 @@ public class StockInOrderCreateDTO {
      * 入库明细列表
      */
     @Schema(description = "入库明细列表")
-    @NotNull(message = "入库明细不能为空")
+    @NotEmpty(message = "入库明细不能为空")
     private List<StockInItemCreateDTO> items;
 
     /**
@@ -62,27 +59,6 @@ public class StockInOrderCreateDTO {
         @Schema(description = "产品ID", example = "1")
         @NotNull(message = "产品ID不能为空")
         private Long productId;
-
-        /**
-         * 产品名称
-         */
-        @Schema(description = "产品名称", example = "商品A")
-        @NotBlank(message = "产品名称不能为空")
-        private String productName;
-
-        /**
-         * 产品编码
-         */
-        @Schema(description = "产品编码", example = "PROD001")
-        @NotBlank(message = "产品编码不能为空")
-        private String productCode;
-
-        /**
-         * 产品规格
-         */
-        @Schema(description = "产品单位（直接存中文名即可）", example = "个")
-        @NotNull
-        private String unit;
 
         /**
          * 入库数量

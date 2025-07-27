@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.executor.BatchResult;
 import org.haut.common.constant.Const;
 import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.PageDTO;
@@ -74,54 +75,25 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
         order.setOrderCode(orderCode);
         this.save(order);
 
-
-        List<StockInItem> stockInItems = BeanUtil.copyToList(dto.getItems(), StockInItem.class);
-        // 校验产品是否存在
-        List<Long> productIds = stockInItems.stream().map(StockInItem::getProductId).toList();
-        // 更新库存
-        LambdaQueryWrapper<StockProduct> queryWrapper = Wrappers.lambdaQuery(StockProduct.class)
-                .eq(StockProduct::getOrgId, auth.getOrgId())
-                .in(StockProduct::getProductId, productIds);
-        List<StockProduct> stockProducts = stockProductMapper.selectList(queryWrapper);
-
-        // 现有库存产品转换为Map，方便后续查找
-        Map<Long, StockProduct> stockProductMap = stockProducts.stream()
-                .collect(Collectors.toMap(StockProduct::getProductId, stockProduct -> stockProduct));
-
         // 创建入库明细
+        List<StockInItem> stockInItems = BeanUtil.copyToList(dto.getItems(), StockInItem.class);
         stockInItems.forEach(item -> {
             item.setInOrderCode(orderCode);
             item.setOrgId(auth.getOrgId());
             item.setInOrderId(order.getId());
         });
+
+        // 更新库存，顺便完善产品明细信息
+        List<ServerProduct> productToUpdate = getProductToUpdate(stockInItems, auth);
         stockInItemMapper.insert(stockInItems);
+        List<BatchResult> update = serverProductMapper.updateById(productToUpdate);
 
-
-
-        // 创建一个新的库存产品列表，用于存储更新后的库存数据
-        List<StockProduct> stockProductListToUpdate = new ArrayList<>();
-
-        // 将入库明细的数量累加到库存产品中
-        for (StockInItem item : stockInItems) {
-            StockProduct product = stockProductMap.get(item.getProductId());
-
-            // 如果库存产品不存在，则创建新的库存产品
-            if (product == null) {
-                stockProductListToUpdate.add(new StockProduct()
-                        .setOrgId(auth.getOrgId())
-                        .setProductId(item.getProductId())
-                        .setQuantity(0)
-                );
-            }else {
-                int currentQuantity = product.getQuantity();
-                int addQuantity = item.getQuantity();
-                stockProductListToUpdate.add(product.setQuantity(currentQuantity + addQuantity));
-                int newQuantity = product.getQuantity();
-                log.info("更新库存产品：{}，原数量：{}，新增数量：{}，新数量：{}",
-                        item.getProductName(), currentQuantity, addQuantity, newQuantity);
-            }
+        // 如果更新为空，说明没有库存变化，可能触发了乐观锁异常
+        if (update.isEmpty()) {
+            productToUpdate = getProductToUpdate(stockInItems, auth);
+            serverProductMapper.updateById(productToUpdate);
         }
-        stockProductMapper.insertOrUpdate(stockProductListToUpdate);
+
 
         // 记录入库订单创建日志
         List<StockLog> stockLogs = BeanUtil.copyToList(stockInItems, StockLog.class);
@@ -169,7 +141,7 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
         List<Long> orderIds = page.getRecords().stream().map(StockInOrder::getId).toList();
         // 查询入库明细
         List<StockInItem> stockInItems = stockInItemMapper.selectList(Wrappers.lambdaQuery(StockInItem.class)
-                .in(StockInItem::getInOrderId, orderIds));
+                .in(!orderIds.isEmpty(),StockInItem::getInOrderId, orderIds));
         Map<Long, List<StockInItem>> itemMap = stockInItems.stream()
                 .collect(Collectors.groupingBy(StockInItem::getInOrderId));
         stockInOrderVOPageDTO.getRows().forEach(stockInOrderVO -> {
@@ -190,8 +162,46 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
         List<StockInItem> stockInItems = stockInItemMapper.selectList(wrapper);
 
         StockInOrder order = this.lambdaQuery().eq(StockInOrder::getOrderCode, orderCode).one();
+        if (order == null) {
+            throw new BusinessException("入库订单不存在，订单号：" + orderCode);
+        }
         StockInOrderVO orderVO = BeanUtil.copyProperties(order, StockInOrderVO.class);
         orderVO.setItems(BeanUtil.copyToList(stockInItems, StockInItemVO.class));
         return orderVO;
+    }
+
+    /**
+     * 组装需要更新的产品列表，添加库存
+     * @param stockInItems
+     * @param auth
+     * @return
+     */
+    private List<ServerProduct> getProductToUpdate(List<StockInItem> stockInItems, AuthInfoDTO auth) {
+        List<Long> productIds = stockInItems.stream().map(StockInItem::getProductId).toList();
+        LambdaQueryWrapper<ServerProduct> productWrapper = Wrappers.lambdaQuery(ServerProduct.class)
+                .in(ServerProduct::getId, productIds)
+                .eq(ServerProduct::getOrgId, auth.getOrgId());
+        List<ServerProduct> serverProducts = serverProductMapper.selectList(productWrapper);
+        // 现有产品转换为Map，方便后续查找
+        Map<Long, ServerProduct> productMap = serverProducts.stream()
+                .collect(Collectors.toMap(ServerProduct::getId, product -> product));
+        // 创建一个新的库存产品列表，用于存储更新后的库存数据
+        List<ServerProduct> productsToUpdate = new ArrayList<>();
+        for (StockInItem item : stockInItems) {
+            ServerProduct product = productMap.get(item.getProductId());
+
+            if (product == null) {
+                throw new BusinessException("产品不存在，ID：" + item.getProductId());
+            }
+            // 更新一下产品明细
+            item.setProductCode(product.getProductEncode());
+            item.setProductName(product.getProductName());
+            item.setUnit(product.getUnit());
+
+            int newQuantity = product.getQuantity() + item.getQuantity();
+            product.setQuantity(newQuantity);
+            productsToUpdate.add(product);
+        }
+        return productsToUpdate;
     }
 }

@@ -78,9 +78,9 @@ public class StockInItemVO{
     private Integer quantity;
 
     /**
-     * 单价
+     * 入库单价
      */
-    @Schema(description = "单价", example = "10.00")
+    @Schema(description = "入库单价", example = "10.00")
     private BigDecimal price;
 
     /**

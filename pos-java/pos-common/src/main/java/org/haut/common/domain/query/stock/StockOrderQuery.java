@@ -24,12 +24,6 @@ public class StockOrderQuery {
     private String orderCode;
 
     /**
-     * 订单类型(1:入库 2:出库)
-     */
-    @Schema(description = "订单类型(1:入库 2:出库) 非日志查询情况不用传", example = "1")
-    private Integer orderType;
-
-    /**
      * 操作员
      */
     @Schema(description = "操作员", example = "admin")

@@ -103,4 +103,9 @@ public class ServerProduct {
      * 库存数量
      */
     private Integer quantity;
+
+    /**
+     * 版本号
+     */
+    private Integer version;
 }
