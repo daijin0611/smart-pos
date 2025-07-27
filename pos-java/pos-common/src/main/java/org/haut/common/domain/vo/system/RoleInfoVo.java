@@ -19,24 +19,6 @@ public class RoleInfoVo {
     private Long id;
 
     /**
-     * 创建时间
-     */
-    @Schema(description = "创建时间")
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @Schema(description = "更新时间")
-    private Date updateTime;
-
-    /**
-     * 删除状态（0 存在，1 删除）
-     */
-    @Schema(description = "删除状态")
-    private Integer isDelete;
-
-    /**
      * 角色标识
      */
     @Schema(description = "角色编码")

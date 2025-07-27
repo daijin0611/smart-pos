@@ -92,18 +92,14 @@ public class SysRoleController {
     @PostMapping("/add-user")
     @Operation(description = "批量为角色分配用户", summary = "批量分配用户")
     public JsonVO<String> addUser(@RequestBody @Validated RoleUserAddDTO dto) {
-        List<SysUserRole> userRoleList = new ArrayList<>();
-        dto.getUserIds().forEach(userId -> userRoleList.add(new SysUserRole(userId, dto.getRoleId())));
-        sysUserRoleService.saveBatch(userRoleList);
+        sysRoleService.addUserToRole(dto);
         return JsonVO.success();
     }
 
     @PostMapping("/add-permission")
     @Operation(description = "批量为角色分配权限", summary = "批量分配权限")
     public JsonVO<String> addPermission(@RequestBody @Validated RolePermissionAddDTO dto) {
-        List<SysRolePermission> rolePermissionList = new ArrayList<>();
-        dto.getPermissionIds().forEach(permissionId -> rolePermissionList.add(new SysRolePermission(dto.getRoleId(), permissionId)));
-        sysRolePermissionService.saveBatch(rolePermissionList);
+        sysRoleService.addPermToRole(dto);
         return JsonVO.success();
     }
 

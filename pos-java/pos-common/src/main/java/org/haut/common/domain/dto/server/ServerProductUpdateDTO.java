@@ -5,6 +5,11 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
 
+/**
+ *
+ * @author 丁铭瀚
+ * @version 1.0
+ */
 @Data
 @Schema(description = "服务产品更新信息对象")
 public class ServerProductUpdateDTO {
@@ -62,5 +67,8 @@ public class ServerProductUpdateDTO {
     @Max(value = 1, message = "产品状态值不合法")
     @Schema(description = "产品状态(0-启用，1-禁用)", example = "0")
     private Integer productStatus;
+
+    @Schema(description = "单位", example = "个")
+    private String unit;
 }
 

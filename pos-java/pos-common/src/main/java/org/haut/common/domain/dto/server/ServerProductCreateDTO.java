@@ -65,4 +65,7 @@ public class ServerProductCreateDTO {
     @Schema(description = "产品状态(0-启用，1-禁用)", example = "0")
     private Integer productStatus;
 
+    @Schema(description = "单位", example = "个")
+    @NotBlank
+    private String unit;
 }

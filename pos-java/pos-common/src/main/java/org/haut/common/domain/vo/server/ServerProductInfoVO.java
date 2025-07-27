@@ -53,4 +53,10 @@ public class ServerProductInfoVO {
     
     @Schema(description = "组织ID", example = "1")
     private Long orgId;
+
+    @Schema(description = "单位", example = "个")
+    private String unit;
+
+    @Schema(description = "库存", example = "100")
+    private String quantity;
 }

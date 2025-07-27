@@ -3,6 +3,9 @@ package org.haut.server.system.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.haut.common.domain.entity.system.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.haut.common.domain.vo.system.RoleInfoVo;
+
+import java.util.List;
 
 /**
 * @author daiji
@@ -12,6 +15,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUser> {
+
+    List<RoleInfoVo> queryRoleList(Long userId);
 }
 
 

@@ -5,4 +5,18 @@
 <mapper namespace="org.haut.server.system.mapper.SysUserMapper">
 
 
+    <select id="queryRoleList" resultType="org.haut.common.domain.vo.system.RoleInfoVo">
+        SELECT
+            r.id,
+            r.role_code,
+            r.role_name,
+            r.role_sort,
+            r.role_status,
+            r.remark
+        FROM sys_user_role ur
+        LEFT JOIN sys_role r ON ur.role_id = r.id
+        WHERE ur.user_id = #{userId}
+        AND r.is_delete = 0
+        AND r.role_status = 0
+    </select>
 </mapper>

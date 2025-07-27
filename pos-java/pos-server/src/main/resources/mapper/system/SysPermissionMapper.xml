@@ -30,7 +30,7 @@
         AND sp.perm_status = 0
     </select>
     <select id="queryListByUserId" resultMap="BaseResultMap" parameterType="long">
-        select *
+        select distinct sp.*
         from sys_permission sp
         left join pos.sys_role_permission srp on sp.id = srp.permission_id
         where srp.role_id in (

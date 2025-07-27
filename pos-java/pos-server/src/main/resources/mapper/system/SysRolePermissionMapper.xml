@@ -12,4 +12,7 @@
     <sql id="Base_Column_List">
         role_id,permission_id
     </sql>
+    <delete id="deleteByRoleId">
+        DELETE FROM sys_role_permission WHERE role_id = #{roleId}
+    </delete>
 </mapper>

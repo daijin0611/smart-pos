@@ -46,7 +46,10 @@
         FROM sys_user_role ur
         LEFT JOIN sys_user u ON ur.user_id = u.id
         WHERE ur.role_id = #{query.roleId}
+        AND u.is_delete = 0
+        AND u.org_id = #{orgId}
     </select>
+    <!--查询未当前角色的用户-->
     <select id="getUnAllocatedUserList" resultType="org.haut.common.domain.vo.system.UserInfoVO">
         SELECT u.id,
                u.user_code,
@@ -69,7 +72,8 @@
                u.update_time
         FROM sys_user u
                  LEFT JOIN sys_user_role ur ON ur.user_id = u.id
-        WHERE ur.role_id != #{query.roleId}
-           OR ur.role_id IS NULL
+        WHERE (ur.role_id != #{query.roleId} OR ur.role_id IS NULL)
+            AND u.is_delete = 0
+            AND u.org_id = #{orgId}
     </select>
 </mapper>

@@ -1,5 +1,6 @@
 package org.haut.server.system.mapper;
 
+import jakarta.validation.constraints.NotNull;
 import org.haut.common.domain.entity.system.SysUserRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -11,6 +12,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
+    void deleteByUserId(Long userId);
+
+    void deleteByRoleId(Long roleId);
 }
 
 

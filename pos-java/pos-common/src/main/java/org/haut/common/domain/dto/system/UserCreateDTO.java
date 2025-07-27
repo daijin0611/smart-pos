@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 丁铭瀚
@@ -47,7 +48,6 @@ public class UserCreateDTO {
     private Integer userSex;
 
     @Schema(description = "出生日期", example = "1990-01-01")
-    @PastOrPresent(message = "生日不能是未来日期")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date userBirthday;
 
@@ -55,7 +55,6 @@ public class UserCreateDTO {
     private String userDept;
 
     @Schema(description = "入职日期", example = "2020-01-01")
-    @PastOrPresent(message = "生日不能是未来日期")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date userEntryDate;
 
@@ -78,4 +77,9 @@ public class UserCreateDTO {
 
     @Schema(description = "健康证到期日", example = "2025-12-31")
     private Date userHealth;
+
+    @Schema(description = "角色id列表")
+    @NotEmpty(message = "角色列表不能为空")
+    private List<Long> roleIds;
+
 }

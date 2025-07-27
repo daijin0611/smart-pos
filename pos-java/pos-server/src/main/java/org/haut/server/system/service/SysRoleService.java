@@ -1,5 +1,7 @@
 package org.haut.server.system.service;
 
+import org.haut.common.domain.dto.system.RolePermissionAddDTO;
+import org.haut.common.domain.dto.system.RoleUserAddDTO;
 import org.haut.common.domain.query.system.AllocatedListQuery;
 import org.haut.common.domain.query.system.UnAllocatedListQuery;
 import org.haut.common.domain.vo.system.UserInfoVO;
@@ -18,4 +20,8 @@ public interface SysRoleService extends IService<SysRole> {
     List<UserInfoVO> getAllocatedUserList(AllocatedListQuery query);
 
     List<UserInfoVO> getUnAllocatedUserList(UnAllocatedListQuery query);
+
+    void addUserToRole(RoleUserAddDTO dto);
+
+    void addPermToRole(RolePermissionAddDTO dto);
 }

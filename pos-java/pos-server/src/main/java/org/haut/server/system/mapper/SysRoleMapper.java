@@ -17,9 +17,11 @@ import java.util.List;
 */
 public interface SysRoleMapper extends BaseMapper<SysRole> {
 
-    List<UserInfoVO> getAllocatedUserList(@Param("query") AllocatedListQuery query);
+    List<UserInfoVO> getAllocatedUserList(@Param("query") AllocatedListQuery query,
+                                          @Param("orgId") Long orgId);
 
-    List<UserInfoVO> getUnAllocatedUserList(@Param("query") UnAllocatedListQuery query);
+    List<UserInfoVO> getUnAllocatedUserList(@Param("query") UnAllocatedListQuery query,
+                                            @Param("orgId") Long orgId);
 }
 
 

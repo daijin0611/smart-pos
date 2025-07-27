@@ -7,8 +7,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
+import org.haut.common.domain.dto.system.UserAllocateRoleDTO;
+import org.haut.common.domain.dto.system.UserCreateDTO;
 import org.haut.common.domain.dto.system.UserDTO;
 import org.haut.common.domain.query.system.UserListQuery;
+import org.haut.common.domain.vo.system.RoleInfoVo;
+import org.haut.common.exception.BusinessException;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.UserContextHolder;
 import org.haut.common.domain.entity.system.SysRole;
 import org.haut.common.domain.entity.system.SysUser;
@@ -23,6 +30,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 /**
@@ -42,18 +51,79 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     private final BCryptPasswordEncoder encoder;
     /**
      * 查询用户列表,条件查询
-     *
+     * 当前门店
      * @param query
      * @return
      */ 
     @Override
-    public Page<SysUser> getList(UserListQuery query) {
+    public PageDTO<SysUser> getList(UserListQuery query) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
         LambdaQueryWrapper<SysUser> queryWrapper = Wrappers.lambdaQuery(SysUser.class)
                 .like(StringUtils.isNotBlank(query.getUserName()), SysUser::getUserName, query.getUserName())
                 .eq(StringUtils.isNotBlank(query.getUserStatus()), SysUser::getUserStatus, query.getUserStatus())
-                .like(StringUtils.isNotBlank(query.getUserNumber()), SysUser::getUserNumber, query.getUserNumber());
+                .like(StringUtils.isNotBlank(query.getUserNumber()), SysUser::getUserNumber, query.getUserNumber())
+                .eq(SysUser::getOrgId, auth.getOrgId());
         Page<SysUser> page = new Page<>(query.getPageNum(), query.getPageSize());
-        return sysUserMapper.selectPage(page, queryWrapper);
+        sysUserMapper.selectPage(page, queryWrapper);
+        return PageDTO.create(page);
+    }
+
+    /**
+     * 添加用户
+     * @param user
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addUser(UserCreateDTO user) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        List<Long> roleIds = user.getRoleIds();
+        if (roleIds == null || roleIds.isEmpty()) {
+            throw new BusinessException("用户必须分配至少一个角色");
+        }
+        // 创建用户
+        SysUser sysUser = BeanUtil.toBean(user, SysUser.class);
+        sysUser.setOrgId(auth.getOrgId());
+        this.save(sysUser);
+
+        // 创建用户角色关联
+        List<SysUserRole> sysUserRoles = new ArrayList<>();
+        roleIds.forEach(roleId -> {
+            SysUserRole sysUserRole = new SysUserRole()
+                    .setRoleId(roleId)
+                    .setUserId(sysUser.getId());
+            sysUserRoles.add(sysUserRole);
+        });
+        sysUserRoleMapper.insert(sysUserRoles);
+    }
+
+    /**
+     * 分配角色给用户
+     * @param dto
+     */
+    @Override
+    public void allocateRole(UserAllocateRoleDTO dto) {
+        // 校验用户是否存在
+        SysUser sysUser = sysUserMapper.selectById(dto.getUserId());
+        if (sysUser == null) {
+            throw new BusinessException("用户不存在");
+        }
+        // 删除用户原有角色
+        sysUserRoleMapper.deleteByUserId(dto.getUserId());
+
+        // 分配新角色
+        List<SysUserRole> sysUserRoles = new ArrayList<>();
+        dto.getRoleIds().forEach(roleId -> {
+            SysUserRole sysUserRole = new SysUserRole()
+                    .setRoleId(roleId)
+                    .setUserId(dto.getUserId());
+            sysUserRoles.add(sysUserRole);
+        });
+        sysUserRoleMapper.insert(sysUserRoles);
+    }
+
+    @Override
+    public List<RoleInfoVo> queryRoleList(Long userId) {
+        return sysUserMapper.queryRoleList(userId);
     }
 
 

@@ -93,4 +93,14 @@ public class ServerProduct {
      * 组织id
      */
     private Long orgId;
+
+    /**
+     * 单位
+     */
+    private String unit;
+
+    /**
+     * 库存数量
+     */
+    private Integer quantity;
 }

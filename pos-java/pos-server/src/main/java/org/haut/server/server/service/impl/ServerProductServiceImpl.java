@@ -65,6 +65,11 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
         return BeanUtil.toBean(product, ServerProductInfoVO.class);
     }
 
+    /**
+     * 添加服务产品
+     * @param product 产品信息
+     * @return 操作结果消息
+     */
     @Override
     public String addProduct(ServerProductCreateDTO product) {
         try {
@@ -78,7 +83,7 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
                            .eq(ServerProduct::getOrgId, orgId);
             long nameCount = this.count(nameQueryWrapper);
             if (nameCount > 0) {
-                return "该门店下已存在相同名称的产品";
+                throw new BusinessException("该门店下已存在相同名称的产品");
             }
             
             // 检查同一门店下是否存在相同编码的产品
@@ -87,21 +92,27 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
                              .eq(ServerProduct::getOrgId, orgId);
             long encodeCount = this.count(encodeQueryWrapper);
             if (encodeCount > 0) {
-                return "该门店下已存在相同编码的产品";
+                throw new BusinessException("该门店下已存在相同编码的产品");
             }
             
             // 设置组织ID
             ServerProduct serverProduct = BeanUtil.toBean(product, ServerProduct.class);
             serverProduct.setOrgId(orgId);
+            serverProduct.setQuantity(0);
             
             // 保存产品
             this.save(serverProduct);
             return "添加成功";
         } catch (Exception e) {
-            return e.getMessage();
+            throw new BusinessException(e.getMessage());
         }
     }
-    
+
+    /**
+     * 更新服务产品，库存不可直接更改
+     * @param product 产品信息
+     * @return 操作结果消息
+     */
     @Override
     public String updateProduct(ServerProductUpdateDTO product) {
         try {
@@ -116,7 +127,7 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
                            .ne(ServerProduct::getId, product.getId());
             long nameCount = this.count(nameQueryWrapper);
             if (nameCount > 0) {
-                return "该门店下已存在相同名称的产品";
+                throw new BusinessException("该门店下已存在相同名称的产品");
             }
             
             // 检查是否存在相同编码的其他产品
@@ -126,21 +137,37 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
                              .ne(ServerProduct::getId, product.getId());
             long encodeCount = this.count(encodeQueryWrapper);
             if (encodeCount > 0) {
-                return "该门店下已存在相同编码的产品";
+                throw new BusinessException("该门店下已存在相同编码的产品");
             }
-            
-            // 设置orgId，确保产品归属于当前门店
-            ServerProduct serverProduct = BeanUtil.toBean(product, ServerProduct.class);
-            serverProduct.setOrgId(orgId);
-            
             // 更新产品
-            this.updateById(serverProduct);
+            this.lambdaUpdate()
+                    .set(ServerProduct::getProductName, product.getProductName())
+                    .set(ServerProduct::getProductEncode, product.getProductEncode())
+                    .set(ServerProduct::getProductStatus, product.getProductStatus())
+                    .set(ServerProduct::getProductPrice, product.getProductPrice())
+                    .set(ServerProduct::getVipProductPrice, product.getVipProductPrice())
+                    .set(ServerProduct::getIsDiscount, product.getIsDiscount())
+                    .set(ServerProduct::getCommissionType, product.getCommissionType())
+                    .set(ServerProduct::getProductCommissionValue, product.getProductCommissionValue())
+                    .set(ServerProduct::getProductCommissionPrice, product.getProductCommissionPrice())
+                    .set(ServerProduct::getUnit, product.getUnit())
+                    .set(ServerProduct::getRemark, product.getRemark())
+                    .eq(ServerProduct::getId, product.getId())
+                    .eq(ServerProduct::getOrgId, orgId)
+                    .update();
+
             return "更新成功";
         } catch (Exception e) {
             return e.getMessage();
         }
     }
 
+    /**
+     * 更新产品状态
+     * @param id 产品ID
+     * @param status 产品状态
+     * @return 操作结果消息
+     */
     @Override
     public String updateProductStatus(Long id, Integer status) {
         boolean update = this.lambdaUpdate().set(ServerProduct::getProductStatus, status)

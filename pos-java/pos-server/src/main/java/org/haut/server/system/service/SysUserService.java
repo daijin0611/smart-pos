@@ -2,10 +2,16 @@ package org.haut.server.system.service;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.dto.system.UserAllocateRoleDTO;
+import org.haut.common.domain.dto.system.UserCreateDTO;
 import org.haut.common.domain.query.system.UserListQuery;
 import org.haut.common.domain.entity.system.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.haut.common.domain.vo.system.RoleInfoVo;
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+import java.util.List;
 
 /**
 * @author daiji
@@ -14,5 +20,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 */
 public interface SysUserService extends IService<SysUser> , UserDetailsService {
 
-    Page<SysUser> getList(UserListQuery query);
+    PageDTO<SysUser> getList(UserListQuery query);
+
+    void addUser(UserCreateDTO user);
+
+    void allocateRole(UserAllocateRoleDTO dto);
+
+    List<RoleInfoVo> queryRoleList(Long userId);
 }

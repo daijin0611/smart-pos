@@ -4,19 +4,26 @@ package org.haut.controller.system;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.dto.system.UserAllocateRoleDTO;
 import org.haut.common.domain.dto.system.UserCreateDTO;
 import org.haut.common.domain.dto.system.UserUpdateDTO;
 import org.haut.common.domain.query.system.UserListQuery;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.domain.vo.system.RoleInfoVo;
 import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.common.domain.entity.system.SysUser;
+import org.haut.common.exception.BusinessException;
 import org.haut.server.system.service.SysUserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/system/user")
@@ -30,7 +37,7 @@ public class SysUserController {
 
     @GetMapping("/query-list")
     @Operation(description = "获取用户列表", summary = "获取用户列表")
-    public JsonVO<Page<SysUser>> getList(UserListQuery query){
+    public JsonVO<PageDTO<SysUser>> getList(UserListQuery query){
         log.info(query.toString());
         return JsonVO.success(sysUserService.getList(query));
     }
@@ -43,26 +50,38 @@ public class SysUserController {
         return JsonVO.success(userInfoVO);
     }
 
-
-
+    @GetMapping("query-role-list")
+    @Operation(description = "获取用户角色列表", summary = "获取用户角色列表")
+    public JsonVO<List<RoleInfoVo>> queryRoleList(@RequestParam Long userId) {
+        log.info("查询用户角色列表，用户id：{}", userId);
+        List<RoleInfoVo> roleList = sysUserService.queryRoleList(userId);
+        return JsonVO.success(roleList);
+    }
 
     @PostMapping("/add-user")
     @Operation(description = "添加用户", summary = "添加用户")
     public JsonVO<String> addUser(@Validated @RequestBody UserCreateDTO user){
         if (judgeUserCodeExist(user.getUserCode())) {
-            throw new RuntimeException("用户编号"+ user.getUserCode() + "已存在");
+            throw new BusinessException("用户编号"+ user.getUserCode() + "已存在");
         }
-        sysUserService.save(BeanUtil.toBean(user,SysUser.class));
+        sysUserService.addUser(user);
         return JsonVO.success("添加成功");
     }
 
+
+    @PostMapping("/allocate-role")
+    @Operation(description = "为用户分配角色", summary = "分配角色")
+    public JsonVO<String> allocateRole(@RequestBody @Validated UserAllocateRoleDTO dto){
+        sysUserService.allocateRole(dto);
+        return JsonVO.success("分配角色成功");
+    }
 
 
     @PutMapping("/update-user")
     @Operation(description = "更新用户", summary = "更新用户")
     public JsonVO<String> updateUser(@Validated @RequestBody UserUpdateDTO user){
         if (judgeUserCodeExist(user.getUserCode())) {
-            throw new RuntimeException("用户编号"+ user.getUserCode() + "已存在");
+            throw new BusinessException("用户编号"+ user.getUserCode() + "已存在");
         }
         sysUserService.updateById(BeanUtil.toBean(user,SysUser.class));
         return JsonVO.success("更新成功");
