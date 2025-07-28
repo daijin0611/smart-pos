@@ -23,7 +23,7 @@ public class ServerProductListQuery {
      * 产品状态
      */
     @Schema(description = "产品状态（0 正常，1 停用）")
-    private Integer productStatus = 0;
+    private Integer productStatus;
 
     /**
      * 页码

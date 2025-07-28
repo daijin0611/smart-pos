@@ -27,18 +27,5 @@
         product_encode,product_price,vip_product_price,is_discount,commission_type,
         product_commission_value,product_commission_price,product_status,org_id
     </sql>
-    <select id="stockQueryPage" resultType="org.haut.common.domain.vo.stock.StockProductVO">
-        select
-            sep.*,
-            IFNULL(stp.quantity, 0) as quantity
-        from server_product sep
-        left join stock_product stp on sep.id = stp.product_id AND stp.is_delete = 0
-        where sep.is_delete = 0 AND sep.org_id = #{orgId}
-            <if test="query.productName != null and query.productName != ''">
-                AND sep.product_name like CONCAT('%', #{query.productName}, '%')
-            </if>
-            <if test="query.productCode != null and query.productCode != ''">
-                AND sep.product_encode like CONCAT('%', #{query.productCode}, '%')
-            </if>
-    </select>
+
 </mapper>

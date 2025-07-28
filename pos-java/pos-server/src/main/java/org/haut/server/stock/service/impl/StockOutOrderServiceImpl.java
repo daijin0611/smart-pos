@@ -7,23 +7,23 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.executor.BatchResult;
 import org.haut.common.constant.Const;
 import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.stock.StockOutOrderCreateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
-import org.haut.common.domain.entity.stock.StockOutItem;
-import org.haut.common.domain.entity.stock.StockOutOrder;
-import org.haut.common.domain.entity.stock.StockProduct;
-import org.haut.common.domain.entity.stock.StockLog;
+import org.haut.common.domain.entity.server.ServerProduct;
+import org.haut.common.domain.entity.stock.*;
 import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockOutItemVO;
 import org.haut.common.domain.vo.stock.StockOutOrderVO;
+import org.haut.common.enums.Status;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
+import org.haut.server.server.mapper.ServerProductMapper;
 import org.haut.server.stock.mapper.StockOutItemMapper;
-import org.haut.server.stock.mapper.StockProductMapper;
 import org.haut.server.stock.mapper.StockLogMapper;
 import org.haut.server.stock.service.StockOutOrderService;
 import org.haut.server.stock.mapper.StockOutOrderMapper;
@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * 出库订单服务实现类
@@ -53,8 +54,8 @@ import java.util.ArrayList;
 public class StockOutOrderServiceImpl extends ServiceImpl<StockOutOrderMapper, StockOutOrder>
     implements StockOutOrderService {
     private final StockOutItemMapper stockOutItemMapper;
-    private final StockProductMapper stockProductMapper;
     private final StockLogMapper stockLogMapper;
+    private final ServerProductMapper serverProductMapper;
 
     @Override
     public PageDTO<StockOutOrderVO> queryPage(StockOrderQuery query) {
@@ -68,6 +69,10 @@ public class StockOutOrderServiceImpl extends ServiceImpl<StockOutOrderMapper, S
                 .orderByDesc(StockOutOrder::getCreateTime);
         Page<StockOutOrder> page = new Page<>(query.getPageNum(), query.getPageSize());
         Page<StockOutOrder> result = this.page(page, queryWrapper);
+        if (result.getTotal() == 0) {
+            throw new BusinessException("没有找到符合条件的出库订单");
+        }
+
         PageDTO<StockOutOrderVO> stockOutOrderVOPageDTO = PageDTO.create(result, StockOutOrderVO.class);
 
         // 查询子项
@@ -124,60 +129,17 @@ public class StockOutOrderServiceImpl extends ServiceImpl<StockOutOrderMapper, S
                 .setOutOrderId(order.getId())
                 .setOrgId(auth.getOrgId())
         ).toList();
+        // 获取需要更新的产品列表
+        List<ServerProduct> productsToUpdate = getProductToUpdate(outItems, auth);
         stockOutItemMapper.insert(outItems);
+        // 更新库存
+        List<BatchResult> batchResults = serverProductMapper.updateById(productsToUpdate);
+        // 如果更新为空，说明没有库存变化，可能触发了乐观锁异常，重新获取产品信息
+        if (batchResults.isEmpty()) {
+            productsToUpdate = getProductToUpdate(outItems, auth);
+            serverProductMapper.updateById(productsToUpdate);
+        }
 
-        // 扣减库存 - 优化性能，使用Map避免嵌套循环
-        List<Long> productIds = outItems.stream().map(StockOutItem::getProductId).toList();
-        
-        // 查询当前机构下的库存产品
-        LambdaQueryWrapper<StockProduct> queryWrapper = Wrappers.lambdaQuery(StockProduct.class)
-                .eq(StockProduct::getOrgId, auth.getOrgId())
-                .in(StockProduct::getProductId, productIds);
-        List<StockProduct> stockProducts = stockProductMapper.selectList(queryWrapper);
-        
-        // 将库存产品转换为Map，提高查找效率
-        Map<Long, StockProduct> stockProductMap = new HashMap<>();
-        for (StockProduct stockProduct : stockProducts) {
-            stockProductMap.put(stockProduct.getProductId(), stockProduct);
-        }
-        
-        // 需要更新的库存产品列表
-        List<StockProduct> stockProductsToUpdate = new ArrayList<>();
-        
-        // 处理库存扣减
-        for (StockOutItem outItem : outItems) {
-            StockProduct stockProduct = stockProductMap.get(outItem.getProductId());
-
-            if (stockProduct == null) {
-                // 如果没有找到对应的库存产品，说明该商品没有库存，直接抛出异常
-                log.error("产品ID：{}，产品名称：{}，单位：{}，库存产品不存在，无法进行出库操作", outItem.getProductId(), outItem.getProductName(), outItem.getUnit());
-                throw new BusinessException("产品ID：" + outItem.getProductId() + "，产品名称：" + outItem.getProductName() + "，单位：" + outItem.getUnit() + " 库存产品不存在，无法进行出库操作");
-            }
-            
-            int currentQuantity = stockProduct.getQuantity();
-            int outQuantity = outItem.getQuantity();
-            
-            // 检查库存是否充足
-            if (currentQuantity < outQuantity) {
-                log.error("产品ID：{}，产品名称：{}，单位：{}，库存不足，当前库存：{}，出库数量：{}", 
-                        outItem.getProductId(), outItem.getProductName(), outItem.getUnit(), currentQuantity, outQuantity);
-                throw new BusinessException("产品ID：" + outItem.getProductId() + "，产品名称：" + outItem.getProductName() + "，单位：" + outItem.getUnit() + " 库存不足，当前库存：" + currentQuantity + "，出库数量：" + outQuantity);
-            }
-            
-            // 扣减库存
-            int newQuantity = currentQuantity - outQuantity;
-            stockProduct.setQuantity(newQuantity);
-            stockProductsToUpdate.add(stockProduct);
-            
-            log.info("产品ID：{}，产品名称：{}，单位：{}，扣减前库存：{}，扣减数量：{}，扣减后库存：{}", 
-                    outItem.getProductId(), outItem.getProductName(), outItem.getUnit(), currentQuantity, outQuantity, newQuantity);
-        }
-        
-        // 批量更新库存产品
-        if (!stockProductsToUpdate.isEmpty()) {
-            stockProductMapper.updateById(stockProductsToUpdate);
-        }
-        
         // 记录库存日志
         List<StockLog> stockLogs = outItems.stream().map(item -> {
             StockLog stockLog = new StockLog();
@@ -213,5 +175,46 @@ public class StockOutOrderServiceImpl extends ServiceImpl<StockOutOrderMapper, S
         StockOutOrderVO vo = BeanUtil.toBean(order, StockOutOrderVO.class);
         vo.setItems(BeanUtil.copyToList(items, StockOutItemVO.class));
         return vo;
+    }
+
+    /**
+     * 组装需要更新的产品列表，扣减库存
+     * @param stockOutItems
+     * @param auth
+     * @return
+     */
+    private List<ServerProduct> getProductToUpdate(List<StockOutItem> stockOutItems, AuthInfoDTO auth) {
+        List<Long> productIds = stockOutItems.stream().map(StockOutItem::getProductId).toList();
+        LambdaQueryWrapper<ServerProduct> productWrapper = Wrappers.lambdaQuery(ServerProduct.class)
+                .in(ServerProduct::getId, productIds)
+                .eq(ServerProduct::getOrgId, auth.getOrgId());
+        List<ServerProduct> serverProducts = serverProductMapper.selectList(productWrapper);
+        // 现有产品转换为Map，方便后续查找
+        Map<Long, ServerProduct> productMap = serverProducts.stream()
+                .collect(Collectors.toMap(ServerProduct::getId, product -> product));
+        // 创建一个新的库存产品列表，用于存储更新后的库存数据
+        List<ServerProduct> productsToUpdate = new ArrayList<>();
+        for (StockOutItem item : stockOutItems) {
+            ServerProduct product = productMap.get(item.getProductId());
+
+            if (product == null) {
+                throw new BusinessException("产品不存在，ID：" + item.getProductId());
+            }
+            if (product.getProductStatus() == Status.DISABLED.getValue()) {
+                throw new BusinessException("产品已停用，无法出库，产品ID：" + item.getProductId());
+            }
+            // 更新一下产品明细
+            item.setProductCode(product.getProductEncode());
+            item.setProductName(product.getProductName());
+            item.setUnit(product.getUnit());
+
+            int newQuantity = product.getQuantity() - item.getQuantity();
+            if (newQuantity < 0) {
+                throw new BusinessException("库存不足，产品：" + product.getProductName() + "，当前库存：" + product.getQuantity() + "，出库数量：" + item.getQuantity());
+            }
+            product.setQuantity(newQuantity);
+            productsToUpdate.add(product);
+        }
+        return productsToUpdate;
     }
 }

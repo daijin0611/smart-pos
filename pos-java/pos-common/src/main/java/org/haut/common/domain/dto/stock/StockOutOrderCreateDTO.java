@@ -63,26 +63,6 @@ public class StockOutOrderCreateDTO {
         @NotNull(message = "产品ID不能为空")
         private Long productId;
 
-        /**
-         * 产品名称
-         */
-        @Schema(description = "产品名称", example = "产品名称")
-        @NotBlank(message = "产品名称不能为空")
-        private String productName;
-
-        /**
-         * 产品编码
-         */
-        @Schema(description = "产品编码", example = "P001")
-        @NotBlank(message = "产品编码不能为空")
-        private String productCode;
-
-        /**
-         * 单位
-         */
-        @Schema(description = "单位", example = "件")
-        @NotBlank(message = "单位不能为空")
-        private String unit;
 
         /**
          * 出库数量

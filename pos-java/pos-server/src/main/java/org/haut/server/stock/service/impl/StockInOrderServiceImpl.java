@@ -16,6 +16,7 @@ import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockInItemVO;
 import org.haut.common.domain.vo.stock.StockInOrderVO;
+import org.haut.common.enums.Status;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
@@ -24,10 +25,8 @@ import org.haut.common.domain.entity.server.ServerProduct;
 import org.haut.common.domain.entity.stock.StockInItem;
 import org.haut.common.domain.entity.stock.StockInOrder;
 import org.haut.common.domain.entity.stock.StockLog;
-import org.haut.common.domain.entity.stock.StockProduct;
 import org.haut.server.stock.mapper.StockInItemMapper;
 import org.haut.server.stock.mapper.StockLogMapper;
-import org.haut.server.stock.mapper.StockProductMapper;
 import org.haut.server.stock.service.StockInOrderService;
 import org.haut.server.stock.mapper.StockInOrderMapper;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 入库订单服务实现类
@@ -57,7 +55,7 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
     implements StockInOrderService {
     private final ServerProductMapper serverProductMapper;
     private final StockInItemMapper stockInItemMapper;
-    private final StockProductMapper stockProductMapper;
+
     private final StockLogMapper stockLogMapper;
     /**
      * 添加入库订单
@@ -88,7 +86,7 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
         stockInItemMapper.insert(stockInItems);
         List<BatchResult> update = serverProductMapper.updateById(productToUpdate);
 
-        // 如果更新为空，说明没有库存变化，可能触发了乐观锁异常
+        // 如果更新为空，说明没有库存变化，可能触发了乐观锁异常，重新获取产品信息
         if (update.isEmpty()) {
             productToUpdate = getProductToUpdate(stockInItems, auth);
             serverProductMapper.updateById(productToUpdate);
@@ -192,6 +190,9 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
 
             if (product == null) {
                 throw new BusinessException("产品不存在，ID：" + item.getProductId());
+            }
+            if (product.getProductStatus() == Status.DISABLED.getValue()) {
+                throw new BusinessException("产品已停用，无法入库，产品ID：" + item.getProductId());
             }
             // 更新一下产品明细
             item.setProductCode(product.getProductEncode());
