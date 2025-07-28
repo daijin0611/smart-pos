@@ -1,12 +1,8 @@
 package org.haut.server.server.mapper;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.haut.common.domain.entity.server.ServerProduct;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.haut.common.domain.query.stock.StockProductPageQuery;
-import org.haut.common.domain.vo.stock.StockProductVO;
 
 /**
 * @author Cdh

@@ -42,11 +42,11 @@ public class ServerProductInfoVO {
     @Schema(description = "该服务产品的提成类型", example = "1")
     private Integer commissionType;
 
-    @Schema(description = "该服务产品的提成比例", example = "0.15")
-    private BigDecimal productCommissionValue;
+    @Schema(description = "提成值(固定/比例)", example = "0.15")
+    private BigDecimal commissionValue;
 
-    @Schema(description = "该服务产品的提成固定值", example = "10.00")
-    private BigDecimal productCommissionPrice;
+    @Schema(description = "提成基准(0-标准价提成，1-实收价提成)", example = "10.00")
+    private Integer commissionBase;
     
     @Schema(description = "产品状态(0-启用，1-禁用)", example = "0")
     private Integer productStatus;

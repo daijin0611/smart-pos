@@ -42,7 +42,6 @@ public class ServerItemController {
     @Operation(description = "添加服务项目", summary = "添加服务项目")
     public JsonVO<String> addServerItem(@Validated @RequestBody ServerItemListDTO item) {
         log.info(item.toString());
-//        item.setId(null);
         serverItemService.save(BeanUtil.toBean(item, ServerItem.class));
         return JsonVO.success("添加成功");
     }

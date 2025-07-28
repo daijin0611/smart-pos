@@ -7,34 +7,17 @@ import lombok.Data;
 @Schema(description = "服务产品查询对象")
 public class ServerProductListQuery {
 
-    /**
-     * 产品名称
-     */
-    @Schema(description = "产品名称")
-    private String productName;
 
     /**
-     * 产品编码
+     * 查询关键字
      */
-    @Schema(description = "产品编码")
-    private String productEncode;
+    @Schema(description = "查询关键字(编码/名称)")
+    private String keyWord;
 
     /**
      * 产品状态
      */
-    @Schema(description = "产品状态（0 正常，1 停用）")
+    @Schema(description = "产品状态（0 正常，1 停用，null 全部状态）")
     private Integer productStatus;
-
-    /**
-     * 页码
-     */
-    @Schema(description = "页码", example = "1")
-    private Integer pageNum = 1;
-
-    /**
-     * 页大小
-     */
-    @Schema(description = "页大小", example = "10")
-    private Integer pageSize = 20;
 
 }

@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 服务项目
@@ -12,6 +15,8 @@ import lombok.Data;
  */
 @TableName(value ="server_item")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ServerItem {
     /**
      * 主键

@@ -1,24 +1,42 @@
 package org.haut.server.server.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.dto.server.ServerProductCreateDTO;
 import org.haut.common.domain.dto.server.ServerProductUpdateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.server.ServerProductListQuery;
-import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.vo.server.ServerProductInfoVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.domain.entity.server.ServerProduct;
 import org.haut.server.server.service.ServerProductService;
 import org.haut.server.server.mapper.ServerProductMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Mapper(componentModel = "spring")
+interface ProductConvert {
+
+    @Mapping(source = "status", target = "productStatus")
+    ServerProductInfoVO toVo(ServerProduct serverProduct);
+
+    @Mapping(source = "productStatus", target = "status")
+    ServerProduct toEntity(ServerProductCreateDTO productCreateDTO);
+
+    @Mapping(source = "productStatus", target = "status")
+    ServerProduct toEntity(ServerProductUpdateDTO productUpdateDTO);
+
+    @Mapping(source = "status", target = "productStatus")
+    List<ServerProductInfoVO> toVoList(List<ServerProduct> serverProducts);
+}
+
 
 /**
 * @author Cdh
@@ -26,10 +44,12 @@ import org.springframework.stereotype.Service;
 * @createDate 2025-04-25 00:22:51
 */
 @Service
+@RequiredArgsConstructor
 public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, ServerProduct>
     implements ServerProductService{
 
-    @Autowired private ServerProductMapper serverProductMapper;
+    private final ServerProductMapper serverProductMapper;
+    private final ProductConvert productConvert;
 
     /**
      * 查询服务产品列表,条件查询
@@ -38,17 +58,17 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
      * @return
      */
     @Override
-    public PageDTO<ServerProductInfoVO> getList(ServerProductListQuery query) {
+    public List<ServerProductInfoVO> getList(ServerProductListQuery query) {
         // 如果查询条件中没有设置orgId，则从当前用户认证信息中获取
         AuthInfoDTO auth = AuthContextHolder.getAuth();
-        Page<ServerProduct> page = new Page<>(query.getPageNum(), query.getPageSize());
         LambdaQueryWrapper<ServerProduct> wrapper = Wrappers.lambdaQuery(ServerProduct.class)
-                .like(StringUtils.isNotBlank(query.getProductEncode()), ServerProduct::getProductEncode, query.getProductEncode())
-                .like(StringUtils.isNotBlank(query.getProductName()), ServerProduct::getProductName, query.getProductName())
-                .eq(query.getProductStatus() != null, ServerProduct::getProductStatus, query.getProductStatus())
-                .eq(auth.getOrgId() != null, ServerProduct::getOrgId, auth.getOrgId());
-
-        return PageDTO.create(this.page(page, wrapper), ServerProductInfoVO.class);
+                .and(StringUtils.isNotBlank(query.getKeyWord()),w -> w
+                        .like(ServerProduct::getProductEncode, query.getKeyWord())
+                        .or()
+                        .like(ServerProduct::getProductName, query.getKeyWord()))
+                .eq(query.getProductStatus() != null, ServerProduct::getStatus, query.getProductStatus())
+                .eq(ServerProduct::getOrgId, auth.getOrgId());
+        return productConvert.toVoList(this.list(wrapper));
     }
 
     @Override
@@ -62,7 +82,7 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
         }
         
         // 将 ServerProduct 转化为 ServerProductInfoVO
-        return BeanUtil.toBean(product, ServerProductInfoVO.class);
+        return productConvert.toVo(product);
     }
 
     /**
@@ -96,7 +116,7 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
             }
             
             // 设置组织ID
-            ServerProduct serverProduct = BeanUtil.toBean(product, ServerProduct.class);
+            ServerProduct serverProduct = productConvert.toEntity(product);
             serverProduct.setOrgId(orgId);
             serverProduct.setQuantity(0);
             
@@ -143,13 +163,13 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
             this.lambdaUpdate()
                     .set(ServerProduct::getProductName, product.getProductName())
                     .set(ServerProduct::getProductEncode, product.getProductEncode())
-                    .set(ServerProduct::getProductStatus, product.getProductStatus())
+                    .set(ServerProduct::getStatus, product.getProductStatus())
                     .set(ServerProduct::getProductPrice, product.getProductPrice())
                     .set(ServerProduct::getVipProductPrice, product.getVipProductPrice())
                     .set(ServerProduct::getIsDiscount, product.getIsDiscount())
                     .set(ServerProduct::getCommissionType, product.getCommissionType())
-                    .set(ServerProduct::getProductCommissionValue, product.getProductCommissionValue())
-                    .set(ServerProduct::getProductCommissionPrice, product.getProductCommissionPrice())
+                    .set(ServerProduct::getCommissionValue, product.getProductCommissionValue())
+                    .set(ServerProduct::getCommissionBase, product.getCommissionBase())
                     .set(ServerProduct::getUnit, product.getUnit())
                     .set(ServerProduct::getRemark, product.getRemark())
                     .eq(ServerProduct::getId, product.getId())
@@ -165,12 +185,12 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
     /**
      * 更新产品状态
      * @param id 产品ID
-     * @param status 产品状态
+     * @param status 产品状态(0-启用，1-禁用)
      * @return 操作结果消息
      */
     @Override
     public String updateProductStatus(Long id, Integer status) {
-        boolean update = this.lambdaUpdate().set(ServerProduct::getProductStatus, status)
+        boolean update = this.lambdaUpdate().set(ServerProduct::getStatus, status)
                 .eq(ServerProduct::getId, id)
                 .update();
         return update ? "更新成功" : "更新失败";

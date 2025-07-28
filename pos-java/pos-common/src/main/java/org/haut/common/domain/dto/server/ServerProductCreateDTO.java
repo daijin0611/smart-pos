@@ -50,14 +50,11 @@ public class ServerProductCreateDTO {
     private Integer commissionType;
 
 
-    @DecimalMin(value = "0.00", message = "提成比例不能小于0")
-    @DecimalMax(value = "1.00", message = "提成比例不能大于1")
-    @Schema(description = "提成比例值", example = "0.15")
+    @Schema(description = "提成值(固定提成时为固定金额，比例提成时为比例)", example = "0.15")
     private BigDecimal productCommissionValue;
 
-    @DecimalMin(value = "0.00", message = "提成价格不能小于0")
-    @Schema(description = "固定提成价格", example = "10.00")
-    private BigDecimal productCommissionPrice;
+    @Schema(description = "提成基准(0-标准价提成，1-实收价提成)", example = "0")
+    private Integer commissionBase;
 
     @NotNull(message = "产品状态不能为空")
     @Min(value = 0, message = "产品状态值不合法")

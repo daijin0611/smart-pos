@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.exception.BusinessException;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/server/product")
 @Tag(name = "服务产品管理", description = "服务产品管理")
@@ -27,7 +29,7 @@ public class ServerProductController {
 
     @GetMapping("/query-list")
     @Operation(description = "获取服务产品列表", summary = "获取服务产品列表")
-    public JsonVO<PageDTO<ServerProductInfoVO>> getList(ServerProductListQuery query){
+    public JsonVO<List<ServerProductInfoVO>> getList(ServerProductListQuery query){
         log.info(query.toString());
         // 调用服务层方法获取列表
         return JsonVO.success(serverProductService.getList(query));

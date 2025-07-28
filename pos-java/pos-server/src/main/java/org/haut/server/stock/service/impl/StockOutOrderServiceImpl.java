@@ -200,7 +200,7 @@ public class StockOutOrderServiceImpl extends ServiceImpl<StockOutOrderMapper, S
             if (product == null) {
                 throw new BusinessException("产品不存在，ID：" + item.getProductId());
             }
-            if (product.getProductStatus() == Status.DISABLED.getValue()) {
+            if (product.getStatus() == Status.DISABLED.getValue()) {
                 throw new BusinessException("产品已停用，无法出库，产品ID：" + item.getProductId());
             }
             // 更新一下产品明细

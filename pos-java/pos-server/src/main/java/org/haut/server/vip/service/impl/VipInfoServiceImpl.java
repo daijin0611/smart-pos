@@ -45,9 +45,9 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         // 条件查询
         if (query.getQueryField() != null) {
             queryWrapper
-            .like(query.getQueryField().matches("^\\d+$"),VipInfo::getInfoPhoneNumber, query.getQueryField())
-            .like(query.getQueryField().matches("^[\\u4e00-\\u9fa5a-zA-Z]+$"),VipInfo::getInfoName, query.getQueryField())
-            .like(query.getQueryField().matches("^[\\u4e00-\\u9fa5a-zA-Z0-9]+$"),VipInfo::getInfoCardNumber, query.getQueryField());
+            .like(VipInfo::getInfoPhoneNumber, query.getQueryField()).or()
+            .like(VipInfo::getInfoName, query.getQueryField()).or()
+            .like(VipInfo::getInfoCardNumber, query.getQueryField());
         }
         //查询数据库
         List<VipInfo> vipInfos = vipInfoMapper.selectList(queryWrapper);

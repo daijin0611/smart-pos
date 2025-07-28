@@ -3,10 +3,11 @@ package org.haut.server.server.service;
 import org.haut.common.domain.dto.server.ServerProductCreateDTO;
 import org.haut.common.domain.dto.server.ServerProductUpdateDTO;
 import org.haut.common.domain.query.server.ServerProductListQuery;
-import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.vo.server.ServerProductInfoVO;
 import org.haut.common.domain.entity.server.ServerProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author Cdh
@@ -17,10 +18,11 @@ public interface ServerProductService extends IService<ServerProduct> {
 
     /**
      * 获取服务产品列表
+     *
      * @param query 查询条件
      * @return 服务产品列表
      */
-    PageDTO<ServerProductInfoVO> getList(ServerProductListQuery query);
+    List<ServerProductInfoVO> getList(ServerProductListQuery query);
 
     /**
      * 根据ID获取服务产品详情

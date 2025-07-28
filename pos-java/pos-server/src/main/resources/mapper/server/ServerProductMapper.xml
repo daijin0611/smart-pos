@@ -16,16 +16,19 @@
             <result property="vipProductPrice" column="vip_product_price" />
             <result property="isDiscount" column="is_discount" />
             <result property="commissionType" column="commission_type" />
-            <result property="productCommissionValue" column="product_commission_value" />
-            <result property="productCommissionPrice" column="product_commission_price" />
-            <result property="productStatus" column="product_status" />
+            <result property="commissionValue" column="commission_value" />
+            <result property="commissionBase" column="commission_base" />
+            <result property="status" column="status" />
             <result property="orgId" column="org_id" />
+            <result property="unit" column="unit" />
+            <result property="quantity" column="quantity" />
+            <result property="version" column="version" />
     </resultMap>
 
     <sql id="Base_Column_List">
         id,create_time,update_time,is_delete,remark,product_name,
         product_encode,product_price,vip_product_price,is_discount,commission_type,
-        product_commission_value,product_commission_price,product_status,org_id
+        commission_value,commission_base,status,org_id,unit,quantity,version
     </sql>
 
 </mapper>
