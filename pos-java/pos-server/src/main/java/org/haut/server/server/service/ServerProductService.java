@@ -46,5 +46,11 @@ public interface ServerProductService extends IService<ServerProduct> {
      */
     String updateProduct(ServerProductUpdateDTO product);
 
+    /**
+     * 更新服务产品状态
+     * @param id 产品ID
+     * @param status 状态
+     * @return 操作结果消息
+     */
     String updateProductStatus(Long id, Integer status);
 }

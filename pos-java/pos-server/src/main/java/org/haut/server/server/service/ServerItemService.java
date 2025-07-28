@@ -1,9 +1,10 @@
 package org.haut.server.server.service;
 
-import org.haut.common.domain.dto.server.ServerItemListDTO;
-import org.haut.common.domain.query.server.ServerItemListQuery;
+import org.haut.common.domain.dto.server.ServerItemCreateDTO;
+import org.haut.common.domain.query.server.ServerItemQuery;
 import org.haut.common.domain.entity.server.ServerItem;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.haut.common.domain.vo.server.ServerItemVO;
 
 import java.util.List;
 
@@ -14,5 +15,9 @@ import java.util.List;
 */
 public interface ServerItemService extends IService<ServerItem> {
 
-    List<ServerItemListDTO> getList(ServerItemListQuery query);
+    List<ServerItemVO> getList(ServerItemQuery query);
+
+    ServerItemVO queryById(Long id);
+
+    void addServerItem(ServerItemCreateDTO item);
 }

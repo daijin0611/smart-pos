@@ -53,7 +53,7 @@ public class ServerProductUpdateDTO {
     private Integer commissionType;
 
     @Schema(description = "提成值(固定提成时为固定金额，比例提成时为比例)", example = "0.15")
-    private BigDecimal productCommissionValue;
+    private BigDecimal commissionValue;
 
     @Schema(description = "提成基准(0-标准价提成，1-实收价提成)", example = "0")
     private Integer commissionBase;

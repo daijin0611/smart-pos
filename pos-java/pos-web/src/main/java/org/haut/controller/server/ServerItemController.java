@@ -4,11 +4,12 @@ import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.haut.common.domain.dto.server.ServerItemInfoDTO;
-import org.haut.common.domain.dto.server.ServerItemListDTO;
-import org.haut.common.domain.query.server.ServerItemListQuery;
+import org.haut.common.domain.dto.server.ServerItemCreateDTO;
+import org.haut.common.domain.dto.server.ServerItemUpdateDTO;
+import org.haut.common.domain.query.server.ServerItemQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.entity.server.ServerItem;
+import org.haut.common.domain.vo.server.ServerItemVO;
 import org.haut.server.server.service.ServerItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -26,29 +27,27 @@ public class ServerItemController {
 
     @GetMapping("/query-list")
     @Operation(description = "获取服务项目列表", summary = "获取服务项目列表")
-    public JsonVO<List<ServerItemListDTO>> getList(ServerItemListQuery query) {
+    public JsonVO<List<ServerItemVO>> getList(ServerItemQuery query) {
         log.info(query.toString());
         return JsonVO.success(serverItemService.getList(query));
     }
 
     @GetMapping("/query-info")
     @Operation(description = "获取服务项目详细信息", summary = "获取服务项目详细信息")
-    public JsonVO<ServerItemInfoDTO> getServerItemById(@RequestParam Long id) {
+    public JsonVO<ServerItemVO> getServerItemById(@RequestParam Long id) {
         log.info("服务项目id：{}", id);
-        ServerItemInfoDTO serverItemInfoDTO = BeanUtil.toBean(serverItemService.getById(id), ServerItemInfoDTO.class);
-        return JsonVO.success(serverItemInfoDTO);
+        return JsonVO.success(serverItemService.queryById(id));
     }
     @PostMapping("/add-item")
     @Operation(description = "添加服务项目", summary = "添加服务项目")
-    public JsonVO<String> addServerItem(@Validated @RequestBody ServerItemListDTO item) {
-        log.info(item.toString());
-        serverItemService.save(BeanUtil.toBean(item, ServerItem.class));
+    public JsonVO<String> addServerItem(@Validated @RequestBody ServerItemCreateDTO item) {
+        serverItemService.addServerItem(item);
         return JsonVO.success("添加成功");
     }
 
     @PutMapping("/update-item")
     @Operation(description = "更新服务项目", summary = "更新服务项目")
-    public JsonVO<String> updateServerItem(@Validated @RequestBody ServerItemListDTO item) {
+    public JsonVO<String> updateServerItem(@Validated @RequestBody ServerItemUpdateDTO item) {
         log.info(item.toString());
         serverItemService.updateById(BeanUtil.toBean(item, ServerItem.class));
         return JsonVO.success("更新成功");

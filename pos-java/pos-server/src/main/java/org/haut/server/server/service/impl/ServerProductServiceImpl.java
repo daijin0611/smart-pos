@@ -168,7 +168,7 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
                     .set(ServerProduct::getVipProductPrice, product.getVipProductPrice())
                     .set(ServerProduct::getIsDiscount, product.getIsDiscount())
                     .set(ServerProduct::getCommissionType, product.getCommissionType())
-                    .set(ServerProduct::getCommissionValue, product.getProductCommissionValue())
+                    .set(ServerProduct::getCommissionValue, product.getCommissionValue())
                     .set(ServerProduct::getCommissionBase, product.getCommissionBase())
                     .set(ServerProduct::getUnit, product.getUnit())
                     .set(ServerProduct::getRemark, product.getRemark())
