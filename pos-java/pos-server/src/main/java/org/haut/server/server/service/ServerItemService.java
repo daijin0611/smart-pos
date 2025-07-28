@@ -1,6 +1,7 @@
 package org.haut.server.server.service;
 
 import org.haut.common.domain.dto.server.ServerItemCreateDTO;
+import org.haut.common.domain.dto.server.ServerItemUpdateDTO;
 import org.haut.common.domain.query.server.ServerItemQuery;
 import org.haut.common.domain.entity.server.ServerItem;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -20,4 +21,6 @@ public interface ServerItemService extends IService<ServerItem> {
     ServerItemVO queryById(Long id);
 
     void addServerItem(ServerItemCreateDTO item);
+
+    void updateServerItem(ServerItemUpdateDTO item);
 }

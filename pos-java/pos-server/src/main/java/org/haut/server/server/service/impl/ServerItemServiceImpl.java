@@ -40,6 +40,12 @@ public class ServerItemServiceImpl extends ServiceImpl<ServerItemMapper, ServerI
         implements ServerItemService {
     private final ServerItemConvert serverItemConvert;
 
+    /**
+     * 查询服务项目列表
+     *
+     * @param query 查询条件
+     * @return 服务项目列表
+     */
     @Override
     public List<ServerItemVO> getList(ServerItemQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
@@ -58,13 +64,43 @@ public class ServerItemServiceImpl extends ServiceImpl<ServerItemMapper, ServerI
         return serverItemConvert.toVOList(serverItems);
     }
 
+    /**
+     * 根据ID查询服务项目
+     * @param id
+     * @return
+     */
     @Override
     public ServerItemVO queryById(Long id) {
         return serverItemConvert.toVO(this.getById(id));
     }
 
+    /**
+     * 添加服务项目
+     * @param item
+     */
     @Override
     public void addServerItem(ServerItemCreateDTO item) {
+        ServerItem entity = toEntity(item);
+        this.save(entity);
+    }
+
+    /**
+     * 更新服务项目
+     * @param item
+     */
+    @Override
+    public void updateServerItem(ServerItemUpdateDTO item) {
+        ServerItem entity = toEntity(item);
+        this.updateById(entity);
+    }
+
+    /**
+     * 将 ServerItemCreateDTO 转换为 ServerItem 实体
+     * 并进行必要的校验
+     * @param item
+     * @return
+     */
+    private ServerItem toEntity(ServerItemCreateDTO item) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
 
         // 校验服务项目编码是否已存在
@@ -83,6 +119,7 @@ public class ServerItemServiceImpl extends ServiceImpl<ServerItemMapper, ServerI
 
         ServerItem entity = serverItemConvert.toEntity(item);
         entity.setOrgId(auth.getOrgId());
-        this.save(entity);
+        return entity;
     }
+
 }

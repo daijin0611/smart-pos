@@ -49,7 +49,17 @@ public class ServerItemController {
     @Operation(description = "更新服务项目", summary = "更新服务项目")
     public JsonVO<String> updateServerItem(@Validated @RequestBody ServerItemUpdateDTO item) {
         log.info(item.toString());
-        serverItemService.updateById(BeanUtil.toBean(item, ServerItem.class));
+        serverItemService.updateServerItem(item);
+        return JsonVO.success("更新成功");
+    }
+
+    @PutMapping("/update-status")
+    @Operation(description = "更新服务项目状态", summary = "更新服务项目状态")
+    public JsonVO<String> updateStatus(@RequestParam Long id, @RequestParam Integer status) {
+        log.info("更新服务项目状态，id: {}, status: {}", id, status);
+        serverItemService.lambdaUpdate().set(ServerItem::getItemStatus, status)
+                .eq(ServerItem::getId, id)
+                .update();
         return JsonVO.success("更新成功");
     }
 
