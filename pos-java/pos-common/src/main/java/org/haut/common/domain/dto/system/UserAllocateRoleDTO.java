@@ -16,6 +16,6 @@ public class UserAllocateRoleDTO {
     @Schema(description = "用户ID")
     private Long userId;
 
-    @Schema(description = "角色ID列表")
-    private List<Long> roleIds;
+    @Schema(description = "角色ID")
+    private Long roleId;
 }

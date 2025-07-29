@@ -21,14 +21,6 @@ public class UserInfoVO {
     @Schema(description = "员工ID", example = "1")
     private Long id;
 
-    @Schema(description = "创建时间", example = "2020-01-01 00:00:00")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
-
-    @Schema(description = "更新时间", example = "2020-01-01 00:00:00")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateTime;
-
     @Schema(description = "员工编号", example = "EMP001")
     private String userCode;//
 
@@ -79,5 +71,8 @@ public class UserInfoVO {
 
     @Schema(description = "组织机构id")
     private Long orgId;
+
+    @Schema(description = "角色信息")
+    private RoleInfoVo role;
 
 }

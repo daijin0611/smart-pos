@@ -14,6 +14,7 @@ import org.haut.common.domain.dto.system.UserCreateDTO;
 import org.haut.common.domain.dto.system.UserDTO;
 import org.haut.common.domain.query.system.UserListQuery;
 import org.haut.common.domain.vo.system.RoleInfoVo;
+import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.UserContextHolder;
@@ -52,19 +53,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     /**
      * 查询用户列表,条件查询
      * 当前门店
+     *
      * @param query
      * @return
      */ 
     @Override
-    public PageDTO<SysUser> getList(UserListQuery query) {
+    public PageDTO<UserInfoVO> getList(UserListQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
-        LambdaQueryWrapper<SysUser> queryWrapper = Wrappers.lambdaQuery(SysUser.class)
-                .like(StringUtils.isNotBlank(query.getUserName()), SysUser::getUserName, query.getUserName())
-                .eq(StringUtils.isNotBlank(query.getUserStatus()), SysUser::getUserStatus, query.getUserStatus())
-                .like(StringUtils.isNotBlank(query.getUserNumber()), SysUser::getUserNumber, query.getUserNumber())
-                .eq(SysUser::getOrgId, auth.getOrgId());
-        Page<SysUser> page = new Page<>(query.getPageNum(), query.getPageSize());
-        sysUserMapper.selectPage(page, queryWrapper);
+        Page<UserInfoVO> page = new Page<>();
+        page.setCurrent(query.getPageNum());
+        page.setSize(query.getPageSize());
+        sysUserMapper.getList(page,query, auth.getOrgId());
         return PageDTO.create(page);
     }
 
@@ -76,24 +75,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     @Transactional(rollbackFor = Exception.class)
     public void addUser(UserCreateDTO user) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
-        List<Long> roleIds = user.getRoleIds();
-        if (roleIds == null || roleIds.isEmpty()) {
-            throw new BusinessException("用户必须分配至少一个角色");
+        Long roleId = user.getRoleId();
+        if (roleId == null) {
+            throw new BusinessException("用户必须分配一个角色");
         }
         // 创建用户
         SysUser sysUser = BeanUtil.toBean(user, SysUser.class);
         sysUser.setOrgId(auth.getOrgId());
         this.save(sysUser);
-
-        // 创建用户角色关联
-        List<SysUserRole> sysUserRoles = new ArrayList<>();
-        roleIds.forEach(roleId -> {
-            SysUserRole sysUserRole = new SysUserRole()
-                    .setRoleId(roleId)
-                    .setUserId(sysUser.getId());
-            sysUserRoles.add(sysUserRole);
-        });
-        sysUserRoleMapper.insert(sysUserRoles);
     }
 
     /**
@@ -102,28 +91,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
      */
     @Override
     public void allocateRole(UserAllocateRoleDTO dto) {
-        // 校验用户是否存在
-        SysUser sysUser = sysUserMapper.selectById(dto.getUserId());
-        if (sysUser == null) {
-            throw new BusinessException("用户不存在");
-        }
-        // 删除用户原有角色
-        sysUserRoleMapper.deleteByUserId(dto.getUserId());
-
-        // 分配新角色
-        List<SysUserRole> sysUserRoles = new ArrayList<>();
-        dto.getRoleIds().forEach(roleId -> {
-            SysUserRole sysUserRole = new SysUserRole()
-                    .setRoleId(roleId)
-                    .setUserId(dto.getUserId());
-            sysUserRoles.add(sysUserRole);
-        });
-        sysUserRoleMapper.insert(sysUserRoles);
+        this.lambdaUpdate().set(SysUser::getRoleId, dto.getRoleId())
+                .eq(SysUser::getId, dto.getUserId())
+                .update();
     }
 
     @Override
     public List<RoleInfoVo> queryRoleList(Long userId) {
         return sysUserMapper.queryRoleList(userId);
+    }
+
+    @Override
+    public UserInfoVO queryOne(Long id) {
+        SysUser user = this.getById(id);
+        SysRole sysRole = sysRoleMapper.selectById(user.getRoleId());
+        RoleInfoVo roleInfoVo = BeanUtil.toBean(sysRole, RoleInfoVo.class);
+        UserInfoVO userInfoVO = BeanUtil.toBean(user, UserInfoVO.class);
+        userInfoVO.setRole(roleInfoVo);
+        return userInfoVO;
     }
 
 

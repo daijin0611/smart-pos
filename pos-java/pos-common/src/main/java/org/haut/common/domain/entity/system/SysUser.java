@@ -122,4 +122,9 @@ public class SysUser {
      * 组织代码
      */
     private Long orgId;
+
+    /**
+     * 角色id
+     */
+    private Long roleId;
 }

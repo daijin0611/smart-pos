@@ -78,8 +78,8 @@ public class UserCreateDTO {
     @Schema(description = "健康证到期日", example = "2025-12-31")
     private Date userHealth;
 
-    @Schema(description = "角色id列表")
-    @NotEmpty(message = "角色列表不能为空")
-    private List<Long> roleIds;
+    @Schema(description = "角色id")
+    @NotNull(message = "角色不能为空")
+    private Long roleId;
 
 }
