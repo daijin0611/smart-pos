@@ -68,5 +68,18 @@ public class SysDictController {
         return JsonVO.success();
     }
 
-    
+    @PutMapping("/delete-item")
+    @Operation(summary = "删除字典项", description = "根据字典项ID删除字典项")
+    public JsonVO<Void> deleteDictItem(@RequestParam Long itemId) {
+        sysDictItemService.removeById(itemId);
+        return JsonVO.success();
+    }
+
+    @PutMapping("/delete-type")
+    @Operation(summary = "删除字典类型", description = "根据字典类型ID删除字典类型")
+    public JsonVO<Void> deleteDictType(@RequestParam Long dictTypeId) {
+        sysDictTypeService.removeById(dictTypeId);
+        return JsonVO.success();
+    }
+
 }
