@@ -8,43 +8,21 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * @author 丁铭瀚
+ * @version 1.0
+ */
 @Data
-@Schema(description = "充值提成规则列表对象")
-public class RechaegeRoleListDTO {
-    /**
-     * 主键
-     */
-    @Schema(description = "充值提成规则ID", example = "1")
-    @TableId(type = IdType.AUTO)
-    @NotNull(message = "ID不能为空")
-    private Long id;
+@Schema(description = "充值提成规则创建对象")
+@Accessors(chain = true)
+public class RechargeRoleCreateDTO {
 
-    /**
-     * 创建时间
-     */
-    @Schema(description = "创建时间")
-    @PastOrPresent(message = "创建时间不能是未来日期")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @Schema(description = "更新时间")
-    @PastOrPresent(message = "更新时间不能是未来日期")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date updateTime;
-
-    /**
-     * 删除状态(0 存在，1 删除)
-     */
-    @Schema(description = "删除状态(0 存在，1 删除)")
-    private Integer isDelete;
 
     /**
      * 备注（其他描述）

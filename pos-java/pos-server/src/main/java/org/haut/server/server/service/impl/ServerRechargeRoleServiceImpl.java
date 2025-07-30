@@ -4,9 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.haut.common.domain.dto.server.RechaegeRoleListDTO;
+
 import org.haut.common.domain.query.server.ServerRechaegeRoleListQuery;
 import org.haut.common.domain.entity.server.ServerRechargeRole;
+import org.haut.common.domain.vo.server.RechargeRoleVO;
 import org.haut.server.server.service.ServerRechargeRoleService;
 import org.haut.server.server.mapper.ServerRechargeRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,13 @@ public class ServerRechargeRoleServiceImpl extends ServiceImpl<ServerRechargeRol
      * @return
      */
     @Override
-    public List<RechaegeRoleListDTO> getList(ServerRechaegeRoleListQuery query) {
+    public List<RechargeRoleVO> getList(ServerRechaegeRoleListQuery query) {
         //构建条件查询器，当充值提成规则名称不为空时，进行查询
         QueryWrapper<ServerRechargeRole> queryWrapper = new QueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(query.getRechargeRoleName()),"recharge_role_name",query.getRechargeRoleName());
         //查询数据库
         List<ServerRechargeRole> serverRechargeRoles = serverRechargeRoleMapper.selectList(queryWrapper);
-        return BeanUtil.copyToList(serverRechargeRoles, RechaegeRoleListDTO.class);
+        return BeanUtil.copyToList(serverRechargeRoles, RechargeRoleVO.class);
     }
 
 

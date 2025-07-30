@@ -1,9 +1,10 @@
 package org.haut.server.server.service;
 
-import org.haut.common.domain.dto.server.RechaegeRoleListDTO;
+
 import org.haut.common.domain.query.server.ServerRechaegeRoleListQuery;
 import org.haut.common.domain.entity.server.ServerRechargeRole;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.haut.common.domain.vo.server.RechargeRoleVO;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ import java.util.List;
 */
 public interface ServerRechargeRoleService extends IService<ServerRechargeRole> {
 
-    List<RechaegeRoleListDTO> getList(ServerRechaegeRoleListQuery query);
+    List<RechargeRoleVO> getList(ServerRechaegeRoleListQuery query);
 }
