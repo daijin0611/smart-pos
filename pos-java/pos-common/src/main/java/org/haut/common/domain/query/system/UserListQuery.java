@@ -25,6 +25,12 @@ public class UserListQuery {
     private String userStatus;
 
     /**
+     * 角色id
+     */
+    @Schema(description = "角色id")
+    private Long roleId;
+
+    /**
      * 分页页码
      */
     @Schema(description = "分页页码")

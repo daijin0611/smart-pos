@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -60,9 +62,14 @@ public class SysUserController {
      */
     @GetMapping("/query-info")
     @Operation(description = "根据用户id查询详细信息", summary = "根据用户id查询详细信息")
-    public JsonVO<UserInfoVO> getUserById(@RequestParam Long id){
+    @Parameters(value = {
+            @Parameter(name = "id", description = "用户id"),
+            @Parameter(name = "userNumber", description = "用户电话号", required = true)
+    })
+    public JsonVO<UserInfoVO> getUserById(@RequestParam(required = false, value = "id") Long id,
+                                          @RequestParam(required = false, value = "userNumber") String userNumber){
         log.info("用户id：{}",id);
-        return JsonVO.success(sysUserService.queryOne(id));
+        return JsonVO.success(sysUserService.queryOne(id, userNumber));
     }
 
     /**

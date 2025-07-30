@@ -86,5 +86,8 @@
             <if test="query.userStatus != null and query.userStatus != ''">
                 AND u.user_status = #{query.userStatus}
             </if>
+            <if test="query.roleId != null">
+                AND u.role_id = #{query.roleId}
+            </if>
     </select>
 </mapper>

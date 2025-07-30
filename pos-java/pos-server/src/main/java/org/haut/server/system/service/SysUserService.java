@@ -28,5 +28,5 @@ public interface SysUserService extends IService<SysUser> , UserDetailsService {
 
     List<RoleInfoVo> queryRoleList(Long userId);
 
-    UserInfoVO queryOne(Long id);
+    UserInfoVO queryOne(Long id, String userNumber);
 }

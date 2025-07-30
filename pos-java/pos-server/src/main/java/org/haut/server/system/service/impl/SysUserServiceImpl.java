@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.system.UserAllocateRoleDTO;
@@ -102,8 +101,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     }
 
     @Override
-    public UserInfoVO queryOne(Long id) {
-        SysUser user = this.getById(id);
+    public UserInfoVO queryOne(Long id, String userNumber) {
+        LambdaQueryWrapper<SysUser> queryWrapper = Wrappers.lambdaQuery(SysUser.class)
+                .eq(id != null, SysUser::getId, id)
+                .eq(userNumber != null, SysUser::getUserNumber, userNumber);
+        SysUser user = this.getOne(queryWrapper);
+        if (user == null){
+            throw new BusinessException("用户不存在");
+        }
         SysRole sysRole = sysRoleMapper.selectById(user.getRoleId());
         RoleInfoVo roleInfoVo = BeanUtil.toBean(sysRole, RoleInfoVo.class);
         UserInfoVO userInfoVO = BeanUtil.toBean(user, UserInfoVO.class);

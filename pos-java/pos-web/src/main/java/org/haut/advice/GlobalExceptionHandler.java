@@ -6,6 +6,7 @@ import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.exception.BusinessException;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.validation.FieldError;
@@ -60,5 +61,11 @@ public class GlobalExceptionHandler {
     public JsonVO<String> handleBusinessException(BusinessException ex) {
         log.error(ex.getMessage(), ex);
         return JsonVO.fail(ex.getMessage());
+    }
+
+    @ExceptionHandler(MissingRequestValueException.class)
+    public JsonVO<String> handleMissingRequestValueException(MissingRequestValueException ex) {
+        log.error(ex.getMessage(), ex);
+        return JsonVO.fail("缺少必填参数");
     }
 }
