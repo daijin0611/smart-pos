@@ -78,4 +78,11 @@ public class SysPermissionController {
         return JsonVO.success();
     }
 
+    @PutMapping("/delete-permission")
+    @Operation(description = "删除权限", summary = "删除权限")
+    public JsonVO<String> deletePermission(@RequestParam("id") Long id){
+        sysPermissionService.removeById(id);
+        return JsonVO.success();
+    }
+
 }
