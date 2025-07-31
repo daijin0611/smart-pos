@@ -1,12 +1,13 @@
 package org.haut.server.vip.service;
 
+import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.dto.vip.VipCreateDTO;
 import org.haut.common.domain.dto.vip.VipInfoDTO;
-import org.haut.common.domain.dto.vip.VipListDTO;
+import org.haut.common.domain.dto.vip.VipUpdateDTO;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.common.domain.entity.vip.VipInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
+import org.haut.common.domain.vo.vip.VipInfoVO;
 
 /**
 * @author tinwf
@@ -16,7 +17,7 @@ import java.util.List;
 public interface VipInfoService extends IService<VipInfo> {
 
     // 获取会员列表的接口
-    List<VipListDTO> getList(VipListQuery query);
+    PageDTO<VipInfoVO> getList(VipListQuery query);
 
     /**
      *根据会员ID查询详细信息（含资产余额）
@@ -24,4 +25,7 @@ public interface VipInfoService extends IService<VipInfo> {
     VipInfoDTO getVipById(Long id);
 
 
+    void addVip(VipCreateDTO dto);
+
+    void updateVip(VipUpdateDTO vip);
 }

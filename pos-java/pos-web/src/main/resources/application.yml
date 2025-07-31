@@ -27,7 +27,7 @@ spring:
 
   jackson:
     time-zone: GMT+8  # 设置 Jackson 的时区为 GMT+8
-    date-format: yyyy-MM-dd  # 设置 Jackson 的日期格式
+    date-format: yyyy-MM-dd HH:mm:ss # 设置 Jackson 的日期格式
 
   datasource: # 数据源配置
     type: com.alibaba.druid.pool.DruidDataSource

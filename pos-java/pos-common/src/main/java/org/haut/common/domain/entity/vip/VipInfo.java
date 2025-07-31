@@ -2,6 +2,7 @@ package org.haut.common.domain.entity.vip;
 
 import com.baomidou.mybatisplus.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 
@@ -43,57 +44,60 @@ public class VipInfo {
     /**
      * 姓名
      */
-    private String infoName;
-
-    /**
-     * 会员密码
-     */
-    private String infoPwd;
+    private String name;
 
     /**
      * 性别（0 男，1 女）
      */
-    private Integer infoGender;
+    private Integer gender;
 
     /**
      * 会员卡号
      */
-    private String infoCardNumber;
+    private String cardNumber;
 
     /**
      * 电话号码
      */
-    private String infoPhoneNumber;
-
-    /**
-     * 会员身份
-     */
-    private String infoIdentity;
-
-    /**
-     * 会员生日
-     */
-    private Date infoBirthday;
-
-    /**
-     * 会员地址
-     */
-    private String infoAddress;
+    private String phoneNumber;
 
     /**
      * 末次消费日期
      */
-    private Date infoLastConsumptionTime;
+    private Date lastConsumptionTime;
 
     /**
-     * 末次充值日期
+     * 末次充值时间
      */
-    private Date infoLastRechargeTime;
+    private Date lastRechargeTime;
 
     /**
-     * 结构id
+     * 会员身份
+     */
+    private Integer identity;
+
+    /**
+     * 店内总余额
+     */
+    private BigDecimal balance;
+
+    /**
+     * 会员生日
+     */
+    private Date birthday;
+
+    /**
+     * 会员地址
+     */
+    private String address;
+
+    /**
+     * 会员密码
+     */
+    private String pwd;
+
+    /**
+     * 
      */
     private Long orgId;
-
 }
-

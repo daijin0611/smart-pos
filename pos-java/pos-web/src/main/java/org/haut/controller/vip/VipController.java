@@ -4,12 +4,15 @@ import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.vip.VipCreateDTO;
 import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipListDTO;
+import org.haut.common.domain.dto.vip.VipUpdateDTO;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.entity.vip.VipInfo;
+import org.haut.common.domain.vo.vip.VipInfoVO;
 import org.haut.server.vip.service.VipInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -27,8 +30,8 @@ public class VipController {
     private VipInfoService vipInfoService;
 
     @GetMapping("/query-list")
-    @Operation(description = "获取会员列表", summary = "获取会员列表")
-    public JsonVO<List<VipListDTO>> getList(VipListQuery query) {
+    @Operation(description = "获取会员列表（分页+条件）", summary = "获取会员列表")
+    public JsonVO<PageDTO<VipInfoVO>> getList(VipListQuery query) {
         log.info(query.toString());
         return JsonVO.success(vipInfoService.getList(query));
     }
@@ -45,14 +48,14 @@ public class VipController {
     @PostMapping("/add-vip")
     @Operation(description = "添加会员", summary = "添加会员")
     public JsonVO<String> addVip(@Validated @RequestBody VipCreateDTO dto) {
-        vipInfoService.save(BeanUtil.toBean(dto, VipInfo.class));
+        vipInfoService.addVip(dto);
         return JsonVO.success("添加成功");
     }
 
     @PutMapping("/update-vip")
     @Operation(description = "更新会员", summary = "更新会员")
-    public JsonVO<String> updateUser(@Validated @RequestBody VipInfoDTO vip){
-        vipInfoService.updateById(BeanUtil.toBean(vip,VipInfo.class));
+    public JsonVO<String> updateVip(@Validated @RequestBody VipUpdateDTO vip){
+        vipInfoService.updateVip(vip);
         return JsonVO.success("更新成功");
     }
 }
