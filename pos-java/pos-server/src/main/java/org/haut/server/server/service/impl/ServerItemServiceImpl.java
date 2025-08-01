@@ -122,4 +122,29 @@ public class ServerItemServiceImpl extends ServiceImpl<ServerItemMapper, ServerI
         return entity;
     }
 
+    /**
+     * 将 ServerItemUpdateDTO 转换为 ServerItem 实体
+     * @param item
+     * @return
+     */
+    private ServerItem toEntity(ServerItemUpdateDTO item) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+
+        // 校验服务项目编码是否已存在
+        if (this.count(Wrappers.lambdaQuery(ServerItem.class)
+                .eq(ServerItem::getItemEncode, item.getItemEncode())
+                .eq(ServerItem::getOrgId, auth.getOrgId())
+                .ne(ServerItem::getId, item.getId())) > 0) {
+            throw new BusinessException("服务项目编码已存在");
+        }
+
+        // 校验服务项目名称是否已存在
+        if (this.count(Wrappers.lambdaQuery(ServerItem.class)
+                .eq(ServerItem::getItemName, item.getItemName())
+                .eq(ServerItem::getOrgId, auth.getOrgId())
+                .ne(ServerItem::getId, item.getId())) > 0) {
+            throw new BusinessException("服务项目名称已存在");
+        }
+        return serverItemConvert.toEntity(item).setOrgId(auth.getOrgId());
+    }
 }
