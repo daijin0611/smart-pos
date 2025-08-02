@@ -48,11 +48,17 @@ public class RechargeRoleCreateDTO {
      * 提成类型
      */
     @Schema(description = "提成类型")
-    private String commissionType;
+    private Integer commissionType;
 
     /**
      * 提成值（比例）
      */
     @Schema(description = "提成值（比例）")
     private BigDecimal rechargeCommissionValue;
+
+    /**
+     * 状态
+     */
+    @Schema(description = "状态（0 启用，1 禁用）")
+    private Integer status;
 }

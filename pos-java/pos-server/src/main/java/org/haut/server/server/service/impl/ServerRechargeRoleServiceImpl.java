@@ -1,13 +1,18 @@
 package org.haut.server.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
-import org.haut.common.domain.query.server.ServerRechaegeRoleListQuery;
+import org.haut.common.domain.dto.server.RechargeRoleCreateDTO;
+import org.haut.common.domain.dto.server.RechargeRoleUpdateDTO;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.entity.server.ServerRechargeRole;
+import org.haut.common.domain.query.server.ServerRechargeRoleListQuery;
 import org.haut.common.domain.vo.server.RechargeRoleVO;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.server.service.ServerRechargeRoleService;
 import org.haut.server.server.mapper.ServerRechargeRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +36,32 @@ public class ServerRechargeRoleServiceImpl extends ServiceImpl<ServerRechargeRol
      * @return
      */
     @Override
-    public List<RechargeRoleVO> getList(ServerRechaegeRoleListQuery query) {
-        //构建条件查询器，当充值提成规则名称不为空时，进行查询
-        QueryWrapper<ServerRechargeRole> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like(StringUtils.isNotBlank(query.getRechargeRoleName()),"recharge_role_name",query.getRechargeRoleName());
+    public List<RechargeRoleVO> getList(ServerRechargeRoleListQuery query) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        LambdaQueryWrapper<ServerRechargeRole> queryWrapper = Wrappers.lambdaQuery(ServerRechargeRole.class)
+                .eq(query.getStatus() != null, ServerRechargeRole::getStatus, query.getStatus())
+                .like(StringUtils.isNotBlank(query.getRechargeRoleName()), ServerRechargeRole::getRechargeRoleName, query.getRechargeRoleName())
+                .eq(auth.getOrgId() != null, ServerRechargeRole::getOrgId, auth.getOrgId());
         //查询数据库
         List<ServerRechargeRole> serverRechargeRoles = serverRechargeRoleMapper.selectList(queryWrapper);
         return BeanUtil.copyToList(serverRechargeRoles, RechargeRoleVO.class);
     }
 
+    @Override
+    public void addRole(RechargeRoleCreateDTO role) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        ServerRechargeRole bean = BeanUtil.toBean(role, ServerRechargeRole.class);
+        bean.setOrgId(auth.getOrgId());
+        this.save(bean);
+    }
 
+    @Override
+    public void updateRole(RechargeRoleUpdateDTO role) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        ServerRechargeRole bean = BeanUtil.toBean(role, ServerRechargeRole.class);
+        bean.setOrgId(auth.getOrgId());
+        this.updateById(bean);
+    }
 
 }
 

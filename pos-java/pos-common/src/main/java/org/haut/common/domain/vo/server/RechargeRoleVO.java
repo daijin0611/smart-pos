@@ -70,11 +70,23 @@ public class RechargeRoleVO {
      * 提成类型
      */
     @Schema(description = "提成类型")
-    private String commissionType;
+    private Integer commissionType;
 
     /**
      * 提成值（比例）
      */
     @Schema(description = "提成值（比例）")
     private BigDecimal rechargeCommissionValue;
+
+    /**
+     * 状态
+     */
+    @Schema(description = "状态")
+    private Integer status;
+
+    /**
+     * 机构id
+     */
+    @Schema(description = "机构id")
+    private Integer orgId;
 }

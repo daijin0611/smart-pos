@@ -18,7 +18,7 @@
 
     <sql id="Base_Column_List">
         id, create_time,update_time,is_delete,remark,recharge_role_name,
-        recharge_price,commission_type,recharge_commission_value
+        recharge_price,commission_type,recharge_commission_value,status,org_id
     </sql>
 
 </mapper>

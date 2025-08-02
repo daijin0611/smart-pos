@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.server.RechargeRoleCreateDTO;
 import org.haut.common.domain.dto.server.RechargeRoleUpdateDTO;
-import org.haut.common.domain.query.server.ServerRechaegeRoleListQuery;
+import org.haut.common.domain.query.server.ServerRechargeRoleListQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.entity.server.ServerRechargeRole;
 import org.haut.common.domain.vo.server.RechargeRoleVO;
@@ -26,7 +26,7 @@ public class RechaegeRoleController {
     @Autowired private ServerRechargeRoleService serverRechargeRoleService;
     @GetMapping("/query-list")
     @Operation(description = "获取充值提成规则列表", summary = "获取充值提成规则列表")
-    public JsonVO<List<RechargeRoleVO>> getList(ServerRechaegeRoleListQuery query) {
+    public JsonVO<List<RechargeRoleVO>> getList(ServerRechargeRoleListQuery query) {
        log.info(query.toString());
        return JsonVO.success(serverRechargeRoleService.getList(query));
     }
@@ -35,7 +35,7 @@ public class RechaegeRoleController {
     @Operation(description = "添加充值提成规则", summary = "添加充值提成规则")
     public JsonVO<String> addRole(@Validated @RequestBody RechargeRoleCreateDTO role) {
         log.info(role.toString());
-        serverRechargeRoleService.save(BeanUtil.toBean(role, ServerRechargeRole.class));
+        serverRechargeRoleService.addRole(role);
         return JsonVO.success("添加成功");
     }
 
@@ -43,7 +43,17 @@ public class RechaegeRoleController {
     @Operation(description = "更新充值提成规则", summary = "更新充值提成规则")
     public JsonVO<String> updateRole(@Validated @RequestBody RechargeRoleUpdateDTO role) {
         log.info(role.toString());
-        serverRechargeRoleService.updateById(BeanUtil.toBean(role, ServerRechargeRole.class));
+        serverRechargeRoleService.updateRole(role);
+        return JsonVO.success("更新成功");
+    }
+
+    @PutMapping("/update-status")
+    @Operation(description = "更新充值提成规则状态", summary = "更新充值提成规则状态")
+    public JsonVO<String> updateStatus(@RequestParam Long id, @RequestParam Integer status) {
+        log.info("更新充值提成规则状态，id: {}, status: {}", id, status);
+        serverRechargeRoleService.lambdaUpdate().set(ServerRechargeRole::getStatus, status)
+                .eq(ServerRechargeRole::getId, id)
+                .update();
         return JsonVO.success("更新成功");
     }
 }

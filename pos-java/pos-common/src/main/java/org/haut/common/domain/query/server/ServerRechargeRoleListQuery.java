@@ -5,7 +5,10 @@ import lombok.Data;
 
 @Data
 @Schema(description = "充值提成规则列表查询对象")
-public class ServerRechaegeRoleListQuery {
+public class ServerRechargeRoleListQuery {
     @Schema(description = "充值提成规则名称")
     private String rechargeRoleName;
+
+    @Schema(description = "状态")
+    private Integer status;
 }
