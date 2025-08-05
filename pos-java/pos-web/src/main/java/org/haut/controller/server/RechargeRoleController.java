@@ -1,8 +1,8 @@
 package org.haut.controller.server;
 
-import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.server.RechargeRoleCreateDTO;
 import org.haut.common.domain.dto.server.RechargeRoleUpdateDTO;
@@ -11,7 +11,6 @@ import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.entity.server.ServerRechargeRole;
 import org.haut.common.domain.vo.server.RechargeRoleVO;
 import org.haut.server.server.service.ServerRechargeRoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +19,10 @@ import java.util.List;
 @Slf4j
 @Tag(name = "充值提成规则管理", description = "充值提成规则管理")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/server/recharge-role")
-public class RechaegeRoleController {
-
-    @Autowired private ServerRechargeRoleService serverRechargeRoleService;
+public class RechargeRoleController {
+    private final ServerRechargeRoleService serverRechargeRoleService;
     @GetMapping("/query-list")
     @Operation(description = "获取充值提成规则列表", summary = "获取充值提成规则列表")
     public JsonVO<List<RechargeRoleVO>> getList(ServerRechargeRoleListQuery query) {
