@@ -31,6 +31,12 @@ public class UserListQuery {
     private Long roleId;
 
     /**
+     * 机构id
+     */
+    @Schema(description = "结构id")
+    private Long orgId;
+
+    /**
      * 分页页码
      */
     @Schema(description = "分页页码")

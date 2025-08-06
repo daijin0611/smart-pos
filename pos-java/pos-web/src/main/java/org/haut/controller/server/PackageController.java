@@ -32,7 +32,6 @@ public class PackageController {
     }
 
     // 2. 详情查询（通过ID）
-
     @GetMapping("/query-info")
     @Operation(description = "根据套餐id查询详细信息", summary = "根据套餐id查询详细信息")
     public JsonVO<PackageInfoDTO> getPackageInfo(@RequestParam  Long id) {
