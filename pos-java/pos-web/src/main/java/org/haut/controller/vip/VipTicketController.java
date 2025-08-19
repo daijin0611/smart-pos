@@ -6,11 +6,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.vip.VipTicketCreateDTO;
+import org.haut.common.domain.dto.vip.VipTicketUpdateDTO;
 import org.haut.common.domain.query.vip.VipTicketListQuery;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.domain.vo.vip.VipTicketVO;
 import org.haut.server.vip.service.VipTicketService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/vip/ticket")
@@ -22,10 +26,9 @@ public class VipTicketController {
 
     @GetMapping("/ticket-list")
     @Operation(description = "获取优惠券列表", summary = "获取优惠券列表")
-    public JsonVO<VipTicketCreateDTO> getList(VipTicketListQuery query){
+    public JsonVO<List<VipTicketVO>> getList(VipTicketListQuery query){
         log.info(query.toString());
-        vipTicketService.getList(query);
-        return null;
+        return JsonVO.success(vipTicketService.getList(query));
     }
 
     @GetMapping("/ticket-info")
@@ -40,6 +43,21 @@ public class VipTicketController {
     public JsonVO<String> addTicket(@Validated @RequestBody VipTicketCreateDTO ticket){
         log.info(ticket.toString());
         vipTicketService.addTicket(ticket);
+        return JsonVO.success();
+    }
+
+    @PutMapping("/update-ticket")
+    @Operation(description = "修改优惠券")
+    public JsonVO<String> updateTicket(@Validated @RequestBody VipTicketUpdateDTO ticket){
+        log.info(ticket.toString());
+        vipTicketService.updateTicket(ticket);
+        return JsonVO.success();
+    }
+
+    @PutMapping
+    @Operation(description = "修改优惠券状态")
+    public JsonVO<String> updateStatus(@RequestParam Long id, @RequestParam Integer status){
+        vipTicketService.updateStatus(id, status);
         return JsonVO.success();
     }
 }

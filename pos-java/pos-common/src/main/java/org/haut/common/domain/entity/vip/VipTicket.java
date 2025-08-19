@@ -70,4 +70,9 @@ public class VipTicket {
      * 优惠券面值
      */
     private BigDecimal ticketValue;
+
+    /**
+     * 门店id
+     */
+    private Long orgId;
 }

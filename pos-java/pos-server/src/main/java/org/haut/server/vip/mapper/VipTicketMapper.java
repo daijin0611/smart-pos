@@ -4,6 +4,9 @@ import org.apache.ibatis.annotations.Select;
 import org.haut.common.domain.entity.vip.VipTicket;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.haut.common.domain.query.vip.VipTicketListQuery;
+import org.haut.common.domain.vo.vip.VipTicketVO;
+
+import java.util.List;
 
 /**
 * @author Cdh
@@ -13,7 +16,7 @@ import org.haut.common.domain.query.vip.VipTicketListQuery;
 */
 public interface VipTicketMapper extends BaseMapper<VipTicket> {
 
-    void getList(VipTicketListQuery query);
+    List<VipTicketVO> getList(VipTicketListQuery query);
 }
 
 

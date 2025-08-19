@@ -72,4 +72,20 @@ public class VipTicketVO {
      * 优惠券适用项目
      */
     private List<ServerItemVO> serverItems;
+
+    /**
+     * 门店id
+     */
+    private Long orgId;
+
+    /**
+     * 优惠券描述
+     */
+    private String ticketDescription;
+
+    @Data
+    public static class ServerItemVO {
+        private Integer id;
+        private String itemName;
+    }
 }

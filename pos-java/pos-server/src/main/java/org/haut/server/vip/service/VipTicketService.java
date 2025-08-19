@@ -1,9 +1,13 @@
 package org.haut.server.vip.service;
 
 import org.haut.common.domain.dto.vip.VipTicketCreateDTO;
+import org.haut.common.domain.dto.vip.VipTicketUpdateDTO;
 import org.haut.common.domain.entity.vip.VipTicket;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.query.vip.VipTicketListQuery;
+import org.haut.common.domain.vo.vip.VipTicketVO;
+
+import java.util.List;
 
 /**
 * @author Cdh
@@ -14,5 +18,9 @@ public interface VipTicketService extends IService<VipTicket> {
 
     void addTicket(VipTicketCreateDTO ticket);
 
-    void getList(VipTicketListQuery query);
+    List<VipTicketVO> getList(VipTicketListQuery query);
+
+    void updateTicket(VipTicketUpdateDTO ticket);
+
+    void updateStatus(Long ticketId, Integer status);
 }

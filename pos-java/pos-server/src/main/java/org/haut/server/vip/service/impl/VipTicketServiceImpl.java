@@ -3,11 +3,16 @@ package org.haut.server.vip.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.VipTicketCreateDTO;
+import org.haut.common.domain.dto.vip.VipTicketUpdateDTO;
 import org.haut.common.domain.entity.vip.VipTicket;
 import org.haut.common.domain.entity.vip.VipTicketDetail;
 import org.haut.common.domain.query.vip.VipTicketListQuery;
+import org.haut.common.domain.vo.vip.VipTicketVO;
+import org.haut.common.enums.TicketTypeEnum;
 import org.haut.common.exception.BusinessException;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.vip.mapper.VipTicketDetailMapper;
 import org.haut.server.vip.service.VipTicketService;
 import org.haut.server.vip.mapper.VipTicketMapper;
@@ -32,8 +37,10 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
     @Override
     @Transactional
     public void addTicket(VipTicketCreateDTO ticket) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
         Long hasName = this.baseMapper.selectCount(Wrappers.lambdaQuery(VipTicket.class)
-                .eq(VipTicket::getTicketName, ticket.getTicketName()));
+                .eq(VipTicket::getTicketName, ticket.getTicketName())
+                .eq(VipTicket::getOrgId, auth.getOrgId()));
         if (hasName > 0){
             throw new BusinessException("优惠券名称已存在");
         }
@@ -50,8 +57,63 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
     }
 
     @Override
-    public void getList(VipTicketListQuery query) {
-        this.baseMapper.getList(query);
+    public List<VipTicketVO> getList(VipTicketListQuery query) {
+        return this.baseMapper.getList(query);
+    }
+
+    @Transactional
+    @Override
+    public void updateTicket(VipTicketUpdateDTO ticket) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        Long hasName = this.baseMapper.selectCount(Wrappers.lambdaQuery(VipTicket.class)
+                .eq(VipTicket::getTicketName, ticket.getTicketName())
+                .eq(VipTicket::getOrgId, auth.getOrgId())
+                .ne(VipTicket::getId, ticket.getId()));
+        if (hasName > 0){
+            throw new BusinessException("优惠券名称已存在");
+        }
+        // 更新优惠券
+        VipTicket entity = convert.toEntity(ticket);
+        this.baseMapper.updateById(entity);
+
+        // 更新关联表
+        Long ticketId = entity.getId();
+        List<VipTicketDetail> details = ticket.getServerItemIds().stream()
+                .map(itemId -> new VipTicketDetail().setTicketId(ticketId).setServerItemId(itemId))
+                .toList();
+        // 先清除所有的关联id
+        vipTicketDetailMapper.delete(Wrappers.lambdaQuery(VipTicketDetail.class)
+                .eq(VipTicketDetail::getTicketId, ticketId));
+        // 更新关联表
+        vipTicketDetailMapper.insertOrUpdate(details);
+    }
+
+    @Override
+    public void updateStatus(Long ticketId, Integer status) {
+        if (status != 0 && status != 1){
+            throw new BusinessException("状态修改失败");
+        }
+        this.baseMapper.update(Wrappers.lambdaUpdate(VipTicket.class)
+                .eq(VipTicket::getId, ticketId)
+                .set(VipTicket::getTicketStatus, status));
+    }
+
+    private void checkDto(VipTicketUpdateDTO ticket) {
+        if (ticket.getTicketType().equals(TicketTypeEnum.CONSUMER.getValue())){
+            if (ticket.getTicketValue() == null)
+                throw new BusinessException("优惠券面值不能为空");
+            if (ticket.getTicketFullPayment() == null)
+                throw new BusinessException("优惠券限额不能为空");
+        }
+    }
+
+    private void checkDto(VipTicketCreateDTO ticket) {
+        if (ticket.getTicketType().equals(TicketTypeEnum.CONSUMER.getValue())){
+            if (ticket.getTicketValue() == null)
+                throw new BusinessException("优惠券面值不能为空");
+            if (ticket.getTicketFullPayment() == null)
+                throw new BusinessException("优惠券限额不能为空");
+        }
     }
 }
 
@@ -60,5 +122,8 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
 
 @Mapper(componentModel = "spring")
 interface VipTicketConvert {
+    @Mapping(target = "remark", source = "ticketDescription")
     VipTicket toEntity(VipTicketCreateDTO dto);
+    @Mapping(target = "remark", source = "ticketDescription")
+    VipTicket toEntity(VipTicketUpdateDTO dto);
 }
