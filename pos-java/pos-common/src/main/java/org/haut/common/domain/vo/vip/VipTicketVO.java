@@ -1,34 +1,31 @@
-package org.haut.common.domain.entity.vip;
+package org.haut.common.domain.vo.vip;
 
-import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import org.haut.common.domain.vo.server.ServerItemVO;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import lombok.Data;
+import java.util.List;
 
-/**
- * 会员优惠券
- * @TableName vip_ticket
- */
-@TableName(value ="vip_ticket")
 @Data
-public class VipTicket {
+@Accessors(chain = true)
+@Schema(description = "会员优惠券详细信息")
+public class VipTicketVO {
     /**
      * 主键
      */
-    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
      * 创建时间
      */
-    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
     /**
@@ -70,4 +67,9 @@ public class VipTicket {
      * 优惠券面值
      */
     private BigDecimal ticketValue;
+
+    /**
+     * 优惠券适用项目
+     */
+    private List<ServerItemVO> serverItems;
 }

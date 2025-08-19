@@ -16,10 +16,6 @@
             <result property="ticketEffectiveTime" column="ticket_effective_time" />
             <result property="ticketFullPayment" column="ticket_full_payment" />
             <result property="ticketValue" column="ticket_value" />
-            <result property="ticketAfterDay" column="ticket_after_day" />
-            <result property="isPackageTicket" column="is_package_ticket" />
-            <result property="serverId" column="server_id" />
-            <result property="packageId" column="package_id" />
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -27,4 +23,39 @@
         ticket_name,ticket_type,ticket_effective_time,ticket_full_payment,ticket_value,
         ticket_after_day,is_package_ticket,server_id,package_id
     </sql>
+
+    <resultMap id="VipTicketVO" type="org.haut.common.domain.vo.vip.VipTicketVO">
+        <id property="id" column="id" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+        <result property="isDelete" column="is_delete" />
+        <result property="remark" column="remark" />
+        <result property="ticketStatus" column="ticket_status" />
+        <result property="ticketName" column="ticket_name" />
+        <result property="ticketType" column="ticket_type" />
+        <result property="ticketEffectiveTime" column="ticket_effective_time" />
+        <result property="ticketFullPayment" column="ticket_full_payment" />
+        <result property="ticketValue" column="ticket_value" />
+        <collection property="serverItems" javaType="org.haut.common.domain.vo.server.ServerItemVO">
+            <id property="id" column="server_item_id" />
+            <result property="itemName" column="item_name"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="getList">
+        select vt.*, si.id as server_item_id, si.item_name as item_name
+        from vip_ticket vt
+        left join vip_ticket_detail vtd on vt.id = vtd.ticket_id
+        left join server_item si on vtd.server_item_id = si.id and si.is_delete = 0
+        where vt.is_delete = 0
+        <if test="query.ticketName != null">
+            and vt.ticket_name like concat('%',#{query.ticketName},'%')
+        </if>
+        <if test="query.ticketStatus != null">
+            and vt.ticket_status = #{query.ticketStatus}
+        </if>
+
+    </select>
+
 </mapper>
