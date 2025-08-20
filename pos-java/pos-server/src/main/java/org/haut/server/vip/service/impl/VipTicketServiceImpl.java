@@ -40,7 +40,7 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         Long hasName = this.baseMapper.selectCount(Wrappers.lambdaQuery(VipTicket.class)
                 .eq(VipTicket::getTicketName, ticket.getTicketName())
-                .eq(VipTicket::getOrgId, auth.getOrgId()));
+                .eq(auth.getOrgId() != null,VipTicket::getOrgId, auth.getOrgId()));
         if (hasName > 0){
             throw new BusinessException("优惠券名称已存在");
         }
@@ -58,7 +58,8 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
 
     @Override
     public List<VipTicketVO> getList(VipTicketListQuery query) {
-        return this.baseMapper.getList(query);
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        return this.baseMapper.getList(query,auth.getOrgId());
     }
 
     @Transactional

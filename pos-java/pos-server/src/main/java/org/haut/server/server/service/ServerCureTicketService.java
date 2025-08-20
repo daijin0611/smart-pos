@@ -1,10 +1,11 @@
 package org.haut.server.server.service;
 
-import org.haut.common.domain.dto.server.CureTicketInfoDTO;
-import org.haut.common.domain.dto.server.CureTicketListDTO;
+import org.haut.common.domain.dto.server.CureTicketCreateDTO;
+import org.haut.common.domain.dto.server.CureTicketUpdateDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
 import org.haut.common.domain.entity.server.ServerCureTicket;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.haut.common.domain.vo.server.ServerCureTicketVO;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -16,16 +17,9 @@ import java.util.List;
 */
 public interface ServerCureTicketService extends IService<ServerCureTicket> {
 
-    @Transactional(readOnly = true)
-    CureTicketInfoDTO getCureTicketInfo(Long id);
+    List<ServerCureTicketVO> getList(ServerCureTicketListQuery query);
 
-    List<CureTicketListDTO> getList(ServerCureTicketListQuery query);
+    void saveCureTicket(CureTicketCreateDTO cureTicket);
 
-    List<CureTicketListDTO> getCureTicketWithVipTickets(ServerCureTicketListQuery query);
-
-    CureTicketInfoDTO getCureTicketInfoById(Long id);
-
-    void saveCureTicket(CureTicketInfoDTO cureTicket);
-
-    void updateCureTicket(CureTicketInfoDTO cureTicket);
+    void updateCureTicket(CureTicketUpdateDTO cureTicket);
 }

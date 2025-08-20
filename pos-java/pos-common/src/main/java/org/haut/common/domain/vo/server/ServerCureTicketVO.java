@@ -1,34 +1,37 @@
-package org.haut.common.domain.entity.server;
+package org.haut.common.domain.vo.server;
 
-import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import lombok.Data;
+import java.util.List;
 
 /**
- * 疗程券表
- * @TableName server_cure_ticket
+ * 疗程卷信息VO
+ *
+ * @author mhding
+ * @version 1.0
+ * @since 2024-12-19
  */
-@TableName(value ="server_cure_ticket")
 @Data
-public class ServerCureTicket {
+@Accessors(chain = true)
+@Schema(description = "疗程卷信息")
+public class ServerCureTicketVO {
     /**
      * 主键
      */
-    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
      * 创建时间
      */
-    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
     /**
@@ -80,4 +83,30 @@ public class ServerCureTicket {
      * 组织ID
      */
     private Long orgId;
+
+    /**
+     * 疗程关联优惠券列表
+     */
+    private List<TicketDetailVO> ticketDetails;
+
+    @Data
+    @Accessors(chain = true)
+    @Schema(description = "疗程关联优惠券")
+    public static class TicketDetailVO {
+
+        /**
+         * 关联优惠券ID
+         */
+        private Long vipTicketId;
+        /**
+         * 优惠券名称
+         */
+        private String vipTicketName;
+
+        /**
+         * 优惠券数量
+         */
+        private Integer vipTicketNum;
+    }
+
 }

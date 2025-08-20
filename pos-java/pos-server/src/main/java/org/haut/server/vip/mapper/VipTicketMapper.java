@@ -1,6 +1,5 @@
 package org.haut.server.vip.mapper;
 
-import org.apache.ibatis.annotations.Select;
 import org.haut.common.domain.entity.vip.VipTicket;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.haut.common.domain.query.vip.VipTicketListQuery;
@@ -16,7 +15,7 @@ import java.util.List;
 */
 public interface VipTicketMapper extends BaseMapper<VipTicket> {
 
-    List<VipTicketVO> getList(VipTicketListQuery query);
+    List<VipTicketVO> getList(VipTicketListQuery query, Long orgId);
 }
 
 

@@ -1,41 +1,20 @@
-package org.haut.common.domain.entity.server;
+package org.haut.common.domain.dto.server;
 
-import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import lombok.Data;
+import java.util.List;
 
-/**
- * 疗程券表
- * @TableName server_cure_ticket
- */
-@TableName(value ="server_cure_ticket")
 @Data
-public class ServerCureTicket {
+@Schema(description = "疗程券更新对象")
+@Accessors(chain = true)
+public class CureTicketUpdateDTO {
     /**
-     * 主键
+     * 疗程卷ID
      */
-    @TableId(type = IdType.AUTO)
     private Long id;
-
-    /**
-     * 创建时间
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date updateTime;
-
-    /**
-     * 删除状态(0 存在，1 删除)
-     */
-    private Integer isDelete;
-
     /**
      * 备注（其它描述）
      */
@@ -77,7 +56,7 @@ public class ServerCureTicket {
     private Integer status;
 
     /**
-     * 组织ID
+     * 疗程关联优惠券
      */
-    private Long orgId;
+    private List<CureTicketDetailInfoDTO> vipTicketList;
 }

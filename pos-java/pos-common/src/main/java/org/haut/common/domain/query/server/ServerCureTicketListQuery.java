@@ -13,7 +13,7 @@ public class ServerCureTicketListQuery {
     private String cureTicketName;
 
     /**
-     * 疗程编码
+     * 状态
      */
-    private String cureTicketEncode;
+    private Integer status;
 }

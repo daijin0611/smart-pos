@@ -50,13 +50,15 @@
         left join vip_ticket_detail vtd on vt.id = vtd.ticket_id
         left join server_item si on vtd.server_item_id = si.id and si.is_delete = 0
         where vt.is_delete = 0
-        <if test="ticketName != null and ticketName != '' ">
-            and vt.ticket_name like concat('%',#{ticketName},'%')
+        <if test="query.ticketName != null and query.ticketName != '' ">
+            and vt.ticket_name like concat('%',#{query.ticketName},'%')
         </if>
         <if test="ticketStatus != null">
-            and vt.ticket_status = #{ticketStatus}
+            and vt.ticket_status = #{query.ticketStatus}
         </if>
-
+        <if test="orgId != null">
+            and vt.org_id = #{orgId}
+        </if>
     </select>
 
 </mapper>

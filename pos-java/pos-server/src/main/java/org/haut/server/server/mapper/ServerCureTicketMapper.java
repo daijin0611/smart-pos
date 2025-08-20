@@ -1,7 +1,12 @@
 package org.haut.server.server.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.haut.common.domain.entity.server.ServerCureTicket;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.haut.common.domain.query.server.ServerCureTicketListQuery;
+import org.haut.common.domain.vo.server.ServerCureTicketVO;
+
+import java.util.List;
 
 /**
 * @author Cdh
@@ -11,6 +16,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface ServerCureTicketMapper extends BaseMapper<ServerCureTicket> {
 
+    List<ServerCureTicketVO> getList(
+            @Param("query") ServerCureTicketListQuery query,
+            @Param("orgId") Long orgId);
 }
 
 

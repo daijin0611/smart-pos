@@ -2,18 +2,25 @@ package org.haut.server.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.haut.common.domain.dto.server.CureTicketDetailInfoDTO;
-import org.haut.common.domain.dto.server.CureTicketInfoDTO;
-import org.haut.common.domain.dto.server.CureTicketListDTO;
+import org.haut.common.domain.dto.server.CureTicketCreateDTO;
+import org.haut.common.domain.dto.server.CureTicketUpdateDTO;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
 import org.haut.common.domain.entity.server.ServerCureTicket;
 import org.haut.common.domain.entity.server.ServerCureTicketDetail;
 import org.haut.common.domain.entity.vip.VipTicket;
+import org.haut.common.domain.vo.server.ServerCureTicketVO;
+import org.haut.common.exception.BusinessException;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.server.mapper.ServerCureTicketDetailMapper;
 import org.haut.server.server.mapper.ServerCureTicketMapper;
 import org.haut.server.vip.mapper.VipTicketMapper;
 import org.haut.server.server.service.ServerCureTicketService;
+import org.mapstruct.Mapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,164 +28,101 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMapper, ServerCureTicket>
         implements ServerCureTicketService {
+    private final ServerCureTicketDetailMapper serverCureTicketDetailMapper;
+    private final CureTicketConvert cureTicketConvert;
+    private final CureTicketDetailConvert cureTicketDetailConvert;
 
-    @Autowired
-    private ServerCureTicketDetailMapper serverCureTicketDetailMapper;
-    @Autowired
-    private VipTicketMapper vipTicketMapper;
 
+    /**
+     * 保存疗程券
+     * @param cureTicket
+     */
     @Override
-    public List<CureTicketListDTO> getCureTicketWithVipTickets(ServerCureTicketListQuery query) {
-        QueryWrapper<ServerCureTicket> cureTicketQuery = new QueryWrapper<>();
-        cureTicketQuery.like(BeanUtil.isNotEmpty(query.getCureTicketName()), "cure_ticket_name", query.getCureTicketName())
-                .like(BeanUtil.isNotEmpty(query.getCureTicketEncode()), "cure_ticket_encode", query.getCureTicketEncode());
-        List<ServerCureTicket> cureTicketList = baseMapper.selectList(cureTicketQuery);
-        if (CollectionUtils.isEmpty(cureTicketList)) {
-            return Collections.emptyList();
+    @Transactional
+    public void saveCureTicket(CureTicketCreateDTO cureTicket) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        Long count = this.baseMapper.selectCount(Wrappers.lambdaQuery(ServerCureTicket.class)
+                .eq(ServerCureTicket::getName, cureTicket.getName())
+                .eq(auth.getOrgId() != null, ServerCureTicket::getOrgId, auth.getOrgId()));
+        if (count > 0){
+            throw new BusinessException("疗程券名称已存在");
         }
+        // 插入疗程券
+        ServerCureTicket entity = cureTicketConvert.toEntity(cureTicket);
+        entity.setOrgId(auth.getOrgId());
+        this.baseMapper.insert(entity);
 
-        List<Long> cureTicketIds = cureTicketList.stream()
-                .map(ServerCureTicket::getId)
-                .collect(Collectors.toList());
-        QueryWrapper<ServerCureTicketDetail> detailQuery = new QueryWrapper<>();
-        detailQuery.in("cure_ticket_id", cureTicketIds);
-        List<ServerCureTicketDetail> detailList = serverCureTicketDetailMapper.selectList(detailQuery);
-
-        List<Long> vipTicketIds = detailList.stream()
-                .map(ServerCureTicketDetail::getVipTicketId)
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(Collectors.toList());
-        List<VipTicket> vipTicketList = CollectionUtils.isEmpty(vipTicketIds) ? Collections.emptyList()
-                : vipTicketMapper.selectBatchIds(vipTicketIds);
-
-        Map<Long, VipTicket> vipTicketMap = vipTicketList.stream()
-                .collect(Collectors.toMap(VipTicket::getId, Function.identity()));
-        Map<Long, List<ServerCureTicketDetail>> cureTicketDetailMap = detailList.stream()
-                .collect(Collectors.groupingBy(ServerCureTicketDetail::getCureTicketId));
-
-        return cureTicketList.stream()
-                .map(cureTicket -> {
-                    CureTicketListDTO dto = new CureTicketListDTO();
-                    BeanUtils.copyProperties(cureTicket, dto);
-                    List<ServerCureTicketDetail> details = cureTicketDetailMap.getOrDefault(cureTicket.getId(), Collections.emptyList());
-                    List<CureTicketDetailInfoDTO> detailDTOList = details.stream()
-                            .map(detail -> {
-                                CureTicketDetailInfoDTO detailDTO = new CureTicketDetailInfoDTO();
-                                BeanUtils.copyProperties(detail, detailDTO);
-                                VipTicket vipTicket = vipTicketMap.get(detail.getVipTicketId());
-                                if (vipTicket != null) {
-                                    detailDTO.setVipTicketName(vipTicket.getTicketName());
-                                }
-                                return detailDTO;
-                            })
-                            .collect(Collectors.toList());
-                    dto.setCureTicketDetailInfoDTOList(detailDTOList);
-                    return dto;
+        // 插入关联表
+        Long ticketId = entity.getId();
+        List<ServerCureTicketDetail> details = cureTicket.getVipTicketList().stream()
+                .map(detailDTO -> {
+                    ServerCureTicketDetail detail = cureTicketDetailConvert.toEntity(detailDTO);
+                    detail.setCureTicketId(ticketId);
+                    return detail;
                 })
-                .collect(Collectors.toList());
+                .toList();
+        serverCureTicketDetailMapper.insert(details);
     }
 
+    /**
+     * 更新疗程券
+     * @param cureTicket
+     */
     @Override
-    public CureTicketInfoDTO getCureTicketInfoById(Long id) {
-        ServerCureTicket cureTicketEntity = baseMapper.selectById(id);
-        if (cureTicketEntity == null) {
-            return null;
+    public void updateCureTicket(CureTicketUpdateDTO cureTicket) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        Long count = this.baseMapper.selectCount(Wrappers.lambdaQuery(ServerCureTicket.class)
+                .eq(ServerCureTicket::getName, cureTicket.getName())
+                .eq(auth.getOrgId() != null, ServerCureTicket::getOrgId, auth.getOrgId())
+                .ne(ServerCureTicket::getId, cureTicket.getId()));
+        if (count > 0){
+            throw new BusinessException("疗程券名称已存在");
         }
-        QueryWrapper<ServerCureTicketDetail> detailQuery = new QueryWrapper<>();
-        detailQuery.eq("cure_ticket_id", id);
-        List<ServerCureTicketDetail> detailList = serverCureTicketDetailMapper.selectList(detailQuery);
-
-        List<Long> vipTicketIds = detailList.stream()
-                .map(ServerCureTicketDetail::getVipTicketId)
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(Collectors.toList());
-        List<VipTicket> vipTicketList = CollectionUtils.isEmpty(vipTicketIds) ? Collections.emptyList()
-                : vipTicketMapper.selectBatchIds(vipTicketIds);
-
-        CureTicketInfoDTO infoDTO = new CureTicketInfoDTO();
-        BeanUtils.copyProperties(cureTicketEntity, infoDTO);
-        List<CureTicketDetailInfoDTO> detailDTOList = detailList.stream()
-                .map(detail -> {
-                    CureTicketDetailInfoDTO detailDTO = new CureTicketDetailInfoDTO();
-                    BeanUtils.copyProperties(detail, detailDTO);
-                    VipTicket vipTicket = vipTicketList.stream()
-                            .filter(t -> t.getId().equals(detail.getVipTicketId()))
-                            .findFirst()
-                            .orElse(null);
-                    if (vipTicket != null) {
-                        detailDTO.setVipTicketName(vipTicket.getTicketName());
-                    }
-                    return detailDTO;
+        // 更新优惠券主表
+        ServerCureTicket entity = cureTicketConvert.toEntity(cureTicket);
+        this.updateById(entity);
+        // 删除关联表
+        serverCureTicketDetailMapper.delete(Wrappers.lambdaQuery(ServerCureTicketDetail.class)
+                .eq(ServerCureTicketDetail::getCureTicketId, cureTicket.getId()));
+        // 插入关联表
+        Long cureTicketId = cureTicket.getId();
+        List<ServerCureTicketDetail> details = cureTicket.getVipTicketList().stream()
+                .map(detailDTO -> {
+                    ServerCureTicketDetail detail = cureTicketDetailConvert.toEntity(detailDTO);
+                    detail.setCureTicketId(cureTicketId);
+                    return detail;
                 })
-                .collect(Collectors.toList());
-        infoDTO.setCureTicketDetailInfoDTOList(detailDTOList);
-        return infoDTO;
+                .toList();
+        serverCureTicketDetailMapper.insert(details);
     }
 
+    /**
+     * 获取治疗券列表
+     * @param query
+     * @return
+     */
     @Override
-    public void saveCureTicket(CureTicketInfoDTO cureTicket) {
-        // 保存主表时将主键置空，避免重复插入
-        ServerCureTicket cureTicketEntity = BeanUtil.toBean(cureTicket, ServerCureTicket.class);
-        cureTicketEntity.setId(null);
-        baseMapper.insert(cureTicketEntity);
-        Long cureTicketId = cureTicketEntity.getId();
-
-        List<CureTicketDetailInfoDTO> detailList = cureTicket.getCureTicketDetailInfoDTOList();
-        // 如果详情列表为空，为防止空数据错误，添加一条默认的详情数据
-        if (CollectionUtils.isEmpty(detailList)) {
-            CureTicketDetailInfoDTO defaultDetail = new CureTicketDetailInfoDTO();
-            defaultDetail.setVipTicketId(0L); // 根据业务设定默认会员券ID
-            detailList = Collections.singletonList(defaultDetail);
-        }
-        detailList.forEach(detailDTO -> {
-            ServerCureTicketDetail detailEntity = BeanUtil.toBean(detailDTO, ServerCureTicketDetail.class);
-            detailEntity.setCureTicketId(cureTicketId);
-            serverCureTicketDetailMapper.insert(detailEntity);
-        });
+    public List<ServerCureTicketVO> getList(ServerCureTicketListQuery query) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        return this.baseMapper.getList(query, auth.getOrgId());
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateCureTicket(CureTicketInfoDTO updateDTO) {
-        ServerCureTicket cureTicket = new ServerCureTicket();
-        BeanUtils.copyProperties(updateDTO, cureTicket);
-        baseMapper.updateById(cureTicket);
 
-        // 删除原有的详情记录
-        QueryWrapper<ServerCureTicketDetail> deleteWrapper = new QueryWrapper<>();
-        deleteWrapper.eq("cure_ticket_id", updateDTO.getCureTicketId());
-        serverCureTicketDetailMapper.delete(deleteWrapper);
+}
 
-        // 插入新的详情记录
-        List<CureTicketDetailInfoDTO> detailUpdateDTOList = updateDTO.getCureTicketDetailInfoDTOList();
-        if (!CollectionUtils.isEmpty(detailUpdateDTOList)) {
-            List<ServerCureTicketDetail> detailList = detailUpdateDTOList.stream()
-                    .map(detailUpdateDTO -> {
-                        ServerCureTicketDetail detail = new ServerCureTicketDetail();
-                        BeanUtils.copyProperties(detailUpdateDTO, detail);
-                        detail.setCureTicketId(updateDTO.getCureTicketId());
-                        return detail;
-                    })
-                    .collect(Collectors.toList());
-            serverCureTicketDetailMapper.insert(detailList);
-        }
-    }
+@Mapper(componentModel = "spring")
+interface CureTicketConvert {
+    ServerCureTicket toEntity(CureTicketCreateDTO dto);
+    ServerCureTicket toEntity(CureTicketUpdateDTO dto);
+}
 
-    @Override
-    public CureTicketInfoDTO getCureTicketInfo(Long id) {
-        return getCureTicketInfoById(id);
-    }
-
-    @Override
-    public List<CureTicketListDTO> getList(ServerCureTicketListQuery query) {
-        return getCureTicketWithVipTickets(query);
-    }
+@Mapper(componentModel = "spring")
+interface CureTicketDetailConvert {
+    ServerCureTicketDetail toEntity(CureTicketDetailInfoDTO dto);
 }
