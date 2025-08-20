@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.vip.mapper.VipRechargeActiveMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.common.domain.entity.vip.VipRechargeActive">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="activeStatus" column="active_status" />
+            <result property="activeName" column="active_name" />
+            <result property="activeBeginTime" column="active_begin_time" />
+            <result property="activeFinalTime" column="active_final_time" />
+            <result property="activeType" column="active_type" />
+            <result property="activeCapital" column="active_capital" />
+            <result property="activeDiscount" column="active_discount" />
+            <result property="activeBase" column="active_base" />
+            <result property="isCrossStore" column="is_cross_store" />
+            <result property="presentValue" column="present_value" />
+            <result property="presentDiscountIsSame" column="present_discount_is_same" />
+            <result property="presentDiscount" column="present_discount" />
+            <result property="presentBase" column="present_base" />
+            <result property="presentIsCrossStore" column="present_is_cross_store" />
+            <result property="orgId" column="org_id" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,active_status,
+        active_name,active_begin_time,active_final_time,active_type,active_capital,active_discount,
+        active_base,is_cross_store,present_value,present_discount_is_same,present_discount,
+        present_base,present_is_cross_store,org_id
+    </sql>
+
+    <resultMap id="VipRechargeActiveVO" type="org.haut.common.domain.vo.vip.VipRechargeActiveVO">
+        <id property="id" column="id" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+        <result property="isDelete" column="is_delete" />
+        <result property="remark" column="remark" />
+        <result property="activeStatus" column="active_status" />
+        <result property="activeName" column="active_name" />
+        <result property="activeBeginTime" column="active_begin_time" />
+        <result property="activeFinalTime" column="active_final_time" />
+        <result property="activeType" column="active_type" />
+        <result property="activeCapital" column="active_capital" />
+        <result property="activeDiscount" column="active_discount" />
+        <result property="activeBase" column="active_base" />
+        <result property="isCrossStore" column="is_cross_store" />
+        <result property="presentValue" column="present_value" />
+        <result property="presentDiscountIsSame" column="present_discount_is_same" />
+        <result property="presentDiscount" column="present_discount" />
+        <result property="presentBase" column="present_base" />
+        <result property="presentIsCrossStore" column="present_is_cross_store" />
+        <result property="orgId" column="org_id" />
+        <collection property="ticketList" ofType="org.haut.common.domain.vo.vip.VipRechargeActiveVO$TicketVO">
+            <result property="ticketId" column="ticket_id"/>
+            <result property="number" column="number"/>
+            <result property="ticketName" column="ticket_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="queryList" resultMap="VipRechargeActiveVO">
+        select
+        vra.*,
+        t.ticket_id,
+        t.ticket_name,
+        t.number
+        from vip_recharge_active vra
+        left join vip_recharge_active_ticket t on vra.id = t.active_id
+    </select>
+</mapper>

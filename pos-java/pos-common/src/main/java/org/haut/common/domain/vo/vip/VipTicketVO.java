@@ -85,7 +85,7 @@ public class VipTicketVO {
 
     @Data
     public static class ServerItemVO {
-        private Integer id;
+        private Long id;
         private String itemName;
     }
 }
