@@ -1,6 +1,7 @@
 package org.haut.server.server.service;
 
 import org.haut.common.domain.dto.server.CureTicketCreateDTO;
+import org.haut.common.domain.dto.server.CureTicketStatusDTO;
 import org.haut.common.domain.dto.server.CureTicketUpdateDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
 import org.haut.common.domain.entity.server.ServerCureTicket;
@@ -22,4 +23,6 @@ public interface ServerCureTicketService extends IService<ServerCureTicket> {
     void saveCureTicket(CureTicketCreateDTO cureTicket);
 
     void updateCureTicket(CureTicketUpdateDTO cureTicket);
+
+    void updateCureTicketStatus(CureTicketStatusDTO cureTicketStatus);
 }

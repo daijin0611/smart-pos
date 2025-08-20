@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.haut.common.domain.dto.server.CureTicketDetailInfoDTO;
 import org.haut.common.domain.dto.server.CureTicketCreateDTO;
+import org.haut.common.domain.dto.server.CureTicketStatusDTO;
 import org.haut.common.domain.dto.server.CureTicketUpdateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
@@ -113,6 +114,27 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
         return this.baseMapper.getList(query, auth.getOrgId());
     }
 
+    /**
+     * 修改疗程券状态
+     * @param cureTicketStatus
+     */
+    @Override
+    public void updateCureTicketStatus(CureTicketStatusDTO cureTicketStatus) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        // 检查疗程券是否存在
+        ServerCureTicket existingTicket = this.baseMapper.selectOne(Wrappers.lambdaQuery(ServerCureTicket.class)
+                .eq(ServerCureTicket::getId, cureTicketStatus.getId())
+                .eq(auth.getOrgId() != null, ServerCureTicket::getOrgId, auth.getOrgId()));
+        if (existingTicket == null) {
+            throw new BusinessException("疗程券不存在");
+        }
+        
+        // 更新状态
+        ServerCureTicket updateEntity = new ServerCureTicket();
+        updateEntity.setId(cureTicketStatus.getId());
+        updateEntity.setStatus(cureTicketStatus.getStatus());
+        this.updateById(updateEntity);
+    }
 
 }
 

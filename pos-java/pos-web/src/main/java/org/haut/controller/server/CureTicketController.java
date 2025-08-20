@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.server.CureTicketCreateDTO;
+import org.haut.common.domain.dto.server.CureTicketStatusDTO;
 import org.haut.common.domain.dto.server.CureTicketUpdateDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
 import org.haut.common.domain.vo.JsonVO;
@@ -56,5 +57,15 @@ public class CureTicketController {
         return JsonVO.success("更新成功");
     }
 
+    /**
+     * 修改疗程券状态
+     */
+    @Operation(description = "修改疗程券状态", summary = "修改疗程券状态")
+    @PutMapping("/update-status")
+    public JsonVO<String> updateCureTicketStatus(
+            @Validated @RequestBody CureTicketStatusDTO cureTicketStatus) {
+        serverCureTicketService.updateCureTicketStatus(cureTicketStatus);
+        return JsonVO.success("状态修改成功");
+    }
 
 }

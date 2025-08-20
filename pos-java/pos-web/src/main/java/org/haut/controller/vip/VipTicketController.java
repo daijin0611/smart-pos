@@ -47,15 +47,15 @@ public class VipTicketController {
     }
 
     @PutMapping("/update-ticket")
-    @Operation(description = "修改优惠券")
+    @Operation(description = "修改优惠券", summary = "修改优惠券")
     public JsonVO<String> updateTicket(@Validated @RequestBody VipTicketUpdateDTO ticket){
         log.info(ticket.toString());
         vipTicketService.updateTicket(ticket);
         return JsonVO.success();
     }
 
-    @PutMapping
-    @Operation(description = "修改优惠券状态")
+    @PutMapping("/update-status")
+    @Operation(description = "修改优惠券状态", summary = "修改优惠券状态")
     public JsonVO<String> updateStatus(@RequestParam Long id, @RequestParam Integer status){
         vipTicketService.updateStatus(id, status);
         return JsonVO.success();

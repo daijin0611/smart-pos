@@ -10,10 +10,12 @@ public class ServerCureTicketListQuery {
     /**
      * 疗程卷名称
      */
+    @Schema(description = "疗程卷名称")
     private String cureTicketName;
 
     /**
      * 状态
      */
+    @Schema(description = "状态")  
     private Integer status;
 }
