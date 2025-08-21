@@ -1,6 +1,7 @@
 package org.haut.server.vip.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,12 +12,18 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.dto.server.RelatedTicketDTO;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveAddDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveStatusDTO;
 import org.haut.common.domain.entity.vip.VipRechargeActive;
+import org.haut.common.domain.entity.vip.VipRechargeActiveTicket;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;
+import org.haut.common.exception.BusinessException;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.vip.mapper.VipRechargeActiveMapper;
+import org.haut.server.vip.mapper.VipRechargeActiveTicketMapper;
 import org.haut.server.vip.service.VipRechargeActiveService;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
@@ -36,7 +43,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveMapper, VipRechargeActive>
         implements VipRechargeActiveService {
-        
+
+    private final VipRechargeActiveConvert vipRechargeActiveConvert;
+    private final VipRechargeActiveTicketMapper vipRechargeActiveTicketMapper;
+
     /**
      * 查询充值活动列表
      * 
@@ -46,8 +56,9 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
     @Override
     public List<VipRechargeActiveVO> queryList(VipRechargeActiveQuery query) {
         log.info("查询充值活动列表，查询条件：{}", query);
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
         // 转换为VO并返回
-        return this.baseMapper.queryList(query);
+        return this.baseMapper.queryList(query, auth.getOrgId());
     }
     
     /**
@@ -60,12 +71,26 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
     @Transactional(rollbackFor = Exception.class)
     public Boolean addRechargeActive(VipRechargeActiveAddDTO addDTO) {
         log.info("新增充值活动，数据：{}", addDTO);
-        
-        // TODO: 实现具体的新增逻辑
-        // 1. 数据转换
-        // 2. 保存充值活动
-        // 3. 处理关联优惠券
-        
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        VipRechargeActive entity = vipRechargeActiveConvert.toEntity(addDTO).setOrgId(auth.getOrgId());
+        long count = this.count(Wrappers.lambdaQuery(VipRechargeActive.class)
+                .eq(VipRechargeActive::getActiveName, entity.getActiveName())
+                .eq(VipRechargeActive::getOrgId, entity.getOrgId()));
+        if (count > 0)
+            throw new BusinessException("活动名称已存在");
+
+        // 插入活动
+        this.save(entity);
+
+        // 插入关联表
+        List<RelatedTicketDTO> ticketIds = addDTO.getTicketIds();
+        List<VipRechargeActiveTicket> list = ticketIds.stream().map((ticket) -> new VipRechargeActiveTicket()
+                .setTicketId(ticket.getVipTicketId())
+                .setActiveId(entity.getId())
+                .setNumber(ticket.getVipTicketNum())
+                .setTicketName(ticket.getVipTicketName())
+        ).toList();
+        vipRechargeActiveTicketMapper.insert(list);
         return true;
     }
     
@@ -79,16 +104,14 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateStatus(VipRechargeActiveStatusDTO statusDTO) {
         log.info("修改充值活动状态，数据：{}", statusDTO);
-        
-        // TODO: 实现具体的状态修改逻辑
-        // 1. 验证活动是否存在
-        // 2. 更新状态
-        
+        this.lambdaUpdate().eq(VipRechargeActive::getId, statusDTO.getId())
+                .set(VipRechargeActive::getActiveStatus, statusDTO.getActiveStatus())
+                .update();
         return true;
     }
 }
 
 @Mapper(componentModel = "spring")
 interface VipRechargeActiveConvert {
-    
+    VipRechargeActive toEntity(VipRechargeActiveAddDTO addDTO);
 }

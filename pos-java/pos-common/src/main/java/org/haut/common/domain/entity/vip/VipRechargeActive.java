@@ -3,8 +3,10 @@ package org.haut.common.domain.entity.vip;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -17,6 +19,7 @@ import java.util.Date;
 @TableName(value = "vip_recharge_active")
 @Data
 @Schema(description = "充值活动实体")
+@Accessors(chain = true)
 public class VipRechargeActive {
     
     /**
@@ -68,13 +71,13 @@ public class VipRechargeActive {
      * 活动开始时间
      */
     @Schema(description = "活动开始时间")
-    private Date activeBeginTime;
+    private LocalDate activeBeginTime;
     
     /**
      * 活动结束时间
      */
     @Schema(description = "活动结束时间")
-    private Date activeFinalTime;
+    private LocalDate activeFinalTime;
     
     /**
      * 活动类型

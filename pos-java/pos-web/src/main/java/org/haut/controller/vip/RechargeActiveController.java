@@ -10,6 +10,8 @@ import java.util.List;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveAddDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveStatusDTO;
+import org.haut.common.domain.entity.vip.VipRechargeActive;
+import org.haut.common.domain.entity.vip.VipRechargeActiveTicket;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;
@@ -51,6 +53,7 @@ public class RechargeActiveController {
     public JsonVO<String> addRechargeActive(@Validated @RequestBody VipRechargeActiveAddDTO addDTO) {
         log.info("新增充值活动，数据：{}", addDTO);
         // TODO: 实现具体逻辑
+        vipRechargeActiveService.addRechargeActive(addDTO);
         return JsonVO.success("新增成功");
     }
     
@@ -64,7 +67,7 @@ public class RechargeActiveController {
     @Operation(description = "修改充值活动状态", summary = "修改充值活动状态")
     public JsonVO<String> updateStatus(@Validated @RequestBody VipRechargeActiveStatusDTO statusDTO) {
         log.info("修改充值活动状态，数据：{}", statusDTO);
-        // TODO: 实现具体逻辑
+        vipRechargeActiveService.updateStatus(statusDTO);
         return JsonVO.success("状态修改成功");
     }
 }

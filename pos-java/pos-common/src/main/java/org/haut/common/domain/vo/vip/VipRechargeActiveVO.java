@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -40,13 +41,13 @@ public class VipRechargeActiveVO {
      * 活动开始时间
      */
     @Schema(description = "活动开始时间")
-    private Date activeBeginTime;
+    private LocalDate activeBeginTime;
     
     /**
      * 活动结束时间
      */
     @Schema(description = "活动结束时间")
-    private Date activeFinalTime;
+    private LocalDate activeFinalTime;
     
     /**
      * 活动类型

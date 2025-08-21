@@ -52,8 +52,6 @@ public class SysDictController {
         return JsonVO.success(sysDictItemService.queryItemsByDictCode(dictCode));
     }
 
-    
-
     @PostMapping("/add-item")
     @Operation(summary = "新增字典项", description = "在指定字典类型下创建新的字典项")
     public JsonVO<Void> addDictItem(@Valid @RequestBody DictItemCreateDTO dto) {

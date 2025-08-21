@@ -2,6 +2,7 @@ package org.haut.server.vip.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.haut.common.domain.entity.vip.VipRechargeActive;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;
@@ -26,6 +27,6 @@ public interface VipRechargeActiveMapper extends BaseMapper<VipRechargeActive> {
      * @param query 查询条件
      * @return 充值活动列表
      */
-    List<VipRechargeActiveVO> queryList(VipRechargeActiveQuery query);
+    List<VipRechargeActiveVO> queryList(@Param("query") VipRechargeActiveQuery query, @Param("orgId") Long orgId);
 
 }

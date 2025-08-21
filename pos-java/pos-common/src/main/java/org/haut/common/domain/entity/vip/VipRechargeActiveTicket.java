@@ -3,6 +3,7 @@ package org.haut.common.domain.entity.vip;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.util.Date;
 
@@ -16,6 +17,7 @@ import java.util.Date;
 @TableName(value = "vip_recharge_active_ticket")
 @Data
 @Schema(description = "充值活动优惠券关联实体")
+@Accessors(chain = true)
 public class VipRechargeActiveTicket {
     
     /**

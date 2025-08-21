@@ -53,7 +53,7 @@
         <if test="query.ticketName != null and query.ticketName != '' ">
             and vt.ticket_name like concat('%',#{query.ticketName},'%')
         </if>
-        <if test="ticketStatus != null">
+        <if test="query.ticketStatus != null">
             and vt.ticket_status = #{query.ticketStatus}
         </if>
         <if test="orgId != null">

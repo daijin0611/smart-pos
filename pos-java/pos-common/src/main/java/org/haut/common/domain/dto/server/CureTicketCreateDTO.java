@@ -63,7 +63,7 @@ public class CureTicketCreateDTO {
      * 疗程关联优惠券
      */
     @Schema(description = "疗程关联优惠券")
-    private List<CureTicketDetailInfoDTO> vipTicketList;
+    private List<RelatedTicketDTO> vipTicketList;
 
 
 }

@@ -65,10 +65,21 @@
     <select id="queryList" resultMap="VipRechargeActiveVO">
         select
         vra.*,
-        t.ticket_id,
-        t.ticket_name,
-        t.number
+        t.ticket_id as ticket_id,
+        t.ticket_name as ticket_name,
+        t.number as number
         from vip_recharge_active vra
         left join vip_recharge_active_ticket t on vra.id = t.active_id
+        <where>
+            <if test="query.activeStatus != null">
+                and vra.active_status = #{query.activeStatus}
+            </if>
+            <if test="query.activeName != null and query.activeName != ''">
+                and vra.active_name = #{query.activeName}
+            </if>
+            <if test="orgId != null">
+                and vra.org_id = #{orgId}
+            </if>
+        </where>
     </select>
 </mapper>

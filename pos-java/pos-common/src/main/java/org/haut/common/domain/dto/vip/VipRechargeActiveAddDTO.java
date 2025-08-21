@@ -5,9 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.Data;
+import org.haut.common.domain.dto.server.RelatedTicketDTO;
+import org.springframework.cglib.core.Local;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -34,16 +37,16 @@ public class VipRechargeActiveAddDTO {
      */
     @Schema(description = "活动开始时间")
     @NotNull(message = "活动开始时间不能为空")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date activeBeginTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate activeBeginTime;
     
     /**
      * 活动结束时间
      */
     @Schema(description = "活动结束时间")
     @NotNull(message = "活动结束时间不能为空")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date activeFinalTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate activeFinalTime;
     
     /**
      * 活动类型
@@ -87,7 +90,7 @@ public class VipRechargeActiveAddDTO {
     /**
      * 赠送折扣是否相同
      */
-    @Schema(description = "赠送折扣是否相同")
+    @Schema(description = "赠送折扣是否相同（0 不同， 1 相同）")
     private Integer presentDiscountIsSame;
     
     /**
@@ -112,18 +115,12 @@ public class VipRechargeActiveAddDTO {
      * 关联优惠券ID列表
      */
     @Schema(description = "关联优惠券ID列表")
-    private List<Long> ticketIds;
+    private List<RelatedTicketDTO> ticketIds;
     
     /**
      * 备注
      */
     @Schema(description = "备注")
     private String remark;
-    
-    /**
-     * 机构ID
-     */
-    @Schema(description = "机构ID")
-    @NotNull(message = "机构ID不能为空")
-    private Long orgId;
+
 }

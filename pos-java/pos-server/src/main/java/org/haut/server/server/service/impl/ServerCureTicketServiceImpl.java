@@ -1,11 +1,9 @@
 package org.haut.server.server.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.haut.common.domain.dto.server.CureTicketDetailInfoDTO;
+import org.haut.common.domain.dto.server.RelatedTicketDTO;
 import org.haut.common.domain.dto.server.CureTicketCreateDTO;
 import org.haut.common.domain.dto.server.CureTicketStatusDTO;
 import org.haut.common.domain.dto.server.CureTicketUpdateDTO;
@@ -13,23 +11,17 @@ import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
 import org.haut.common.domain.entity.server.ServerCureTicket;
 import org.haut.common.domain.entity.server.ServerCureTicketDetail;
-import org.haut.common.domain.entity.vip.VipTicket;
 import org.haut.common.domain.vo.server.ServerCureTicketVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.server.mapper.ServerCureTicketDetailMapper;
 import org.haut.server.server.mapper.ServerCureTicketMapper;
-import org.haut.server.vip.mapper.VipTicketMapper;
 import org.haut.server.server.service.ServerCureTicketService;
 import org.mapstruct.Mapper;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -146,5 +138,5 @@ interface CureTicketConvert {
 
 @Mapper(componentModel = "spring")
 interface CureTicketDetailConvert {
-    ServerCureTicketDetail toEntity(CureTicketDetailInfoDTO dto);
+    ServerCureTicketDetail toEntity(RelatedTicketDTO dto);
 }
