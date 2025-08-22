@@ -58,4 +58,10 @@ public class VipController {
         vipInfoService.updateVip(vip);
         return JsonVO.success("更新成功");
     }
+
+    @PostMapping("/recharge")
+    @Operation(description = "会员充值", summary = "会员充值")
+    public JsonVO<String> recharge(){
+        return JsonVO.success("充值成功");
+    }
 }
