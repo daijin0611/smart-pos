@@ -5,6 +5,7 @@ target/
 .lingma/
 .vercel/
 stock-demo/
+pos-generator
 
 ### IntelliJ IDEA ###
 .idea/
