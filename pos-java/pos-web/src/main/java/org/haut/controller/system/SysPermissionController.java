@@ -12,7 +12,7 @@ import org.haut.common.domain.dto.system.PermissionUpdateDTO;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.query.system.PermissionListQuery;
 import org.haut.common.domain.vo.system.PermissionInfoVO;
-import org.haut.common.domain.entity.system.SysPermission;
+import org.haut.server.system.entity.SysPermission;
 import org.haut.server.system.service.SysPermissionService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

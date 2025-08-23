@@ -1,7 +1,7 @@
 package org.haut.server.system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.haut.common.domain.entity.system.SysRolePermission;
+import org.haut.server.system.entity.SysRolePermission;
 import org.haut.server.system.service.SysRolePermissionService;
 import org.haut.server.system.mapper.SysRolePermissionMapper;
 import org.springframework.stereotype.Service;

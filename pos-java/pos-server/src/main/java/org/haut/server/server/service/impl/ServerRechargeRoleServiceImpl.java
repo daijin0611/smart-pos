@@ -2,14 +2,13 @@ package org.haut.server.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.haut.common.domain.dto.server.RechargeRoleCreateDTO;
 import org.haut.common.domain.dto.server.RechargeRoleUpdateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
-import org.haut.common.domain.entity.server.ServerRechargeRole;
+import org.haut.server.server.entity.ServerRechargeRole;
 import org.haut.common.domain.query.server.ServerRechargeRoleListQuery;
 import org.haut.common.domain.vo.server.RechargeRoleVO;
 import org.haut.common.utils.AuthContextHolder;

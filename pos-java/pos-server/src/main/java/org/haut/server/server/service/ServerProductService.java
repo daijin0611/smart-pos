@@ -4,7 +4,7 @@ import org.haut.common.domain.dto.server.ServerProductCreateDTO;
 import org.haut.common.domain.dto.server.ServerProductUpdateDTO;
 import org.haut.common.domain.query.server.ServerProductListQuery;
 import org.haut.common.domain.vo.server.ServerProductInfoVO;
-import org.haut.common.domain.entity.server.ServerProduct;
+import org.haut.server.server.entity.ServerProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

@@ -13,13 +13,13 @@ import org.haut.common.domain.dto.vip.*;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.common.domain.vo.vip.VipInfoVO;
 import org.haut.common.utils.AuthContextHolder;
-import org.haut.common.domain.entity.vip.VipInfo;
+import org.haut.server.vip.entity.VipInfo;
 import org.haut.server.vip.mapper.VipAssetMapper;
 import org.haut.server.vip.service.VipInfoService;
 import org.haut.server.vip.mapper.VipInfoMapper;
 import org.mapstruct.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -115,6 +115,16 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         VipInfo entity = vipInfoConvert.toEntity(vip);
         log.info("会员信息：{}", entity);
         this.updateById(entity);
+    }
+
+    /**
+     * 充值功能
+     * @param dto
+     */
+    @Override
+    @Transactional
+    public void recharge(RechargeDTO dto) {
+
     }
 
 }

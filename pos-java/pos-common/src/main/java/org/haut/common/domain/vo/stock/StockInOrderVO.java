@@ -3,7 +3,6 @@ package org.haut.common.domain.vo.stock;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.haut.common.domain.entity.stock.StockInItem;
 
 import java.math.BigDecimal;
 import java.util.Date;

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.utils.AuthContextHolder;
-import org.haut.common.domain.entity.room.RoomBed;
+import org.haut.server.room.entity.RoomBed;
 import org.haut.server.room.service.RoomBedService;
 import org.haut.server.room.mapper.RoomBedMapper;
 import org.springframework.stereotype.Service;

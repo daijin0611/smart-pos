@@ -4,10 +4,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
-import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveAddDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveStatusDTO;
-import org.haut.common.domain.entity.vip.VipRechargeActive;
+import org.haut.server.vip.entity.VipRechargeActive;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;
 

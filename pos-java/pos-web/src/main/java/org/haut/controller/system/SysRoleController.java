@@ -15,12 +15,9 @@ import org.haut.common.domain.query.system.AllocatedListQuery;
 import org.haut.common.domain.query.system.RoleListQuery;
 import org.haut.common.domain.query.system.UnAllocatedListQuery;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.common.domain.vo.system.PermissionInfoVO;
 import org.haut.common.domain.vo.system.RoleInfoVo;
 import org.haut.common.domain.vo.system.UserInfoVO;
-import org.haut.common.domain.entity.system.SysRole;
-import org.haut.common.domain.entity.system.SysRolePermission;
-import org.haut.common.domain.entity.system.SysUserRole;
+import org.haut.server.system.entity.SysRole;
 import org.haut.server.system.service.SysPermissionService;
 import org.haut.server.system.service.SysRolePermissionService;
 import org.haut.server.system.service.SysRoleService;
@@ -28,7 +25,6 @@ import org.haut.server.system.service.SysUserRoleService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

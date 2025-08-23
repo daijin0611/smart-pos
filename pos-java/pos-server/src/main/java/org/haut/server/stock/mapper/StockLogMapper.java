@@ -1,7 +1,7 @@
 package org.haut.server.stock.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.haut.common.domain.entity.stock.StockLog;
+import org.haut.server.stock.entity.StockLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

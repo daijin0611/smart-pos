@@ -1,7 +1,7 @@
 package org.haut.server.stock.service;
 
 import org.haut.common.domain.dto.PageDTO;
-import org.haut.common.domain.entity.stock.StockLog;
+import org.haut.server.stock.entity.StockLog;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockLogVO;

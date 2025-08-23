@@ -28,7 +28,7 @@
         <druid.version>1.2.20</druid.version>
         <knife4j.version>4.3.0</knife4j.version>
         <jakarta-servlet.version>6.0.0</jakarta-servlet.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
     </properties>
 
     <parent>
@@ -144,18 +144,19 @@
                         <target>${java.version}</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <annotationProcessorPaths>
-                            <!--MapStruct注解-->
-                            <path>
-                                <groupId>org.mapstruct</groupId>
-                                <artifactId>mapstruct-processor</artifactId>
-                                <version>${mapstruct.version}</version>
-                            </path>
                             <!--Lombok注解-->
                             <path>
                                 <groupId>org.projectlombok</groupId>
                                 <artifactId>lombok</artifactId>
                                 <version>${lombok.version}</version>
                             </path>
+                            <!--MapStruct注解-->
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+
                         </annotationProcessorPaths>
                     </configuration>
                 </plugin>

@@ -1,6 +1,6 @@
 package org.haut.server.system.service;
 
-import org.haut.common.domain.entity.system.SysDictItem;
+import org.haut.server.system.entity.SysDictItem;
 import org.haut.common.domain.dto.system.DictItemCreateDTO;
 import org.haut.common.domain.dto.system.DictItemUpdateDTO;
 import org.haut.common.domain.vo.system.DictItemVO;

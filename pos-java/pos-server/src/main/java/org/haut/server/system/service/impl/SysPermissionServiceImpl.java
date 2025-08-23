@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.query.system.PermissionListQuery;
 import org.haut.common.domain.vo.system.PermissionInfoVO;
-import org.haut.common.domain.entity.system.SysPermission;
+import org.haut.server.system.entity.SysPermission;
 import org.haut.server.system.service.SysPermissionService;
 import org.haut.server.system.mapper.SysPermissionMapper;
 import org.springframework.stereotype.Service;

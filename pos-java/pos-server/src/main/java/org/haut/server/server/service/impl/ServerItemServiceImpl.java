@@ -9,7 +9,7 @@ import org.haut.common.domain.dto.server.ServerItemCreateDTO;
 import org.haut.common.domain.dto.server.ServerItemUpdateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.server.ServerItemQuery;
-import org.haut.common.domain.entity.server.ServerItem;
+import org.haut.server.server.entity.ServerItem;
 import org.haut.common.domain.vo.server.ServerItemVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;

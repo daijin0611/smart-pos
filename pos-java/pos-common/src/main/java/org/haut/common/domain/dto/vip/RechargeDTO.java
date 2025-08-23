@@ -3,7 +3,6 @@ package org.haut.common.domain.dto.vip;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import reactor.util.function.Tuple3;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,18 +30,18 @@ public class RechargeDTO {
     @Schema(description = "资产折扣基数（0 标准价，1 会员价）")
     private Integer assetDiscountBase;
     @Schema(description = "资产是否允许跨店（0 不允许，1 允许）")
-    private Integer asset_is_cross_store;
+    private Integer assetIsCrossStore;
 
     @Schema(description = "业绩技师信息(支持多人业绩)")
-    private List<UserKpi> userKpiList;
+    private List<UserKpiDTO> userKpiList;
 
     @Schema(description = "支付信息")
-    private List<PaymentInfo> paymentInfoList;
+    private List<PaymentInfoDTO> paymentInfoList;
 
     @Data
-    @Accessors
+    @Accessors(chain = true)
     @Schema(description = "业绩技师信息")
-    public static class UserKpi{
+    public static class UserKpiDTO{
         @Schema(description = "业绩技师id")
         private Long userId;
         @Schema(description = "业绩技师姓名")
@@ -52,9 +51,9 @@ public class RechargeDTO {
     }
 
     @Data
-    @Accessors
+    @Accessors(chain = true)
     @Schema(description = "支付信息")
-    public static class PaymentInfo {
+    public static class PaymentInfoDTO {
         @Schema(description = "支付类型")
         private Integer paymentType;
         @Schema(description = "支付名称")

@@ -2,10 +2,9 @@ package org.haut.server.stock.service;
 
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.stock.StockOutOrderCreateDTO;
-import org.haut.common.domain.entity.stock.StockOutOrder;
+import org.haut.server.stock.entity.StockOutOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.query.stock.StockOrderQuery;
-import org.haut.common.domain.vo.stock.StockOutOrderVO;
 import org.haut.common.domain.vo.stock.StockOutOrderVO;
 
 /**

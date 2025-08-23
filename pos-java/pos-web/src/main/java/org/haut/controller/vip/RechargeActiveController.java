@@ -7,11 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
-import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveAddDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveStatusDTO;
-import org.haut.common.domain.entity.vip.VipRechargeActive;
-import org.haut.common.domain.entity.vip.VipRechargeActiveTicket;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;

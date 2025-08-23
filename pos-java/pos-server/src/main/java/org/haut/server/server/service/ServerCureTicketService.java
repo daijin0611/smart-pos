@@ -4,10 +4,9 @@ import org.haut.common.domain.dto.server.CureTicketCreateDTO;
 import org.haut.common.domain.dto.server.CureTicketStatusDTO;
 import org.haut.common.domain.dto.server.CureTicketUpdateDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
-import org.haut.common.domain.entity.server.ServerCureTicket;
+import org.haut.server.server.entity.ServerCureTicket;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.vo.server.ServerCureTicketVO;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

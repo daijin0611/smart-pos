@@ -1,13 +1,7 @@
 package org.haut.common.domain.vo.stock;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.haut.common.domain.entity.stock.StockOutItem;
 
 import java.math.BigDecimal;
 import java.util.Date;

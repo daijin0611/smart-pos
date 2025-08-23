@@ -2,7 +2,7 @@ package org.haut.server.server.service;
 
 import org.haut.common.domain.dto.server.RechargeRoleCreateDTO;
 import org.haut.common.domain.dto.server.RechargeRoleUpdateDTO;
-import org.haut.common.domain.entity.server.ServerRechargeRole;
+import org.haut.server.server.entity.ServerRechargeRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.query.server.ServerRechargeRoleListQuery;
 import org.haut.common.domain.vo.server.RechargeRoleVO;

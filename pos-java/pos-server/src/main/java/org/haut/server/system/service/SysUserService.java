@@ -5,7 +5,7 @@ import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.system.UserAllocateRoleDTO;
 import org.haut.common.domain.dto.system.UserCreateDTO;
 import org.haut.common.domain.query.system.UserListQuery;
-import org.haut.common.domain.entity.system.SysUser;
+import org.haut.server.system.entity.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.vo.system.RoleInfoVo;
 import org.haut.common.domain.vo.system.UserInfoVO;

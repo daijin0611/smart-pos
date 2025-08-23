@@ -3,7 +3,7 @@ package org.haut.server.server.service;
 import org.haut.common.domain.dto.server.PackageInfoDTO;
 import org.haut.common.domain.dto.server.PackageListDTO;
 import org.haut.common.domain.query.server.ServerPackageListQuery;
-import org.haut.common.domain.entity.server.ServerPackage;
+import org.haut.server.server.entity.ServerPackage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

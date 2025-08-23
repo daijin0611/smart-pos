@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.haut.server.system.mapper.SysRolePermissionMapper">
 
-    <resultMap id="BaseResultMap" type="org.haut.common.domain.entity.system.SysRolePermission">
+    <resultMap id="BaseResultMap" type="org.haut.server.system.entity.SysRolePermission">
             <id property="roleId" column="role_id" />
             <id property="permissionId" column="permission_id" />
     </resultMap>

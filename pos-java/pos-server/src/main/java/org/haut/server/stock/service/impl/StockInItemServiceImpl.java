@@ -1,7 +1,7 @@
 package org.haut.server.stock.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.haut.common.domain.entity.stock.StockInItem;
+import org.haut.server.stock.entity.StockInItem;
 import org.haut.server.stock.service.StockInItemService;
 import org.haut.server.stock.mapper.StockInItemMapper;
 import org.springframework.stereotype.Service;

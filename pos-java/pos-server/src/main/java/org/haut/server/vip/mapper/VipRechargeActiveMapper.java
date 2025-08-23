@@ -3,7 +3,7 @@ package org.haut.server.vip.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
-import org.haut.common.domain.entity.vip.VipRechargeActive;
+import org.haut.server.vip.entity.VipRechargeActive;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;
 

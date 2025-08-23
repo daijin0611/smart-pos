@@ -1,6 +1,6 @@
 package org.haut.server.vip.service;
 
-import org.haut.common.domain.entity.vip.VipAsset;
+import org.haut.server.vip.entity.VipAsset;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

@@ -1,23 +1,18 @@
 package org.haut.server.vip.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.server.RelatedTicketDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveAddDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveStatusDTO;
-import org.haut.common.domain.entity.vip.VipRechargeActive;
-import org.haut.common.domain.entity.vip.VipRechargeActiveTicket;
+import org.haut.server.vip.entity.VipRechargeActive;
+import org.haut.server.vip.entity.VipRechargeActiveTicket;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;
 import org.haut.common.exception.BusinessException;

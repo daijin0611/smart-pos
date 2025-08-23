@@ -13,7 +13,7 @@ import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.vo.room.RoomInfoVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
-import org.haut.common.domain.entity.room.RoomInfo;
+import org.haut.server.room.entity.RoomInfo;
 import org.haut.server.room.service.RoomInfoService;
 import org.haut.server.room.mapper.RoomInfoMapper;
 import org.springframework.stereotype.Service;

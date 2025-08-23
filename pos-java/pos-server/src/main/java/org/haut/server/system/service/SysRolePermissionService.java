@@ -1,6 +1,6 @@
 package org.haut.server.system.service;
 
-import org.haut.common.domain.entity.system.SysRolePermission;
+import org.haut.server.system.entity.SysRolePermission;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

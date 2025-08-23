@@ -2,14 +2,14 @@ package org.haut.server.vip.mapper;
 
 import org.apache.ibatis.annotations.Select;
 import org.haut.common.domain.dto.vip.VipAssetDTO;
-import org.haut.common.domain.entity.vip.VipAsset;
+import org.haut.server.vip.entity.VipAsset;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
 * @author tinwf
 * @description 针对表【vip_asset(会员资产表)】的数据库操作Mapper
 * @createDate 2025-05-07 00:36:29
-* @Entity org.haut.common.domain.entity.vip.VipAsset
+* @Entity org.haut.server.vip.entity.VipAsset
 */
 public interface VipAssetMapper extends BaseMapper<VipAsset> {
 

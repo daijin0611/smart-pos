@@ -12,7 +12,7 @@ import org.haut.common.domain.query.server.ServerProductListQuery;
 import org.haut.common.domain.vo.server.ServerProductInfoVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
-import org.haut.common.domain.entity.server.ServerProduct;
+import org.haut.server.server.entity.ServerProduct;
 import org.haut.server.server.service.ServerProductService;
 import org.haut.server.server.mapper.ServerProductMapper;
 import org.mapstruct.Mapper;

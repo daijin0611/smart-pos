@@ -3,7 +3,7 @@ package org.haut.server.server.service;
 import org.haut.common.domain.dto.server.ServerItemCreateDTO;
 import org.haut.common.domain.dto.server.ServerItemUpdateDTO;
 import org.haut.common.domain.query.server.ServerItemQuery;
-import org.haut.common.domain.entity.server.ServerItem;
+import org.haut.server.server.entity.ServerItem;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.vo.server.ServerItemVO;
 

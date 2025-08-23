@@ -1,7 +1,7 @@
 package org.haut.server.server.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.haut.common.domain.entity.server.ServerCureTicketDetail;
+import org.haut.server.server.entity.ServerCureTicketDetail;
 import org.haut.server.server.service.ServerCureTicketDetailService;
 import org.haut.server.server.mapper.ServerCureTicketDetailMapper;
 import org.springframework.stereotype.Service;

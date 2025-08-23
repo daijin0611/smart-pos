@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
-import org.haut.common.domain.entity.stock.StockLog;
+import org.haut.server.stock.entity.StockLog;
 import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockLogVO;
 import org.haut.common.utils.AuthContextHolder;

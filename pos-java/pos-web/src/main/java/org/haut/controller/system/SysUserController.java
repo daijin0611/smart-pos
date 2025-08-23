@@ -3,9 +3,6 @@ package org.haut.controller.system;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.v3.core.util.Json;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -16,20 +13,17 @@ import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.system.UserAllocateRoleDTO;
 import org.haut.common.domain.dto.system.UserCreateDTO;
 import org.haut.common.domain.dto.system.UserUpdateDTO;
-import org.haut.common.domain.entity.system.SysRole;
+import org.haut.server.system.entity.SysRole;
 import org.haut.common.domain.query.system.UserListQuery;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.common.domain.vo.system.RoleInfoVo;
 import org.haut.common.domain.vo.system.UserInfoVO;
-import org.haut.common.domain.entity.system.SysUser;
+import org.haut.server.system.entity.SysUser;
 import org.haut.common.exception.BusinessException;
 import org.haut.server.system.service.SysRoleService;
 import org.haut.server.system.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/system/user")

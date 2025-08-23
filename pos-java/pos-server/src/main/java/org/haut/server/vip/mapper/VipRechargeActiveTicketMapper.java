@@ -1,9 +1,7 @@
 package org.haut.server.vip.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.haut.common.domain.entity.vip.VipRechargeActiveTicket;
-
-import java.util.List;
+import org.haut.server.vip.entity.VipRechargeActiveTicket;
 
 /**
  * 充值活动优惠券关联数据访问层

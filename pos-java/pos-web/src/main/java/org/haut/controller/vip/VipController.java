@@ -1,33 +1,25 @@
 package org.haut.controller.vip;
 
-import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.PageDTO;
-import org.haut.common.domain.dto.vip.VipCreateDTO;
-import org.haut.common.domain.dto.vip.VipInfoDTO;
-import org.haut.common.domain.dto.vip.VipListDTO;
-import org.haut.common.domain.dto.vip.VipUpdateDTO;
+import org.haut.common.domain.dto.vip.*;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.common.domain.entity.vip.VipInfo;
 import org.haut.common.domain.vo.vip.VipInfoVO;
 import org.haut.server.vip.service.VipInfoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/vip")
 @Tag(name = "会员管理", description = "会员管理")
 @Slf4j
+@RequiredArgsConstructor
 public class VipController {
-
-    @Autowired
-    private VipInfoService vipInfoService;
+    private final VipInfoService vipInfoService;
 
     @GetMapping("/query-list")
     @Operation(description = "获取会员列表（分页+条件）", summary = "获取会员列表")
@@ -61,7 +53,9 @@ public class VipController {
 
     @PostMapping("/recharge")
     @Operation(description = "会员充值", summary = "会员充值")
-    public JsonVO<String> recharge(){
+    public JsonVO<String> recharge(RechargeDTO dto){
+        vipInfoService.recharge(dto);
         return JsonVO.success("充值成功");
     }
+
 }

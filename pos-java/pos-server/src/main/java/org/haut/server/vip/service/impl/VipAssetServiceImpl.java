@@ -1,7 +1,7 @@
 package org.haut.server.vip.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.haut.common.domain.entity.vip.VipAsset;
+import org.haut.server.vip.entity.VipAsset;
 import org.haut.server.vip.service.VipAssetService;
 import org.haut.server.vip.mapper.VipAssetMapper;
 import org.springframework.stereotype.Service;

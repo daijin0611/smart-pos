@@ -1,6 +1,5 @@
 package org.haut.controller.server;
 
-import cn.hutool.core.bean.BeanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +7,7 @@ import org.haut.common.domain.dto.server.ServerItemCreateDTO;
 import org.haut.common.domain.dto.server.ServerItemUpdateDTO;
 import org.haut.common.domain.query.server.ServerItemQuery;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.common.domain.entity.server.ServerItem;
+import org.haut.server.server.entity.ServerItem;
 import org.haut.common.domain.vo.server.ServerItemVO;
 import org.haut.server.server.service.ServerItemService;
 import org.springframework.beans.factory.annotation.Autowired;

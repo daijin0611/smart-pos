@@ -8,7 +8,7 @@ import org.haut.common.domain.dto.server.RechargeRoleCreateDTO;
 import org.haut.common.domain.dto.server.RechargeRoleUpdateDTO;
 import org.haut.common.domain.query.server.ServerRechargeRoleListQuery;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.common.domain.entity.server.ServerRechargeRole;
+import org.haut.server.server.entity.ServerRechargeRole;
 import org.haut.common.domain.vo.server.RechargeRoleVO;
 import org.haut.server.server.service.ServerRechargeRoleService;
 import org.springframework.validation.annotation.Validated;

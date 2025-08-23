@@ -1,9 +1,7 @@
 package org.haut.server.vip.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.haut.common.domain.entity.vip.VipRechargeActiveTicket;
-
-import java.util.List;
+import org.haut.server.vip.entity.VipRechargeActiveTicket;
 
 /**
  * 充值活动优惠券关联服务接口

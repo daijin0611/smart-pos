@@ -1,6 +1,6 @@
 package org.haut.server.stock.service;
 
-import org.haut.common.domain.entity.stock.StockInItem;
+import org.haut.server.stock.entity.StockInItem;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

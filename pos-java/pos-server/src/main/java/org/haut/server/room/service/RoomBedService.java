@@ -1,6 +1,6 @@
 package org.haut.server.room.service;
 
-import org.haut.common.domain.entity.room.RoomBed;
+import org.haut.server.room.entity.RoomBed;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

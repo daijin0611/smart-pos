@@ -4,7 +4,7 @@ import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.stock.StockInOrderCreateDTO;
 import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockInOrderVO;
-import org.haut.common.domain.entity.stock.StockInOrder;
+import org.haut.server.stock.entity.StockInOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
