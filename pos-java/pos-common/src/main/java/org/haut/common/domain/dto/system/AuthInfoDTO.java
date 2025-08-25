@@ -13,4 +13,6 @@ public class AuthInfoDTO {
     private Long userId;
     @Schema(description = "组织ID")
     private Long orgId;
+    @Schema(description = "用户名")
+    private String userName;
 }

@@ -53,7 +53,7 @@ public class VipController {
 
     @PostMapping("/recharge")
     @Operation(description = "会员充值", summary = "会员充值")
-    public JsonVO<String> recharge(RechargeDTO dto){
+    public JsonVO<String> recharge(@RequestBody @Validated RechargeDTO dto){
         vipInfoService.recharge(dto);
         return JsonVO.success("充值成功");
     }

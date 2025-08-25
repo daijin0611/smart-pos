@@ -1,4 +1,4 @@
-package org.haut.server.vip.entity;
+package org.haut.server.kpi.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
@@ -8,13 +8,13 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * 会员资产表
- * @TableName vip_asset
+ * 业绩明细
+ * @TableName kpi_detail
  */
-@TableName(value ="vip_asset")
+@TableName(value ="kpi_detail")
 @Data
 @Accessors(chain = true)
-public class VipAsset {
+public class KpiDetail {
     /**
      * 主键
      */
@@ -44,53 +44,47 @@ public class VipAsset {
     private String remark;
 
     /**
-     * 资产编号
+     * 业务编号
      */
-    private String assetNum;
+    private String serviceCode;
 
     /**
-     * 余额
+     * 业务名称
      */
-    private BigDecimal assetBalance;
+    private String serviceName;
 
     /**
-     * 资产类型（0 充值，1 赠送）
+     * 业务类型
      */
-    private Integer assetType;
+    private Integer serviceType;
 
     /**
-     * 折扣基础（0 标准价，1 会员价）
+     * 上钟类型
      */
-    private Integer assetBaseDiscount;
+    private Integer itemType;
 
     /**
-     * 折扣率
+     * 技师id
      */
-    private BigDecimal assetDiscountRate;
+    private Long userId;
 
     /**
-     * 跨店消费（0 不允许，1 允许）
+     * 提成技师
      */
-    private Integer assetIsCrossStore;
+    private String userName;
 
     /**
-     * 实体卡号
+     * 业绩金额
      */
-    private String assetCardNumber;
+    private BigDecimal performance;
 
     /**
-     * 会员id
+     * 提成金额
      */
-    private Long vipId;
+    private BigDecimal commission;
 
     /**
      * 门店id
      */
     private Long orgId;
-
-    /**
-     * 乐观锁
-     */
-    @Version
-    private Integer version;
 }

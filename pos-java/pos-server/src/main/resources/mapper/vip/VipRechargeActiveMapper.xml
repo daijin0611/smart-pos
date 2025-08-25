@@ -59,6 +59,7 @@
             <result property="ticketId" column="ticket_id"/>
             <result property="number" column="number"/>
             <result property="ticketName" column="ticket_name"/>
+            <result property="ticketEffectiveTime" column="effective_time"/>
         </collection>
     </resultMap>
 
@@ -68,8 +69,10 @@
         t.ticket_id as ticket_id,
         t.ticket_name as ticket_name,
         t.number as number
+        vt.ticket_effective_time as effective_time
         from vip_recharge_active vra
         left join vip_recharge_active_ticket t on vra.id = t.active_id
+        left join vip_ticket vt on t.ticket_id = vt.id
         <where>
             <if test="query.activeStatus != null">
                 and vra.active_status = #{query.activeStatus}
@@ -81,5 +84,15 @@
                 and vra.org_id = #{orgId}
             </if>
         </where>
+    </select>
+    <select id="queryOneById" resultMap="VipRechargeActiveVO">
+        select
+        vra.*,
+        t.ticket_id as ticket_id,
+        t.ticket_name as ticket_name,
+        t.number as number
+        from vip_recharge_active vra
+        left join vip_recharge_active_ticket t on vra.id = t.active_id
+        where vra.id = #{id}
     </select>
 </mapper>

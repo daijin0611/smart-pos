@@ -1,5 +1,6 @@
 package org.haut.server.vip.service;
 
+import org.haut.common.domain.dto.vip.AssetCreateDTO;
 import org.haut.server.vip.entity.VipAsset;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -10,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface VipAssetService extends IService<VipAsset> {
 
+    String createAsset(AssetCreateDTO dto);
 }

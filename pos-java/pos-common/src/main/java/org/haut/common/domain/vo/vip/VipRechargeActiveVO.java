@@ -148,8 +148,13 @@ public class VipRechargeActiveVO {
     @Data
     @Schema(description = "关联优惠券VO")
     public static class TicketVO {
+        @Schema(description = "优惠券ID")
         private Long ticketId;
+        @Schema(description = "优惠券名称")
         private String ticketName;
+        @Schema(description = "有效天数")
+        private Integer ticketEffectiveTime;
+        @Schema(description = "数量")
         private Integer number;
     }
 

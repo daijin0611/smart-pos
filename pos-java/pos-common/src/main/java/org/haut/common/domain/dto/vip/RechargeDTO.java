@@ -1,6 +1,7 @@
 package org.haut.common.domain.dto.vip;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,18 +13,22 @@ import java.util.List;
 @Schema(description = "会员充值DTO")
 public class RechargeDTO {
     @Schema(description = "会员id")
+    @NotNull
     private Long vipId;
     @Schema(description = "会员姓名")
-    private String name;
+    private String vipName;
     @Schema(description = "会员手机号")
-    private String phoneNumber;
+    private String vipPhoneNumber;
     @Schema(description = "会员卡号")
-    private String cardNumber;
+    private String vipCardNumber;
 
     @Schema(description = "活动id")
     private Long activeId;
     @Schema(description = "活动名称")
     private String activeName;
+    @Schema(description = "充值金额")
+    @NotNull
+    private BigDecimal rechargeValue;
 
     @Schema(description = "资产折扣率")
     private Integer assetDiscountRate;
@@ -31,6 +36,9 @@ public class RechargeDTO {
     private Integer assetDiscountBase;
     @Schema(description = "资产是否允许跨店（0 不允许，1 允许）")
     private Integer assetIsCrossStore;
+    @Schema(description = "充值提成规则id")
+    @NotNull
+    private Long rechargeRoleId;
 
     @Schema(description = "业绩技师信息(支持多人业绩)")
     private List<UserKpiDTO> userKpiList;
