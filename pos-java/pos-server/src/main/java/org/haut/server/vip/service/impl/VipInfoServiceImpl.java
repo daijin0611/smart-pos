@@ -22,6 +22,8 @@ import org.haut.common.utils.CodeUtils;
 import org.haut.common.utils.UserContextHolder;
 import org.haut.server.kpi.entity.KpiDetail;
 import org.haut.server.kpi.mapper.KpiDetailMapper;
+import org.haut.server.payment.entity.PaymentDetail;
+import org.haut.server.payment.mapper.PaymentDetailMapper;
 import org.haut.server.server.entity.ServerRechargeRole;
 import org.haut.server.server.mapper.ServerRechargeRoleMapper;
 import org.haut.server.vip.entity.VipInfo;
@@ -40,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.security.Provider;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -75,6 +78,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     private final VipRechargeHistoryService vipRechargeHistoryService;
     private final ServerRechargeRoleMapper serverRechargeRoleMapper;
     private final KpiDetailMapper kpiDetailMapper;
+    private final PaymentDetailMapper paymentDetailMapper;
 
     /**
      * 获取会员列表,条件查询
@@ -213,6 +217,20 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         ).toList();
         kpiDetailMapper.insert(kpi);
         log.info("业绩明细：{}", kpi);
+
+        // 创建支付明细
+        List<PaymentDetail> list = dto.getPaymentInfoList().stream().map(payment ->
+                new PaymentDetail()
+                        .setActiveCode(history.getHistoryCode())
+                        .setActiveType(ServiceTypeEnum.RECHARGE.getValue())
+                        .setActiveName(ServiceTypeEnum.RECHARGE.getType())
+                        .setPaymentType(payment.getPaymentType())
+                        .setTotalAmount(payment.getPaymentAmount())
+                        .setPaymentStatus(PaymentStatusEnum.PAID.getStatus())
+        ).toList();
+        paymentDetailMapper.insert(list);
+        log.info("支付明细{}", list);
+
     }
 
     /**
