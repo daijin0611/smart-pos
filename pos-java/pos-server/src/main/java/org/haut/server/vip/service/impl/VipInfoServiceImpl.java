@@ -179,7 +179,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                 .setRechargeTime(new Date())
                 .setOrgId(auth.getOrgId())
                 .setUserId(auth.getUserId())
-                .setUserName(user.getUserName());
+                .setUserName(auth.getUserName());
 
         // 创建本金资产
         String assetNum = vipAssetService.createAsset(new AssetCreateDTO()

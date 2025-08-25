@@ -10,7 +10,7 @@ public class AuthContextHolder {
 
     private static final ThreadLocal<AuthInfoDTO> currentUser = new ThreadLocal<>();
 
-    public static void serAuth(AuthInfoDTO info) {
+    public static void setAuth(AuthInfoDTO info) {
         currentUser.set(info);
     }
 

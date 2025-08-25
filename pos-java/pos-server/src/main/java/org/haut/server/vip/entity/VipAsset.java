@@ -61,7 +61,7 @@ public class VipAsset {
     /**
      * 折扣基础（0 标准价，1 会员价）
      */
-    private Integer assetBaseDiscount;
+    private Integer assetDiscountBase;
 
     /**
      * 折扣率

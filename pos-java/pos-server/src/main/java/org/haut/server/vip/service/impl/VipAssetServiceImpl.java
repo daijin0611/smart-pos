@@ -15,6 +15,7 @@ import org.haut.server.vip.mapper.VipInfoMapper;
 import org.haut.server.vip.service.VipAssetService;
 import org.haut.server.vip.mapper.VipAssetMapper;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
