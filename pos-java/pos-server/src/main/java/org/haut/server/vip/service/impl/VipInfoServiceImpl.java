@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
-import org.haut.common.domain.dto.system.UserDTO;
 import org.haut.common.domain.dto.vip.*;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.common.domain.vo.vip.VipInfoVO;
@@ -19,13 +18,13 @@ import org.haut.common.enums.*;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
-import org.haut.common.utils.UserContextHolder;
 import org.haut.server.kpi.entity.KpiDetail;
 import org.haut.server.kpi.mapper.KpiDetailMapper;
 import org.haut.server.payment.entity.PaymentDetail;
 import org.haut.server.payment.mapper.PaymentDetailMapper;
 import org.haut.server.server.entity.ServerRechargeRole;
 import org.haut.server.server.mapper.ServerRechargeRoleMapper;
+import org.haut.server.vip.entity.VipAsset;
 import org.haut.server.vip.entity.VipInfo;
 import org.haut.server.vip.entity.VipInfoTicket;
 import org.haut.server.vip.entity.VipRechargeHistory;
@@ -35,6 +34,7 @@ import org.haut.server.vip.mapper.VipRechargeActiveMapper;
 import org.haut.server.vip.service.VipAssetService;
 import org.haut.server.vip.service.VipInfoService;
 import org.haut.server.vip.mapper.VipInfoMapper;
+import org.haut.server.vip.service.VipInfoTicketService;
 import org.haut.server.vip.service.VipRechargeHistoryService;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.security.Provider;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -79,6 +78,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     private final ServerRechargeRoleMapper serverRechargeRoleMapper;
     private final KpiDetailMapper kpiDetailMapper;
     private final PaymentDetailMapper paymentDetailMapper;
+    private final VipInfoTicketService vipInfoTicketService;
 
     /**
      * 获取会员列表,条件查询
@@ -126,6 +126,25 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     }
 
     /**
+     * 更新会员余额
+     * @param vipId
+     */
+    @Override
+    public void updateVipBalance(Long vipId) {
+        List<VipAsset> vipAssets = vipAssetMapper.selectList(Wrappers.lambdaQuery(VipAsset.class)
+                .eq(VipAsset::getVipId, vipId));
+        BigDecimal balance = vipAssets.stream()
+                .map(VipAsset::getAssetBalance)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        log.info("会员{}余额为{}", vipId, balance);
+        this.lambdaUpdate()
+                .eq(VipInfo::getId, vipId)
+                .set(VipInfo::getBalance, balance)
+                .update();
+        log.info("会员{}余额更新成功，余额为{}", vipId, balance);
+    }
+
+    /**
      * 添加vip
      * @param dto
      */
@@ -157,7 +176,6 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     @Transactional(rollbackFor = Exception.class)
     public void recharge(RechargeDTO dto) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
-        UserDTO user = UserContextHolder.getUser();
         log.info("当前门店{}，当前操作员{}",auth.getOrgId(),auth.getUserId());
 
         if (vipInfoMapper.selectById(dto.getVipId()) == null){
@@ -203,7 +221,14 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
 
         // 创建业绩明细，支持多人业绩，为每个销售员都计算业绩
         ServerRechargeRole role = serverRechargeRoleMapper.selectById(dto.getRechargeRoleId());
-        List<KpiDetail> kpi = dto.getUserKpiList().stream().map(kpiUser ->
+        List<RechargeDTO.UserKpiDTO> userKpiList = dto.getUserKpiList();
+        BigDecimal reduceKpi = userKpiList.stream()
+                .map(RechargeDTO.UserKpiDTO::getKpi)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (reduceKpi.compareTo(dto.getRechargeValue()) != 0){
+            throw new BusinessException("业绩金额与充值金额不一致");
+        }
+        List<KpiDetail> kpi = userKpiList.stream().map(kpiUser ->
                 new KpiDetail()
                         .setServiceCode(history.getHistoryCode())
                         .setServiceName(ServiceTypeEnum.RECHARGE.getType())
@@ -219,7 +244,14 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         log.info("业绩明细：{}", kpi);
 
         // 创建支付明细
-        List<PaymentDetail> list = dto.getPaymentInfoList().stream().map(payment ->
+        List<RechargeDTO.PaymentInfoDTO> paymentInfoList = dto.getPaymentInfoList();
+        BigDecimal reducePay = paymentInfoList.stream()
+                .map(RechargeDTO.PaymentInfoDTO::getPaymentAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (reducePay.compareTo(dto.getRechargeValue()) != 0){
+            throw new BusinessException("支付金额与充值金额不一致");
+        }
+        List<PaymentDetail> list = paymentInfoList.stream().map(payment ->
                 new PaymentDetail()
                         .setActiveCode(history.getHistoryCode())
                         .setActiveType(ServiceTypeEnum.RECHARGE.getValue())
@@ -227,10 +259,19 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                         .setPaymentType(payment.getPaymentType())
                         .setTotalAmount(payment.getPaymentAmount())
                         .setPaymentStatus(PaymentStatusEnum.PAID.getStatus())
+                        .setPaymentName(payment.getPaymentName())
+                        .setOrgId(auth.getOrgId())
         ).toList();
         paymentDetailMapper.insert(list);
         log.info("支付明细{}", list);
 
+        // 更新会员总余额
+        updateVipBalance(dto.getVipId());
+        // 更新会员最后充值时间
+        this.lambdaUpdate()
+                .eq(VipInfo::getId, dto.getVipId())
+                .set(VipInfo::getLastRechargeTime, LocalDate.now())
+                .update();
     }
 
     /**
@@ -250,8 +291,12 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         if (active.getActiveCapital().compareTo(dto.getRechargeValue()) > 0){
             throw new BusinessException("充值金额不符合活动要求");
         }
+        if (active.getActiveType().equals(RechargeActiveTypeEnum.ANOTHER.getValue())){
+            log.warn("活动类型为{}，暂不处理", active.getActiveType());
+            return;
+        }
         // 创建赠送金资产
-        if (!active.getActiveType().equals(RechargeActiveType.TICKET.getValue())){
+        if (!active.getActiveType().equals(RechargeActiveTypeEnum.TICKET.getValue())){
             String code = vipAssetService.createAsset(new AssetCreateDTO()
                     .setVipId(dto.getVipId())
                     .setAssetBalance(active.getPresentValue())
@@ -264,26 +309,19 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                     .setPresentValue(active.getPresentValue());
         }
         // 创建优惠券资产
-        if (!active.getActiveType().equals(RechargeActiveType.TICKET.getValue())){
+        if (!active.getActiveType().equals(RechargeActiveTypeEnum.AMOUNT.getValue())){
             StringBuilder ticketInfo = new StringBuilder();
-            List<VipInfoTicket> list = active.getTicketList().stream().map(ticket -> {
-                        ticketInfo.append(ticket.getTicketName())
-                                .append("(")
-                                .append(ticket.getNumber())
-                                .append(")张")
-                                .append("\n");
-                        return new VipInfoTicket()
-                                .setVipInfoId(dto.getVipId())
-                                .setVipTicketId(ticket.getTicketId())
-                                .setTicketName(ticket.getTicketName())
-                                .setVipName(dto.getVipName())
-                                .setStatus(Status.ENABLED.getName())
-                                .setClaimTime(LocalDate.now())
-                                .setExpiryDate(LocalDate.now().plusDays(ticket.getTicketEffectiveTime()));
-                    }
-            ).toList();
-            vipInfoTicketMapper.insert(list);
-            log.info("优惠券资产：{}", list);
+            active.getTicketList().forEach(ticket -> {
+                VipInfoTicketCreateDTO ticketCreateDTO = new VipInfoTicketCreateDTO()
+                        .setVipInfoId(dto.getVipId())
+                        .setRemark("充值活动赠送")
+                        .setVipName(dto.getVipName())
+                        .setTicketName(ticket.getTicketName())
+                        .setNumber(ticket.getNumber())
+                        .setVipTicketId(ticket.getTicketId());
+                String vipInfoTicket = vipInfoTicketService.createVipInfoTicket(ticketCreateDTO);
+                ticketInfo.append(vipInfoTicket);
+            });
             history.setTicketInfo(ticketInfo.toString());
         }
     }

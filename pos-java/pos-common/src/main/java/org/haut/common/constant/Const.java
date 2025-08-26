@@ -9,4 +9,7 @@ public class Const {
 
     public static final String STOCK_OUT = "出库";
     public static final String STOCK_IN = "入库";
+
+    public static final Integer YES = 1;
+    public static final Integer NO = 0;
 }

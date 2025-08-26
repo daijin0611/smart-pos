@@ -7,10 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import org.haut.common.constant.Const;
 import org.haut.common.domain.dto.server.RelatedTicketDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveAddDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveStatusDTO;
+import org.haut.common.enums.RechargeActiveTypeEnum;
 import org.haut.server.vip.entity.VipRechargeActive;
 import org.haut.server.vip.entity.VipRechargeActiveTicket;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
@@ -75,6 +77,12 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
             throw new BusinessException("活动名称已存在");
 
         // 插入活动
+        if (Const.YES.equals(entity.getPresentDiscountIsSame()) &&
+                entity.getActiveType().equals(RechargeActiveTypeEnum.AMOUNT.getValue())){
+            entity.setPresentDiscount(entity.getActiveDiscount())
+                    .setPresentBase(entity.getActiveBase())
+                    .setPresentIsCrossStore(entity.getIsCrossStore());
+        }
         this.save(entity);
 
         // 插入关联表

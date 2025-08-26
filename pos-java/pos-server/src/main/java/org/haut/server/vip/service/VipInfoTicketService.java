@@ -1,5 +1,6 @@
 package org.haut.server.vip.service;
 
+import org.haut.common.domain.dto.vip.VipInfoTicketCreateDTO;
 import org.haut.server.vip.entity.VipInfoTicket;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -10,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface VipInfoTicketService extends IService<VipInfoTicket> {
 
+    String createVipInfoTicket(VipInfoTicketCreateDTO dto);
 }

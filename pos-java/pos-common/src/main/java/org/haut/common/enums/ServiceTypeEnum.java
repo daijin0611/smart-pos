@@ -15,8 +15,8 @@ public enum ServiceTypeEnum {
     CURE_TICKET(2, "治疗券"),
     RECHARGE(3, "充值");
 
-    private Integer value;
-    private String type;
+    private final Integer value;
+    private final String type;
 
     public static ServiceTypeEnum getByValue(Integer value) {
         for (ServiceTypeEnum type : ServiceTypeEnum.values()) {

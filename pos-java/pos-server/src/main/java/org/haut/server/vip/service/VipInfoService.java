@@ -26,6 +26,8 @@ public interface VipInfoService extends IService<VipInfo> {
     VipInfoDTO getVipById(Long id);
 
 
+    void updateVipBalance(Long vipId);
+
     void addVip(VipCreateDTO dto);
 
     void updateVip(VipUpdateDTO vip);

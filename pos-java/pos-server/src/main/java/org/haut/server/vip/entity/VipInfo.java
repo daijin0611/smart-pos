@@ -3,6 +3,7 @@ package org.haut.server.vip.entity;
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;
 
@@ -64,12 +65,12 @@ public class VipInfo {
     /**
      * 末次消费日期
      */
-    private Date lastConsumptionTime;
+    private LocalDate lastConsumptionTime;
 
     /**
      * 末次充值时间
      */
-    private Date lastRechargeTime;
+    private LocalDate lastRechargeTime;
 
     /**
      * 会员身份
@@ -84,7 +85,7 @@ public class VipInfo {
     /**
      * 会员生日
      */
-    private Date birthday;
+    private LocalDate birthday;
 
     /**
      * 会员地址

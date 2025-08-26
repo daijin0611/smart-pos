@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -49,20 +50,20 @@ public class VipInfoDTO {
 
     @Schema(description = "会员生日", example = "1990-01-01")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date infoBirthday;
+    private LocalDate infoBirthday;
 
     @Schema(description = "会员地址", example = "")
     private String infoAddress;
 
-    @Schema(description = "末次消费日期", example = "2025-03-01 12:00:00")
+    @Schema(description = "末次消费日期", example = "2025-03-01")
     @PastOrPresent(message = "末次消费日期不能是未来日期")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date infoLastConsumptionTime;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate infoLastConsumptionTime;
 
-    @Schema(description = "末次充值日期", example = "2025-03-01 12:00:00")
+    @Schema(description = "末次充值日期", example = "2025-03-01")
     @PastOrPresent(message = "末次充值日期不能是未来日期")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date infoLastRechargeTime;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate infoLastRechargeTime;
 
     @Schema(description = "备注信息", example = "")
     private String remark;

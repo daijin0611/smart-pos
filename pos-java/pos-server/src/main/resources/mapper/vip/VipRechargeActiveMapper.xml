@@ -68,7 +68,7 @@
         vra.*,
         t.ticket_id as ticket_id,
         t.ticket_name as ticket_name,
-        t.number as number
+        t.number as number,
         vt.ticket_effective_time as effective_time
         from vip_recharge_active vra
         left join vip_recharge_active_ticket t on vra.id = t.active_id
@@ -90,9 +90,11 @@
         vra.*,
         t.ticket_id as ticket_id,
         t.ticket_name as ticket_name,
-        t.number as number
+        t.number as number,
+        vt.ticket_effective_time as effective_time
         from vip_recharge_active vra
         left join vip_recharge_active_ticket t on vra.id = t.active_id
+        left join vip_ticket vt on t.ticket_id = vt.id
         where vra.id = #{id}
     </select>
 </mapper>

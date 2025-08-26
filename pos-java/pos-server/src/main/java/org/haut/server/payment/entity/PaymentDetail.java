@@ -64,6 +64,11 @@ public class PaymentDetail {
     private Integer paymentType;
 
     /**
+     * 支付方式名称
+     */
+    private String paymentName;
+
+    /**
      * 支付金额
      */
     private BigDecimal totalAmount;
@@ -72,4 +77,9 @@ public class PaymentDetail {
      * 结算状态
      */
     private String paymentStatus;
+
+    /**
+     * 门店id
+     */
+    private Long orgId;
 }
