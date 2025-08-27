@@ -34,4 +34,43 @@
         vip_card_number,activity_id,active_name,recharge_value,asset_code,
         present_value,present_asset_code,ticket_info,user_name,user_id
     </sql>
+
+    <resultMap id="RechargeHistoryVO" type="org.haut.common.domain.vo.vip.RechargeHistoryVO">
+        <id property="id" column="id" />
+        <result property="remark" column="remark" />
+        <result property="rechargeStatus" column="recharge_status" />
+        <result property="rechargeType" column="recharge_type" />
+        <result property="rechargeTime" column="recharge_time" />
+        <result property="vipId" column="vip_id" />
+        <result property="vipName" column="vip_name" />
+        <result property="vipPhoneNumber" column="vip_phone_number" />
+        <result property="vipCardNumber" column="vip_card_number" />
+        <result property="activityId" column="activity_id" />
+        <result property="activeName" column="active_name" />
+        <result property="rechargeValue" column="recharge_value" />
+        <result property="assetCode" column="asset_code" />
+        <result property="presentValue" column="present_value" />
+        <result property="presentAssetCode" column="present_asset_code" />
+        <result property="ticketInfo" column="ticket_info" />
+        <result property="userName" column="user_name" />
+        <result property="userId" column="user_id" />
+        <result property="orgId" column="org_id" />
+        <collection property="paymentInfoList"  ofType="org.haut.common.domain.dto.vip.RechargeDTO$PaymentInfoDTO">
+            <result property="paymentType" column="payment_type" />
+            <result property="paymentName" column="payment_name" />
+            <result property="paymentAmount" column="payment_amount" />
+        </collection>
+        <collection property="userKpiList" ofType="org.haut.common.domain.dto.vip.RechargeDTO$UserKpiDTO">
+            <result property="userId" column="user_id" />
+            <result property="userName" column="user_name" />
+            <result property="kpi" column="kpi" />
+        </collection>
+    </resultMap>
+
+    <select id="getList" resultMap="RechargeHistoryVO">
+        select *
+        from vip_recharge_history vrh
+        left join kpi_detail kd on vrh.history_code = kd.service_code
+        left join payment_detail pd on vrh.history_code = pd.active_code
+    </select>
 </mapper>

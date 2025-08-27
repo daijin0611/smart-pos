@@ -73,7 +73,6 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     private final VipAssetMapper vipAssetMapper;
     private final VipRechargeActiveMapper vipRechargeActiveMapper;
     private final VipAssetService vipAssetService;
-    private final VipInfoTicketMapper vipInfoTicketMapper;
     private final VipRechargeHistoryService vipRechargeHistoryService;
     private final ServerRechargeRoleMapper serverRechargeRoleMapper;
     private final KpiDetailMapper kpiDetailMapper;
