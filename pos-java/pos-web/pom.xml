@@ -63,6 +63,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <mainClass>org.haut.PosApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>

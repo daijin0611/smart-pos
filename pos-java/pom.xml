@@ -225,6 +225,56 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
             </plugin>
+            <!--docker插件-->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.43.4</version>
+                <configuration>
+                    <!-- Docker守护进程连接配置 -->
+                    <dockerHost>https://39.107.119.113:2375</dockerHost>
+                    <certPath>D:/docker-ca</certPath>
+                    <!-- 镜像配置 -->
+                    <images>
+                        <image>
+                            <!-- 镜像名称和标签 -->
+                            <name>pos-api:${project.version}</name>
+                            <!-- 构建配置 -->
+                            <build>
+                                <!-- 指定Dockerfile路径 -->
+                                <dockerFile>${project.basedir}/Dockerfile</dockerFile>
+                                <!-- 构建上下文目录 -->
+                                <contextDir>${project.basedir}</contextDir>
+                            </build>
+                            <alias>
+                                ${project.artifactId}
+                            </alias>
+                            <!-- 运行配置 -->
+                            <run>
+                                <!-- 容器名称 -->
+                                <containerNamePattern>pos-api</containerNamePattern>
+                                <namingStrategy>alias</namingStrategy>
+                                <!-- 端口映射 -->
+                                <ports>
+                                    <port>8080:8080</port>
+                                </ports>
+                                <!-- 环境变量 -->
+                                <env>
+                                    <SPRING_ARGS>-- spring.profiles.active=test</SPRING_ARGS>
+                                    <JAVA_OPTS>-Xms256m -Xmx512m</JAVA_OPTS>
+                                </env>
+                                <!-- 数据卷挂载 -->
+                                <volumes>
+                                    <bind>
+                                        <volume>/etc/localtime:/etc/localtime</volume>
+                                        <volume>/home/app/${project.artifactId}/logs:/tmp/logs</volume>
+                                    </bind>
+                                </volumes>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

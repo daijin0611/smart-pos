@@ -56,6 +56,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/knife4j/**").permitAll() // 允许Knife4j UI资源
                         .requestMatchers("/static/**").permitAll() // 允许静态资源访问
                         .requestMatchers("/druid/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 // 配置表单登录
