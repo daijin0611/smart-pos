@@ -69,7 +69,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
      * @return 分页结果
      */
     @Override
-    public PageDTO<TicketCountVO> queryPage(VipInfoTicketQuery query) {
+    public PageDTO<TicketCountVO> queryTicketCountPage(VipInfoTicketQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         // 使用LambdaQuery构建查询条件
         Page<VipInfoTicket> page = lambdaQuery()

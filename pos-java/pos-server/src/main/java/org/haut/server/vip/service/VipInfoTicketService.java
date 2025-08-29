@@ -16,5 +16,5 @@ public interface VipInfoTicketService extends IService<VipInfoTicket> {
 
     String createVipInfoTicket(VipInfoTicketCreateDTO dto);
 
-    PageDTO<TicketCountVO> queryPage(VipInfoTicketQuery query);
+    PageDTO<TicketCountVO> queryTicketCountPage(VipInfoTicketQuery query);
 }

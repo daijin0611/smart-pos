@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.order.mapper.OrderInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.haut.server.order.entity.OrderInfoEntity">
+        <id column="id" property="id" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="remark" property="remark" />
+        <result column="order_no" property="orderNo" />
+        <result column="order_time" property="orderTime" />
+        <result column="order_status" property="orderStatus" />
+        <result column="vip_id" property="vipId" />
+        <result column="vip_name" property="vipName" />
+        <result column="vip_card_number" property="vipCardNumber" />
+        <result column="vip_phone_number" property="vipPhoneNumber" />
+        <result column="vip_balance" property="vipBalance" />
+        <result column="settle_time" property="settleTime" />
+        <result column="total_amount" property="totalAmount" />
+        <result column="actual_amount" property="actualAmount" />
+        <result column="discount_amount" property="discountAmount" />
+        <result column="bed_id" property="bedId" />
+        <result column="user_id" property="userId" />
+        <result column="customer_type" property="customerType" />
+        <result column="user_name" property="userName" />
+        <result column="bed_name" property="bedName" />
+        <result column="org_id" property="orgId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, create_time, update_time, is_delete, remark, order_no, order_time, order_status,
+        vip_id, vip_name, vip_card_number, vip_phone_number, vip_balance, settle_time,
+        total_amount, actual_amount, discount_amount, bed_id, user_id, customer_type,
+        user_name, bed_name, org_id
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="queryCondition">
+        <where>
+            is_delete = 0
+            <if test="query != null">
+                <if test="query.orderNo != null and query.orderNo != ''">
+                    AND order_no LIKE CONCAT('%', #{query.orderNo}, '%')
+                </if>
+                <if test="query.orderStatus != null">
+                    AND order_status = #{query.orderStatus}
+                </if>
+                <if test="query.vipId != null">
+                    AND vip_id = #{query.vipId}
+                </if>
+                <if test="query.vipName != null and query.vipName != ''">
+                    AND vip_name LIKE CONCAT('%', #{query.vipName}, '%')
+                </if>
+                <if test="query.vipCardNumber != null and query.vipCardNumber != ''">
+                    AND vip_card_number LIKE CONCAT('%', #{query.vipCardNumber}, '%')
+                </if>
+                <if test="query.vipPhoneNumber != null and query.vipPhoneNumber != ''">
+                    AND vip_phone_number LIKE CONCAT('%', #{query.vipPhoneNumber}, '%')
+                </if>
+                <if test="query.customerType != null">
+                    AND customer_type = #{query.customerType}
+                </if>
+                <if test="query.bedId != null">
+                    AND bed_id = #{query.bedId}
+                </if>
+                <if test="query.userId != null">
+                    AND user_id = #{query.userId}
+                </if>
+                <if test="query.orgId != null">
+                    AND org_id = #{query.orgId}
+                </if>
+                <if test="query.orderTimeStart != null">
+                    AND order_time >= #{query.orderTimeStart}
+                </if>
+                <if test="query.orderTimeEnd != null">
+                    AND order_time &lt;= #{query.orderTimeEnd}
+                </if>
+                <if test="query.settleTimeStart != null">
+                    AND settle_time >= #{query.settleTimeStart}
+                </if>
+                <if test="query.settleTimeEnd != null">
+                    AND settle_time &lt;= #{query.settleTimeEnd}
+                </if>
+                <if test="query.totalAmountMin != null">
+                    AND total_amount >= #{query.totalAmountMin}
+                </if>
+                <if test="query.totalAmountMax != null">
+                    AND total_amount &lt;= #{query.totalAmountMax}
+                </if>
+                <if test="query.actualAmountMin != null">
+                    AND actual_amount >= #{query.actualAmountMin}
+                </if>
+                <if test="query.actualAmountMax != null">
+                    AND actual_amount &lt;= #{query.actualAmountMax}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询订单信息 -->
+    <select id="queryOrderInfoPage" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_info
+        <include refid="queryCondition" />
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据条件查询订单信息列表 -->
+    <select id="queryOrderInfoList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_info
+        <include refid="queryCondition" />
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据订单号查询订单信息 -->
+    <select id="queryByOrderNo" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_info
+        WHERE order_no = #{orderNo} AND is_delete = 0
+    </select>
+
+    <!-- 根据会员ID查询订单信息列表 -->
+    <select id="queryByVipId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_info
+        WHERE vip_id = #{vipId} AND is_delete = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据床位ID查询未结算的订单信息 -->
+    <select id="queryUnsettledByBedId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_info
+        WHERE bed_id = #{bedId} AND order_status = 0 AND is_delete = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 统计订单数量 -->
+    <select id="countOrderInfo" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM order_info
+        <include refid="queryCondition" />
+    </select>
+
+    <!-- 更新订单状态 -->
+    <update id="updateOrderStatus">
+        UPDATE order_info
+        SET order_status = #{orderStatus}, update_time = NOW()
+        WHERE id = #{orderId} AND is_delete = 0
+    </update>
+
+</mapper>

@@ -1,6 +1,5 @@
 package org.haut.controller.vip;
 
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +69,7 @@ public class VipTicketController {
     @Operation(description = "分页查询会员优惠券明细", summary = "分页查询会员优惠券明细")
     public JsonVO<PageDTO<TicketCountVO>> queryPage(VipInfoTicketQuery query) {
         log.info("查询会员优惠券明细参数：{}", query);
-        PageDTO<TicketCountVO> result = vipInfoTicketService.queryPage(query);
+        PageDTO<TicketCountVO> result = vipInfoTicketService.queryTicketCountPage(query);
         return JsonVO.success(result);
     }
 }
