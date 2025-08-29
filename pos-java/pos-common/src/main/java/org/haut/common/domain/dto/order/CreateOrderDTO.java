@@ -56,8 +56,7 @@ public class CreateOrderDTO {
     /**
      * 床位ID
      */
-    @NotNull(message = "床位ID不能为空")
-    @Schema(description = "床位ID")
+    @Schema(description = "床位ID(可选)")
     private Long bedId;
     
     /**
@@ -65,13 +64,7 @@ public class CreateOrderDTO {
      */
     @Schema(description = "床位名称")
     private String bedName;
-    
-    /**
-     * 门店ID
-     */
-    @NotNull(message = "门店ID不能为空")
-    @Schema(description = "门店ID")
-    private Long orgId;
+
     
     /**
      * 备注
@@ -83,76 +76,7 @@ public class CreateOrderDTO {
      * 订单明细列表
      */
     @NotEmpty(message = "订单明细不能为空")
-    @Valid
-    @Schema(description = "订单明细列表")
+    @Schema(description = "订单明细列表（至少一个项目明细）")
     private List<CreateOrderDetailDTO> orderDetails;
-    
-    /**
-     * 订单明细DTO
-     */
-    @Data
-    @Accessors(chain = true)
-    @Schema(description = "订单明细DTO")
-    public static class CreateOrderDetailDTO {
-        
-        /**
-         * 员工ID
-         */
-        @NotNull(message = "员工ID不能为空")
-        @Schema(description = "员工ID")
-        private Long userId;
-        
-        /**
-         * 员工名称
-         */
-        @Schema(description = "员工名称")
-        private String userName;
-        
-        /**
-         * 业务类型（0 产品，1 服务，2 疗程券）
-         */
-        @NotNull(message = "业务类型不能为空")
-        @Schema(description = "业务类型（0 产品，1 服务，2 疗程券）")
-        private Integer detailType;
-        
-        /**
-         * 订单业务ID（产品ID、服务ID或疗程券ID）
-         */
-        @NotNull(message = "业务ID不能为空")
-        @Schema(description = "订单业务ID（产品ID、服务ID或疗程券ID）")
-        private Long bid;
-        
-        /**
-         * 标准价格
-         */
-        @NotNull(message = "标准价格不能为空")
-        @Schema(description = "标准价格")
-        private BigDecimal stdPrice;
-        
-        /**
-         * 实际单价
-         */
-        @NotNull(message = "实际单价不能为空")
-        @Schema(description = "实际单价")
-        private BigDecimal truePrice;
-        
-        /**
-         * 销售数量
-         */
-        @NotNull(message = "销售数量不能为空")
-        @Schema(description = "销售数量")
-        private Integer quantity;
-        
-        /**
-         * 上钟类型（0 点钟，1 加钟，2 轮牌）
-         */
-        @Schema(description = "上钟类型（0 点钟，1 加钟，2 轮牌）")
-        private Integer serverType;
-        
-        /**
-         * 备注
-         */
-        @Schema(description = "备注信息")
-        private String remark;
-    }
+
 }

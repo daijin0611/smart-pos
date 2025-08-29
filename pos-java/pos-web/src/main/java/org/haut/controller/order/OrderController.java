@@ -1,4 +1,4 @@
-package org.haut.web.controller.order;
+package org.haut.controller.order;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -69,11 +69,11 @@ public class OrderController {
         IPage<OrderInfoVO> result = orderInfoService.queryOrderInfoPage(page, query);
         
         PageDTO<OrderInfoVO> pageDTO = new PageDTO<>();
-        pageDTO.setRecords(result.getRecords())
-                .setTotal(result.getTotal())
-                .setSize(result.getSize())
-                .setCurrent(result.getCurrent())
-                .setPages(result.getPages());
+//        pageDTO.setRows(result.getRecords())
+//                .setTotal(result.getTotal())
+//                .setSize(result.getSize())
+//                .setCurrent(result.getCurrent())
+//                .setPages(result.getPages());
         
         return JsonVO.success(pageDTO);
     }

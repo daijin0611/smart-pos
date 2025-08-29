@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -58,7 +59,7 @@ public class OrderDetailEntity {
      * 明细编号
      */
     @Schema(description = "明细编号")
-    private String detaileCode;
+    private String detailCode;
 
     /**
      * 订单id
@@ -124,5 +125,5 @@ public class OrderDetailEntity {
      * 结算时间
      */
     @Schema(description = "结算时间")
-    private Date settledTime;
+    private LocalDateTime settledTime;
 }

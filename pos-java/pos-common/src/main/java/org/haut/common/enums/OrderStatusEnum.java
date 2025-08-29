@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum OrderStatusEnum {
-    UNPAID(0,"未支付"),
-    PAID(1,"已支付"),
+    CREATED(1,"已创建"),
     SETTLED(2,"已结算"),
     CANCELED(3,"已取消"),
+    ROLLBACK(4,"已冲正")
     ;
     private final Integer code;
     private final String message;

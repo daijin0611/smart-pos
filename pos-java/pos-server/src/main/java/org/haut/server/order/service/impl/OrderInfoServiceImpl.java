@@ -13,10 +13,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.order.CreateOrderDTO;
+import org.haut.common.domain.dto.order.CreateOrderDetailDTO;
 import org.haut.common.domain.dto.order.SettleOrderDTO;
 import org.haut.common.domain.query.order.OrderInfoQuery;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
+import org.haut.common.enums.OrderStatusEnum;
 import org.haut.common.enums.ServiceTypeEnum;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.CodeUtils;
@@ -89,7 +91,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         BeanUtil.copyProperties(createOrderDTO, orderInfo);
         orderInfo.setOrderNo(orderNo)
                 .setOrderTime(new Date())
-                .setOrderStatus(0) // 0-未结算
+                .setOrderStatus(OrderStatusEnum.CREATED.getCode()) // 1-已创建
                 .setCreateTime(new Date())
                 .setUpdateTime(new Date())
                 .setIsDelete(0);
@@ -240,8 +242,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     /**
      * 验证订单明细
      */
-    private void validateOrderDetails(List<CreateOrderDTO.CreateOrderDetailDTO> orderDetails, VipInfo vipInfo) {
-        for (CreateOrderDTO.CreateOrderDetailDTO detail : orderDetails) {
+    private void validateOrderDetails(List<CreateOrderDetailDTO> orderDetails, VipInfo vipInfo) {
+        for (CreateOrderDetailDTO detail : orderDetails) {
             if (detail.getDetailType().equals(ServiceTypeEnum.PRODUCT.getValue())) { // 产品类型
                 ServerProduct product = serverProductService.getById(detail.getBid());
                 if (product == null) {
@@ -261,12 +263,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     /**
      * 创建订单明细
      */
-    private List<OrderDetailEntity> createOrderDetails(List<CreateOrderDTO.CreateOrderDetailDTO> detailDTOs, Long orderId, String orderNo) {
+    private List<OrderDetailEntity> createOrderDetails(List<CreateOrderDetailDTO> detailDTOs, Long orderId, String orderNo) {
         List<OrderDetailEntity> orderDetails = new ArrayList<>();
-        for (CreateOrderDTO.CreateOrderDetailDTO detailDTO : detailDTOs) {
+        for (CreateOrderDetailDTO detailDTO : detailDTOs) {
             OrderDetailEntity detail = new OrderDetailEntity();
             BeanUtil.copyProperties(detailDTO, detail);
-            detail.setDetaileCode(CodeUtils.generateByTime(PrefixConst.ORDER_DETAIL))
+            detail.setDetailCode(CodeUtils.generateByTime(PrefixConst.ORDER_DETAIL))
                     .setOrderId(orderId)
                     .setOrderCode(orderNo);
             orderDetails.add(detail);
@@ -277,9 +279,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     /**
      * 处理库存扣减
      */
-    private void processInventoryDeduction(List<CreateOrderDTO.CreateOrderDetailDTO> orderDetails) {
+    private void processInventoryDeduction(List<CreateOrderDetailDTO> orderDetails) {
         // 汇总产品型明细
-        List<CreateOrderDTO.CreateOrderDetailDTO> productDetails = orderDetails.stream()
+        List<CreateOrderDetailDTO> productDetails = orderDetails.stream()
                 .filter(d -> d.getDetailType().equals(ServiceTypeEnum.PRODUCT.getValue()))
                 .toList();
         if (productDetails.isEmpty()) {

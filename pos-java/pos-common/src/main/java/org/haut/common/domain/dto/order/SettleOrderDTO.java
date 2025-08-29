@@ -1,11 +1,14 @@
 package org.haut.common.domain.dto.order;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 结算订单请求DTO
@@ -14,16 +17,16 @@ import java.math.BigDecimal;
  * @version 1.0
  * @since 2025-01-29
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
 @Schema(description = "结算订单请求DTO")
-public class SettleOrderDTO {
-    
+public class SettleOrderDTO extends CreateOrderDTO{
+
     /**
      * 订单ID
      */
-    @NotNull(message = "订单ID不能为空")
-    @Schema(description = "订单ID")
+    @Schema(description = "订单ID（如果已在床位创建订单,传入此id用于更改订单状态）")
     private Long orderId;
     
     /**
@@ -52,9 +55,5 @@ public class SettleOrderDTO {
     @Schema(description = "会员余额（结算时的会员余额）")
     private BigDecimal vipBalance;
     
-    /**
-     * 备注
-     */
-    @Schema(description = "备注信息")
-    private String remark;
+
 }
