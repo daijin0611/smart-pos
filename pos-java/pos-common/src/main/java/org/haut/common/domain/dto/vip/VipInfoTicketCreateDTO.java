@@ -14,10 +14,16 @@ public class VipInfoTicketCreateDTO {
     private Long vipInfoId;
     @Schema(description = "会员名称", example = "张三")
     private String vipName;
+    @Schema(description = "会员手机号", example = "12345678901")
+    private String vipPhoneNumber;
+    @Schema(description = "会员卡号", example = "12345678901")
+    private String vipCardNumber;
     @Schema(description = "会员优惠券ID", example = "1")
     private Long vipTicketId;
     @Schema(description = "会员优惠券名称", example = "会员优惠券")
     private String ticketName;
     @Schema(description = "会员优惠券数量", example = "1")
     private Integer number;
+    @Schema(description = "活动id", example = "1")
+    private Long activeId;
 }

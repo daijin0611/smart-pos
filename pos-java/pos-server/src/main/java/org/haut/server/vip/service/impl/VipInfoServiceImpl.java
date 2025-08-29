@@ -315,9 +315,12 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                         .setVipInfoId(dto.getVipId())
                         .setRemark("充值活动赠送")
                         .setVipName(dto.getVipName())
+                        .setVipPhoneNumber(dto.getVipPhoneNumber())
+                        .setVipCardNumber(dto.getVipCardNumber())
                         .setTicketName(ticket.getTicketName())
                         .setNumber(ticket.getNumber())
-                        .setVipTicketId(ticket.getTicketId());
+                        .setVipTicketId(ticket.getTicketId())
+                        .setActiveId(dto.getActiveId());
                 String vipInfoTicket = vipInfoTicketService.createVipInfoTicket(ticketCreateDTO);
                 ticketInfo.append(vipInfoTicket);
             });

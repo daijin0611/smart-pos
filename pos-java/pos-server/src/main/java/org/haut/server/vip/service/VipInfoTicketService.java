@@ -1,6 +1,9 @@
 package org.haut.server.vip.service;
 
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.vip.VipInfoTicketCreateDTO;
+import org.haut.common.domain.query.vip.VipInfoTicketQuery;
+import org.haut.common.domain.vo.vip.TicketCountVO;
 import org.haut.server.vip.entity.VipInfoTicket;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -12,4 +15,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface VipInfoTicketService extends IService<VipInfoTicket> {
 
     String createVipInfoTicket(VipInfoTicketCreateDTO dto);
+
+    PageDTO<TicketCountVO> queryPage(VipInfoTicketQuery query);
 }

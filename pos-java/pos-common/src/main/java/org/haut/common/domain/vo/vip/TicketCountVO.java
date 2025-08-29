@@ -1,36 +1,37 @@
-package org.haut.server.vip.entity;
+package org.haut.common.domain.vo.vip;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.util.Date;
-import lombok.Data;
-import lombok.experimental.Accessors;
 
-/**
- * 会员信息与优惠券关联表（优惠券明细）
- * @TableName vip_info_ticket
- */
-@TableName(value ="vip_info_ticket")
 @Data
 @Accessors(chain = true)
-public class VipInfoTicket {
+@AllArgsConstructor
+@NoArgsConstructor
+@Schema(description = "优惠券统计VO")
+public class TicketCountVO {
     /**
      * 主键
      */
-    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
      * 创建时间
      */
-    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
     /**
@@ -99,7 +100,7 @@ public class VipInfoTicket {
     private Long activeId;
 
     /**
-     * 机构id
+     * 组织id
      */
     private Long orgId;
 }

@@ -10,4 +10,6 @@ public class PrefixConst {
 
     public static final String ASSET = "A"; // 资产前缀
     public static final String RECHARGE_HISTORY = "H"; // 充值历史前缀
+
+    public static final String TICKET = "T"; // 优惠券前缀
 }
