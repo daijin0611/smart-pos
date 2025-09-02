@@ -7,6 +7,9 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import jakarta.validation.constraints.NotNull;
+import org.haut.common.domain.dto.vip.PaymentInfoDTO;
+import org.haut.common.domain.dto.vip.RechargeDTO;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -48,12 +51,25 @@ public class SettleOrderDTO extends CreateOrderDTO{
      */
     @Schema(description = "优惠金额")
     private BigDecimal discountAmount;
-    
+
+
     /**
-     * 会员余额（结算时的会员余额）
+     * 优惠券ID
      */
-    @Schema(description = "会员余额（结算时的会员余额）")
-    private BigDecimal vipBalance;
-    
+    @Schema(description = "优惠券ID")
+    private List<Long> ticketIds;
+
+    /**
+     * 资产id
+     */
+    @Schema(description = "资产ID")
+    private List<Long> assetIds;
+
+    /**
+     * 支付信息
+     */
+    @Schema(description = "支付信息")
+    private List<PaymentInfoDTO> paymentInfoList;
+
 
 }

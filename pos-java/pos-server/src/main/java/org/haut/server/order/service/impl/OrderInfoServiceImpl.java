@@ -1,11 +1,6 @@
 package org.haut.server.order.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,12 +10,16 @@ import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.order.CreateOrderDTO;
 import org.haut.common.domain.dto.order.CreateOrderDetailDTO;
 import org.haut.common.domain.dto.order.SettleOrderDTO;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.order.OrderInfoQuery;
+import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.common.enums.OrderStatusEnum;
 import org.haut.common.enums.ServiceTypeEnum;
+import org.haut.common.enums.TicketStatusEnum;
 import org.haut.common.exception.BusinessException;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
 import org.haut.server.order.entity.OrderDetailEntity;
 import org.haut.server.order.entity.OrderInfoEntity;
@@ -29,23 +28,28 @@ import org.haut.server.order.service.OrderDetailService;
 import org.haut.server.order.service.OrderInfoService;
 import org.haut.server.server.entity.ServerProduct;
 import org.haut.server.server.service.ServerProductService;
-import org.haut.server.stock.service.StockLogService;
 import org.haut.server.stock.service.StockOutOrderService;
 import org.haut.common.domain.dto.stock.StockOutOrderCreateDTO;
 import org.haut.server.vip.entity.VipInfo;
 import org.haut.server.vip.entity.VipInfoTicket;
 import org.haut.server.vip.service.VipInfoService;
 import org.haut.server.vip.service.VipInfoTicketService;
+import org.haut.server.vip.service.VipTicketService;
+import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.security.Provider;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
-
+@Mapper(componentModel = "spring")
+interface OrderConvert {
+    OrderInfoEntity toEntity(CreateOrderDTO dto);
+    OrderCreateVO toVO(OrderInfoEntity entity);
+}
 
 /**
  * 订单信息服务实现类
@@ -61,52 +65,31 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     
     private final OrderDetailService orderDetailService;
     private final ServerProductService serverProductService;
-    private final StockLogService stockLogService;
     private final StockOutOrderService stockOutOrderService;
     private final VipInfoService vipInfoService;
+    private final OrderConvert orderConvert;
+    private final VipTicketService vipTicketService;
     private final VipInfoTicketService vipInfoTicketService;
-    
+    /**
+     * 床态界面创建订单信息
+     *
+     * @param createOrderDTO 创建订单请求DTO
+     * @return 创建订单响应VO
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public OrderInfoVO addOrder(CreateOrderDTO createOrderDTO) {
+    public OrderCreateVO addOrderWithBed(CreateOrderDTO createOrderDTO) {
         log.info("开始创建订单，请求参数：{}", createOrderDTO);
-        
-        // 1. 验证会员信息（如果是会员）
-        VipInfo vipInfo = null;
-        if (createOrderDTO.getCustomerType() == 0 && createOrderDTO.getVipId() != null) {
-            vipInfo = vipInfoService.getById(createOrderDTO.getVipId());
-            if (vipInfo == null) {
-                throw new BusinessException("会员信息不存在");
-            }
-        }
-        
-        // 2. 验证库存和疗程券
-        validateOrderDetails(createOrderDTO.getOrderDetails(), vipInfo);
-        
-        // 3. 生成订单号
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        VipInfo vipInfo = vipInfoService.getById(createOrderDTO.getVipId());
         String orderNo = CodeUtils.generateByTime(PrefixConst.ORDER);
-        
-        // 4. 创建订单主表
-        OrderInfoEntity orderInfo = new OrderInfoEntity();
-        BeanUtil.copyProperties(createOrderDTO, orderInfo);
+
+        OrderInfoEntity orderInfo = orderConvert.toEntity(createOrderDTO);
         orderInfo.setOrderNo(orderNo)
                 .setOrderTime(new Date())
-                .setOrderStatus(OrderStatusEnum.CREATED.getCode()) // 1-已创建
-                .setCreateTime(new Date())
-                .setUpdateTime(new Date())
-                .setIsDelete(0);
-        
-        if (vipInfo != null) {
-            orderInfo.setVipBalance(vipInfo.getBalance());
-            orderInfo.setBeforeBalance(vipInfo.getBalance()); // 设置消费前余额
-        }
-        
-        // 计算订单总金额
-        BigDecimal totalAmount = createOrderDTO.getOrderDetails().stream()
-                .map(detail -> detail.getTruePrice().multiply(new BigDecimal(detail.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        orderInfo.setTotalAmount(totalAmount);
-        
+                .setOrderStatus(OrderStatusEnum.UNSETTLED.getCode())
+                .setOrgId(auth.getOrgId()); // 1-未结算
+
         this.save(orderInfo);
         
         // 5. 创建订单明细
@@ -114,14 +97,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderDetailService.saveBatch(orderDetails);
         
         log.info("订单创建成功，订单号：{}", orderNo);
-        return queryOrderById(orderInfo.getId());
+        return orderConvert.toVO(orderInfo)
+                .setOrderDetailVOList(BeanUtil.copyToList(orderDetails, OrderDetailVO.class));
     }
     
     @Override
     @Transactional(rollbackFor = Exception.class)
     public OrderInfoVO settleOrder(SettleOrderDTO settleOrderDTO) {
         log.info("开始结算订单，请求参数：{}", settleOrderDTO);
-        
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        VipInfo vipInfo = vipInfoService.getById(settleOrderDTO.getVipId());
         // 1. 查询订单信息
         OrderInfoEntity orderInfo = this.getById(settleOrderDTO.getOrderId());
         if (orderInfo == null) {
@@ -131,37 +116,31 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (orderInfo.getOrderStatus() != 0) {
             throw new BusinessException("订单状态异常，无法结算");
         }
-        
-        // 2. 更新订单结算信息
-        orderInfo.setSettleTime(new Date())
-                .setTotalAmount(settleOrderDTO.getTotalAmount())
-                .setActualAmount(settleOrderDTO.getActualAmount())
-                .setDiscountAmount(settleOrderDTO.getDiscountAmount())
-                .setOrderStatus(1) // 1-已结算
-                .setUpdateTime(new Date());
-        
-        if (settleOrderDTO.getVipBalance() != null) {
-            orderInfo.setVipBalance(settleOrderDTO.getVipBalance());
-        }
-        
-        if (StrUtil.isNotBlank(settleOrderDTO.getRemark())) {
-            orderInfo.setRemark(settleOrderDTO.getRemark());
-        }
-        
-        this.updateById(orderInfo);
+        // 2. 处理相关信息
+        handelOrderDetails(settleOrderDTO.getOrderDetails(), vipInfo);
+
         
         // 3. 更新订单明细结算时间
         orderDetailService.updateSettledTimeByOrderId(settleOrderDTO.getOrderId());
         
         // 4. 处理会员余额扣减（如果使用会员余额支付）
-        if (orderInfo.getVipId() != null && settleOrderDTO.getVipBalance() != null) {
-            processVipBalanceDeduction(orderInfo.getVipId(), settleOrderDTO.getVipBalance());
-        }
+//        if (orderInfo.getVipId() != null && settleOrderDTO.getVipBalance() != null) {
+//            processVipBalanceDeduction(orderInfo.getVipId(), settleOrderDTO.getVipBalance());
+//        }
         
         // 5. 处理库存扣减（结算后创建出库单）
         List<OrderDetailEntity> orderDetailList = orderDetailService.queryDetailEntityByOrderId(settleOrderDTO.getOrderId());
         processInventoryDeductionAfterSettle(orderDetailList, orderInfo.getOrderNo());
-        
+
+
+        orderInfo.setSettleTime(LocalDateTime.now())
+                .setTotalAmount(settleOrderDTO.getTotalAmount())
+                .setActualAmount(settleOrderDTO.getActualAmount())
+                .setDiscountAmount(settleOrderDTO.getDiscountAmount())
+                .setOrderStatus(OrderStatusEnum.SETTLED.getCode()); // 1-已结算
+
+
+        this.updateById(orderInfo);
         log.info("订单结算成功，订单ID：{}", settleOrderDTO.getOrderId());
         return queryOrderById(settleOrderDTO.getOrderId());
     }
@@ -242,7 +221,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     /**
      * 验证订单明细
      */
-    private void validateOrderDetails(List<CreateOrderDetailDTO> orderDetails, VipInfo vipInfo) {
+    private void handelOrderDetails(List<CreateOrderDetailDTO> orderDetails, VipInfo vipInfo) {
         for (CreateOrderDetailDTO detail : orderDetails) {
             if (detail.getDetailType().equals(ServiceTypeEnum.PRODUCT.getValue())) { // 产品类型
                 ServerProduct product = serverProductService.getById(detail.getBid());
@@ -259,18 +238,53 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
         }
     }
+
+    /**
+     * 处理会员券
+     * @param dto
+     */
+    private void handelTicket(SettleOrderDTO dto){
+        Map<Object, Object> ticketMap = vipInfoTicketService.getBaseMapper().selectByIds(dto.getTicketIds())
+                .stream().collect(Collectors.toMap(
+                        VipInfoTicket::getId,
+                        ticket -> ticket
+                ));
+        List<CreateOrderDetailDTO> orderDetails = dto.getOrderDetails()
+                .stream()
+                .filter(detail -> detail.getDetailType().equals(ServiceTypeEnum.SERVER.getValue()))
+                .toList();
+        for (Long ticketId : dto.getTicketIds()){
+            if (!ticketMap.containsKey(ticketId))
+                throw new BusinessException("会员券不存在");
+            VipInfoTicket ticket = (VipInfoTicket) ticketMap.get(ticketId);
+
+            if (ticket.getStatus().equals(TicketStatusEnum.USED.getStatus())){
+                throw new BusinessException("会员券已使用");
+            }else {
+                vipInfoTicketService.lambdaUpdate()
+                        .eq(VipInfoTicket::getId, ticketId)
+                        .set(VipInfoTicket::getStatus, TicketStatusEnum.USED.getStatus())
+                        .update();
+            }
+
+        }
+
+    }
     
     /**
-     * 创建订单明细
+     * 完善订单明细
      */
     private List<OrderDetailEntity> createOrderDetails(List<CreateOrderDetailDTO> detailDTOs, Long orderId, String orderNo) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
         List<OrderDetailEntity> orderDetails = new ArrayList<>();
         for (CreateOrderDetailDTO detailDTO : detailDTOs) {
             OrderDetailEntity detail = new OrderDetailEntity();
             BeanUtil.copyProperties(detailDTO, detail);
             detail.setDetailCode(CodeUtils.generateByTime(PrefixConst.ORDER_DETAIL))
                     .setOrderId(orderId)
-                    .setOrderCode(orderNo);
+                    .setOrderCode(orderNo)
+                    .setOrderStatus(OrderStatusEnum.UNSETTLED.getCode())
+                    .setOrgId(auth.getOrgId());
             orderDetails.add(detail);
         }
         return orderDetails;

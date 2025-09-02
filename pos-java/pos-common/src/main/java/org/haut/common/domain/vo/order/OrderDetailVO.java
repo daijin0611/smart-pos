@@ -47,7 +47,7 @@ public class OrderDetailVO {
      * 明细编号
      */
     @Schema(description = "明细编号")
-    private String detaileCode;
+    private String detailCode;
     
     /**
      * 订单ID

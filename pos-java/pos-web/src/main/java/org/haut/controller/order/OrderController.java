@@ -12,6 +12,7 @@ import org.haut.common.domain.dto.order.CreateOrderDTO;
 import org.haut.common.domain.dto.order.SettleOrderDTO;
 import org.haut.common.domain.query.order.OrderInfoQuery;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.server.order.entity.OrderInfoEntity;
@@ -44,10 +45,9 @@ public class OrderController {
     
     @PostMapping("/add-order")
     @Operation(summary = "创建订单", description = "创建新的订单，包含订单明细")
-    public JsonVO<OrderInfoVO> addOrder(@Valid @RequestBody CreateOrderDTO createOrderDTO) {
+    public JsonVO<OrderCreateVO> addOrder(@Valid @RequestBody CreateOrderDTO createOrderDTO) {
         log.info("创建订单请求：{}", createOrderDTO);
-        OrderInfoVO orderInfo = orderInfoService.addOrder(createOrderDTO);
-        return JsonVO.success(orderInfo);
+        return JsonVO.success(orderInfoService.addOrderWithBed(createOrderDTO));
     }
     
     @PostMapping("/settle-order")

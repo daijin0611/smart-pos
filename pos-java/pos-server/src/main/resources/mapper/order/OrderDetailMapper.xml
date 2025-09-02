@@ -9,7 +9,7 @@
         <result column="update_time" property="updateTime" />
         <result column="is_delete" property="isDelete" />
         <result column="remark" property="remark" />
-        <result column="detaile_code" property="detaileCode" />
+        <result column="detail_code" property="detaileCode" />
         <result column="order_id" property="orderId" />
         <result column="order_code" property="orderCode" />
         <result column="user_id" property="userId" />
@@ -64,7 +64,7 @@
     <!-- 批量插入订单明细 -->
     <insert id="batchInsert">
         INSERT INTO order_detail (
-            create_time, update_time, is_delete, remark, detaile_code, order_id, order_code,
+            create_time, update_time, is_delete, remark, detail_code, order_id, order_code,
             user_id, user_name, detail_type, bid, std_price, true_price, quantity, server_type
         ) VALUES
         <foreach collection="orderDetails" item="item" separator=",">

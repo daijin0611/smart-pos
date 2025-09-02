@@ -58,15 +58,4 @@ public class RechargeDTO {
         private BigDecimal kpi;
     }
 
-    @Data
-    @Accessors(chain = true)
-    @Schema(description = "支付信息")
-    public static class PaymentInfoDTO {
-        @Schema(description = "支付类型")
-        private Integer paymentType;
-        @Schema(description = "支付名称")
-        private String paymentName;
-        @Schema(description = "支付金额")
-        private BigDecimal paymentAmount;
-    }
 }

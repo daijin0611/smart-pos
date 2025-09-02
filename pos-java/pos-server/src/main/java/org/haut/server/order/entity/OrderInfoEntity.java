@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -112,7 +113,7 @@ public class OrderInfoEntity {
      * 结算时间
      */
     @Schema(description = "结算时间")
-    private Date settleTime;
+    private LocalDateTime settleTime;
 
     /**
      * 应收金额

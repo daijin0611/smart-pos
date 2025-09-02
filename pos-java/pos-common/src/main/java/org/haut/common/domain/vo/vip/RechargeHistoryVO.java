@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.haut.common.domain.dto.vip.PaymentInfoDTO;
 import org.haut.common.domain.dto.vip.RechargeDTO;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -122,7 +123,7 @@ public class RechargeHistoryVO {
     /**
      * 支付信息
      */
-    private List<RechargeDTO.PaymentInfoDTO> paymentInfoList;
+    private List<PaymentInfoDTO> paymentInfoList;
 
     /**
      * 业绩信息

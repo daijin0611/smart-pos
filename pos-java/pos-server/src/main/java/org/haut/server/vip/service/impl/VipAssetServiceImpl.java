@@ -49,6 +49,13 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
         log.info("会员资产：{}", vipAsset);
         return assetNum;
     }
+
+    @Override
+    public VipAsset updateAsset(VipAsset asset) {
+        return null;
+    }
+
+
 }
 
 @Mapper(componentModel = "spring")

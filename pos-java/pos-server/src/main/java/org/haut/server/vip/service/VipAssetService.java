@@ -12,4 +12,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface VipAssetService extends IService<VipAsset> {
 
     String createAsset(AssetCreateDTO dto);
+
+    VipAsset updateAsset(VipAsset asset);
 }

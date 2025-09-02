@@ -243,9 +243,9 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         log.info("业绩明细：{}", kpi);
 
         // 创建支付明细
-        List<RechargeDTO.PaymentInfoDTO> paymentInfoList = dto.getPaymentInfoList();
+        List<PaymentInfoDTO> paymentInfoList = dto.getPaymentInfoList();
         BigDecimal reducePay = paymentInfoList.stream()
-                .map(RechargeDTO.PaymentInfoDTO::getPaymentAmount)
+                .map(PaymentInfoDTO::getPaymentAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         if (reducePay.compareTo(dto.getRechargeValue()) != 0){
             throw new BusinessException("支付金额与充值金额不一致");

@@ -45,14 +45,14 @@ public class CreateOrderDetailDTO {
     /**
      * 标准价格
      */
-    @NotNull(message = "标准价格不能为空")
+//    @NotNull(message = "标准价格不能为空")
     @Schema(description = "标准价格")
     private BigDecimal stdPrice;
 
     /**
      * 实际单价
      */
-    @NotNull(message = "实际单价不能为空")
+//    @NotNull(message = "实际单价不能为空")
     @Schema(description = "实际单价")
     private BigDecimal truePrice;
 

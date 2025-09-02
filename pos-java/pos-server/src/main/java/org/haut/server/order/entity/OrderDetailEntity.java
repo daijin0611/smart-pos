@@ -14,7 +14,7 @@ import java.util.Date;
  * 
  * @author mhding
  * @version 1.0
- * @since 2025-01-29
+ * @since 2025-09-01
  * @TableName order_detail
  */
 @TableName(value = "order_detail")
@@ -126,4 +126,16 @@ public class OrderDetailEntity {
      */
     @Schema(description = "结算时间")
     private LocalDateTime settledTime;
+
+    /**
+     * 订单状态
+     */
+    @Schema(description = "订单状态")
+    private Integer orderStatus;
+
+    /**
+     * 门店id
+     */
+    @Schema(description = "门店ID")
+    private Long orgId;
 }

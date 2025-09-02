@@ -1,64 +1,58 @@
-package org.haut.common.domain.dto.order;
+package org.haut.common.domain.vo.order;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * 创建订单请求DTO
- * 
- * @author mhding
- * @version 1.0
- * @since 2025-01-29
- */
 @Data
+@Schema(description = "创建订单响应VO")
 @Accessors(chain = true)
-@Schema(description = "创建订单请求DTO")
-public class CreateOrderDTO {
-    
+public class OrderCreateVO {
+
+    /**
+     * 订单ID
+     */
+    private Long id;
+
     /**
      * 会员ID（可选，散客时为null）
      */
     @Schema(description = "会员ID（可选，散客时为null）")
     private Long vipId;
-    
+
     /**
      * 顾客名称
      */
     @Schema(description = "顾客名称")
     private String vipName;
-    
+
     /**
      * 会员卡号
      */
     @Schema(description = "会员卡号")
     private String vipCardNumber;
-    
+
     /**
      * 会员电话号码
      */
     @Schema(description = "会员电话号码")
     private String vipPhoneNumber;
-    
+
     /**
      * 顾客类型（0 会员，1 散客）
      */
-    @NotNull(message = "顾客类型不能为空")
     @Schema(description = "顾客类型（0 会员，1 散客）")
     private Integer customerType;
-    
+
     /**
      * 床位ID
      */
     @Schema(description = "床位ID(可选)")
     private Long bedId;
-    
+
     /**
      * 床位名称
      */
@@ -70,12 +64,15 @@ public class CreateOrderDTO {
      */
     @Schema(description = "备注信息")
     private String remark;
-    
-    /**
-     * 订单明细列表
-     */
-    @NotEmpty(message = "订单明细不能为空")
-    @Schema(description = "订单明细列表（至少一个项目明细）")
-    private List<CreateOrderDetailDTO> orderDetails;
 
+    /**
+     * 订单编号
+     */
+    @Schema(description = "销售单号")
+    private String orderCode;
+
+    /**
+     * 订单明细
+     */
+    private List<OrderDetailVO> orderDetailVOList;
 }

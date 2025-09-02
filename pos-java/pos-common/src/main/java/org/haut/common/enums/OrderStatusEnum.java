@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum OrderStatusEnum {
-    CREATED(1,"已创建"),
+    UNSETTLED(1,"未结算"),
     SETTLED(2,"已结算"),
     CANCELED(3,"已取消"),
     ROLLBACK(4,"已冲正")

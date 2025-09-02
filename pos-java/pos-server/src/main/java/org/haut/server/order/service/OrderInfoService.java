@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.dto.order.CreateOrderDTO;
 import org.haut.common.domain.dto.order.SettleOrderDTO;
 import org.haut.common.domain.query.order.OrderInfoQuery;
+import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.server.order.entity.OrderInfoEntity;
 
@@ -22,11 +23,11 @@ public interface OrderInfoService extends IService<OrderInfoEntity> {
     
     /**
      * 创建订单
-     * 
+     *
      * @param createOrderDTO 创建订单请求DTO
      * @return 订单信息VO
      */
-    OrderInfoVO addOrder(CreateOrderDTO createOrderDTO);
+    OrderCreateVO addOrderWithBed(CreateOrderDTO createOrderDTO);
     
     /**
      * 结算订单
