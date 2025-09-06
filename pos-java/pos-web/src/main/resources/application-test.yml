@@ -112,3 +112,6 @@ logging:
     org.apache.ibatis: DEBUG
     java.sql: DEBUG
     javax.sql: DEBUG
+server:
+  servlet:
+    context-path: /test-api

@@ -1,3 +1,5 @@
+
+
 spring:
   data: # 数据配置
     redis: # Redis配置
@@ -112,3 +114,6 @@ logging:
     org.apache.ibatis: DEBUG
     java.sql: DEBUG
     javax.sql: DEBUG
+server:
+  servlet:
+    context-path: /api
