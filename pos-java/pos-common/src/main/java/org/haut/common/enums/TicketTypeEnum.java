@@ -8,8 +8,8 @@ import lombok.Getter;
  */
 @Getter
 public enum TicketTypeEnum {
-    CONSUMER(1, "代金券"),
-    ITEM(2, "体验券");
+    CONSUMER(0, "代金券"),
+    ITEM(1, "体验券");
 
     private final Integer value;
     private final String type;
