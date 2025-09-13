@@ -21,7 +21,9 @@ import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
 * @author Cdh
@@ -77,9 +79,17 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
         VipTicket entity = convert.toEntity(ticket);
         this.baseMapper.updateById(entity);
 
+        // 代金券类型直接结束
+        if (ticket.getTicketType().equals(TicketTypeEnum.CONSUMER.getValue()))
+            return;
+
         // 更新关联表
+        if (ticket.getServerItemIds() == null || ticket.getServerItemIds().isEmpty())
+            throw  new BusinessException("请选择关联项目");
+
         Long ticketId = entity.getId();
-        List<VipTicketDetail> details = ticket.getServerItemIds().stream()
+        List<VipTicketDetail> details = ticket
+                .getServerItemIds().stream()
                 .map(itemId -> new VipTicketDetail().setTicketId(ticketId).setServerItemId(itemId))
                 .toList();
         // 先清除所有的关联id

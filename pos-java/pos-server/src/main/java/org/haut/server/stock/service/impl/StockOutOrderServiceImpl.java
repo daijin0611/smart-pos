@@ -72,7 +72,7 @@ public class StockOutOrderServiceImpl extends ServiceImpl<StockOutOrderMapper, S
         Page<StockOutOrder> page = new Page<>(query.getPageNum(), query.getPageSize());
         Page<StockOutOrder> result = this.page(page, queryWrapper);
         if (result.getTotal() == 0) {
-            throw new BusinessException("没有找到符合条件的出库订单");
+            return new PageDTO<>();
         }
 
         PageDTO<StockOutOrderVO> stockOutOrderVOPageDTO = PageDTO.create(result, StockOutOrderVO.class);

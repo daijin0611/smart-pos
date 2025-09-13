@@ -78,7 +78,7 @@
                 and vra.active_status = #{query.activeStatus}
             </if>
             <if test="query.activeName != null and query.activeName != ''">
-                and vra.active_name like concat('%',#{query.ticketName},'%')
+                and vra.active_name like concat('%',#{query.activeName},'%')
             </if>
             <if test="orgId != null">
                 and vra.org_id = #{orgId}

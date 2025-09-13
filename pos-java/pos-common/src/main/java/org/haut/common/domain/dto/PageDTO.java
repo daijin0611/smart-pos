@@ -18,10 +18,10 @@ import java.util.function.Function;
 @Schema(description = "分页对象")
 public class PageDTO<T> {
     @Schema(description = "当前页码")
-    private Long pageNum;
+    private Long pageNum = 1L;
 
     @Schema(description = "每页大小")
-    private Long pageSize;
+    private Long pageSize = 20L;
 
     @Schema(description = "总记录数")
     private Long total;
