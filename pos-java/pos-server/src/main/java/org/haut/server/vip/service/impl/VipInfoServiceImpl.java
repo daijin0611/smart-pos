@@ -43,8 +43,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 interface VipInfoConvert{
@@ -193,7 +195,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                 .setRechargeValue(dto.getRechargeValue())
                 .setRechargeStatus(RechargeStatusEnum.SUCCESS.getValue())
                 .setRechargeType(RechargeTypeEnum.STORE.getType())
-                .setRechargeTime(new Date())
+                .setRechargeTime(LocalDateTime.now())
                 .setOrgId(auth.getOrgId())
                 .setUserId(auth.getUserId())
                 .setUserName(auth.getUserName());
@@ -310,7 +312,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         // 创建优惠券资产
         if (!active.getActiveType().equals(RechargeActiveTypeEnum.AMOUNT.getValue())){
             StringBuilder ticketInfo = new StringBuilder();
-            active.getTicketList().forEach(ticket -> {
+            Integer sum = active.getTicketList().stream().map(ticket -> {
                 VipInfoTicketCreateDTO ticketCreateDTO = new VipInfoTicketCreateDTO()
                         .setVipInfoId(dto.getVipId())
                         .setRemark("充值活动赠送")
@@ -320,11 +322,14 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                         .setTicketName(ticket.getTicketName())
                         .setNumber(ticket.getNumber())
                         .setVipTicketId(ticket.getTicketId())
-                        .setActiveId(dto.getActiveId());
+                        .setActiveId(dto.getActiveId())
+                        .setRechargeHistoryCode(history.getHistoryCode());
                 String vipInfoTicket = vipInfoTicketService.createVipInfoTicket(ticketCreateDTO);
                 ticketInfo.append(vipInfoTicket);
-            });
+                return ticket.getNumber();
+            }).mapToInt(i -> i).sum();
             history.setTicketInfo(ticketInfo.toString());
+            history.setTicketNum(sum);
         }
     }
 

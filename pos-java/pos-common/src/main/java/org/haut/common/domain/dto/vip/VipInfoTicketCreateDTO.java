@@ -26,4 +26,6 @@ public class VipInfoTicketCreateDTO {
     private Integer number;
     @Schema(description = "活动id", example = "1")
     private Long activeId;
+    @Schema(description = "充值历史code")
+    private String rechargeHistoryCode;
 }

@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.haut.common.domain.dto.vip.VipRechargeActiveAddDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveStatusDTO;
+import org.haut.common.domain.query.vip.ActiveStatQuery;
+import org.haut.common.domain.vo.vip.RechargeHistoryVO;
 import org.haut.server.vip.entity.VipRechargeActive;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;
@@ -44,4 +46,5 @@ public interface VipRechargeActiveService extends IService<VipRechargeActive> {
      * @return 操作结果
      */
     Boolean updateStatus(VipRechargeActiveStatusDTO statusDTO);
+
 }

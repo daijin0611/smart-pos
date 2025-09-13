@@ -87,12 +87,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         OrderInfoEntity orderInfo = orderConvert.toEntity(createOrderDTO);
         orderInfo.setOrderNo(orderNo)
                 .setOrderTime(new Date())
-                .setOrderStatus(OrderStatusEnum.UNSETTLED.getCode())
-                .setOrgId(auth.getOrgId()); // 1-未结算
+                .setOrderStatus(OrderStatusEnum.UNSETTLED.getCode())// 1-未结算
+                .setOrgId(auth.getOrgId());
 
         this.save(orderInfo);
         
-        // 5. 创建订单明细
         List<OrderDetailEntity> orderDetails = createOrderDetails(createOrderDTO.getOrderDetails(), orderInfo.getId(), orderNo);
         orderDetailService.saveBatch(orderDetails);
         
@@ -112,7 +111,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (orderInfo == null) {
             throw new BusinessException("订单不存在");
         }
-        
         if (orderInfo.getOrderStatus() != 0) {
             throw new BusinessException("订单状态异常，无法结算");
         }

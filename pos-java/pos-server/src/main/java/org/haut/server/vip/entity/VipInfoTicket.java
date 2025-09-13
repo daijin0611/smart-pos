@@ -102,4 +102,9 @@ public class VipInfoTicket {
      * 机构id
      */
     private Long orgId;
+
+    /**
+     * 充值记录id
+     */
+    private String rechargeHistoryCode;
 }

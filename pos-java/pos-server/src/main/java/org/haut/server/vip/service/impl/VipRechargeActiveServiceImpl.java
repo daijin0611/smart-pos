@@ -12,6 +12,8 @@ import org.haut.common.domain.dto.server.RelatedTicketDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveAddDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveStatusDTO;
+import org.haut.common.domain.query.vip.ActiveStatQuery;
+import org.haut.common.domain.vo.vip.RechargeHistoryVO;
 import org.haut.common.enums.RechargeActiveTypeEnum;
 import org.haut.server.vip.entity.VipRechargeActive;
 import org.haut.server.vip.entity.VipRechargeActiveTicket;
@@ -19,8 +21,10 @@ import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
+import org.haut.server.vip.entity.VipRechargeHistory;
 import org.haut.server.vip.mapper.VipRechargeActiveMapper;
 import org.haut.server.vip.mapper.VipRechargeActiveTicketMapper;
+import org.haut.server.vip.mapper.VipRechargeHistoryMapper;
 import org.haut.server.vip.service.VipRechargeActiveService;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
@@ -43,7 +47,6 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
 
     private final VipRechargeActiveConvert vipRechargeActiveConvert;
     private final VipRechargeActiveTicketMapper vipRechargeActiveTicketMapper;
-
     /**
      * 查询充值活动列表
      * 
@@ -112,6 +115,7 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
                 .update();
         return true;
     }
+
 }
 
 @Mapper(componentModel = "spring")

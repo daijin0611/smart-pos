@@ -3,12 +3,15 @@ package org.haut.controller.vip;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.vip.RechargeHistoryListDTO;
+import org.haut.common.domain.query.vip.ActiveStatQuery;
 import org.haut.common.domain.query.vip.RechargeHistoryQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.vip.RechargeHistoryVO;
+import org.haut.common.domain.vo.vip.StatRechargeActiveVO;
 import org.haut.server.vip.service.VipRechargeHistoryService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -35,4 +38,10 @@ public class RechargeHistoryController {
         return null;
     }
 
+
+    @PostMapping
+    @Operation(description = "统计充值活动", summary = "统计充值活动")
+    public JsonVO<StatRechargeActiveVO> statRechargeActive(@RequestBody @Validated ActiveStatQuery query){
+        return JsonVO.success(vipRechargeHistoryService.statRechargeActive(query));
+    }
 }

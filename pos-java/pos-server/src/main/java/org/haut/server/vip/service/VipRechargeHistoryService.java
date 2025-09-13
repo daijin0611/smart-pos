@@ -1,7 +1,9 @@
 package org.haut.server.vip.service;
 
+import org.haut.common.domain.query.vip.ActiveStatQuery;
 import org.haut.common.domain.query.vip.RechargeHistoryQuery;
 import org.haut.common.domain.vo.vip.RechargeHistoryVO;
+import org.haut.common.domain.vo.vip.StatRechargeActiveVO;
 import org.haut.server.vip.entity.VipRechargeHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -15,4 +17,7 @@ import java.util.List;
 public interface VipRechargeHistoryService extends IService<VipRechargeHistory> {
 
     List<RechargeHistoryVO> getList(RechargeHistoryQuery query);
+
+    StatRechargeActiveVO statRechargeActive(ActiveStatQuery query);
+
 }

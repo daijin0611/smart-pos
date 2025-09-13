@@ -9,8 +9,10 @@ import java.util.List;
 
 import org.haut.common.domain.dto.vip.VipRechargeActiveAddDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveStatusDTO;
+import org.haut.common.domain.query.vip.ActiveStatQuery;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.domain.vo.vip.RechargeHistoryVO;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;
 import org.haut.server.vip.service.VipRechargeActiveService;
 import org.springframework.validation.annotation.Validated;
@@ -67,4 +69,5 @@ public class RechargeActiveController {
         vipRechargeActiveService.updateStatus(statusDTO);
         return JsonVO.success("状态修改成功");
     }
+
 }

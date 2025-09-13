@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -62,7 +63,7 @@ public class VipRechargeHistory {
     /**
      * 充值时间
      */
-    private Date rechargeTime;
+    private LocalDateTime rechargeTime;
 
     /**
      * 关联充值会员id
@@ -118,6 +119,11 @@ public class VipRechargeHistory {
      * 赠券信息
      */
     private String ticketInfo;
+
+    /**
+     * 赠券数量
+     */
+    private Integer ticketNum;
 
     /**
      * 操作员名称
