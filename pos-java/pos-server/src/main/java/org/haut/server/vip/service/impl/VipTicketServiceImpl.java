@@ -20,10 +20,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
 * @author Cdh
@@ -47,7 +44,7 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
             throw new BusinessException("优惠券名称已存在");
         }
         // 插入优惠券
-        VipTicket entity = convert.toEntity(ticket);
+        VipTicket entity = convert.toEntity(ticket).setOrgId(auth.getOrgId());
         this.baseMapper.insert(entity);
 
         // 插入关联表

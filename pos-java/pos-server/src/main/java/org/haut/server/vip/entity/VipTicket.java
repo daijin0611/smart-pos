@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * 会员优惠券
@@ -12,6 +13,7 @@ import lombok.Data;
  */
 @TableName(value ="vip_ticket")
 @Data
+@Accessors(chain = true)
 public class VipTicket {
     /**
      * 主键
