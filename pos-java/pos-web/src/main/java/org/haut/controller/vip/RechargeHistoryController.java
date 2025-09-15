@@ -1,9 +1,7 @@
 package org.haut.controller.vip;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.vip.RechargeHistoryListDTO;
@@ -39,7 +37,7 @@ public class RechargeHistoryController {
     }
 
 
-    @PostMapping
+    @PostMapping("/stat-active")
     @Operation(description = "统计充值活动", summary = "统计充值活动")
     public JsonVO<StatRechargeActiveVO> statRechargeActive(@RequestBody @Validated ActiveStatQuery query){
         return JsonVO.success(vipRechargeHistoryService.statRechargeActive(query));

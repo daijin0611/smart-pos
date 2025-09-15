@@ -1,5 +1,6 @@
 package org.haut.server.vip.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +16,11 @@ import org.haut.server.vip.service.VipRechargeHistoryService;
 import org.haut.server.vip.mapper.VipRechargeHistoryMapper;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Mapper(componentModel = "spring")
 interface VipRechargeHistoryConvert {
@@ -66,21 +69,36 @@ public class VipRechargeHistoryServiceImpl extends ServiceImpl<VipRechargeHistor
                         query.getEndTime())
                 .orderByDesc(VipRechargeHistory::getId)
         );
+        if (vipRechargeHistories == null || vipRechargeHistories.isEmpty())
+            return new StatRechargeActiveVO();
+
         // 总赠送优惠券数量
-        int ticketSum = vipRechargeHistories.stream().mapToInt(VipRechargeHistory::getTicketNum).sum();
+        int ticketSum = vipRechargeHistories.stream()
+                        .filter(Objects::nonNull)
+                        .mapToInt(item -> item.getTicketNum() == null ? 0 : item.getTicketNum())
+                        .sum();
         // 总赠送金额
         BigDecimal presentValueSum = vipRechargeHistories.stream()
-                .map(VipRechargeHistory::getPresentValue)
+                .map(e-> e.getPresentValue() == null ? BigDecimal.ZERO : e.getPresentValue())
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
         // 总充值金额
         BigDecimal rechargeValueSum = vipRechargeHistories.stream()
-                .map(VipRechargeHistory::getRechargeValue)
+                .map(e-> e.getRechargeValue() == null ? BigDecimal.ZERO : e.getRechargeValue())
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
         // 总人数
-        int vipNum = vipRechargeHistories.stream().map(VipRechargeHistory::getVipId).distinct().toList().size();
-        return null;
+        int vipNum = vipRechargeHistories.stream()
+                .map(VipRechargeHistory::getVipId)
+                .distinct()
+                .toList()
+                .size();
+        return new StatRechargeActiveVO()
+                .setTicketCount(ticketSum)
+                .setPresentValueCount(presentValueSum)
+                .setRechargeValueCount(rechargeValueSum)
+                .setVipCount(vipNum)
+                .setRechargeHistoryVOList(convert.toVO(vipRechargeHistories));
     }
 }
 

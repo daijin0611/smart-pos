@@ -76,7 +76,7 @@
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
-            <!--redis-->
+            <!--Redis-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -88,7 +88,7 @@
                 <version>${spring-boot.version}</version>
             </dependency>
 
-            <!--mybatis-plus-->
+            <!--Mybatis-Plus-->
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-bom</artifactId>
@@ -96,7 +96,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!--druid-->
+            <!--Druid-->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-3-starter</artifactId>
@@ -107,7 +107,7 @@
                 <artifactId>jakarta.servlet-api</artifactId>
                 <version>${jakarta-servlet.version}</version>
             </dependency>
-            <!--mysql-driver-->
+            <!--Mysql-Driver-->
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>

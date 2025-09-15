@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 import org.haut.common.domain.dto.vip.PaymentInfoDTO;
 import org.haut.common.domain.dto.vip.RechargeDTO;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class RechargeHistoryVO {
     /**
      * 充值时间
      */
-    private Date rechargeTime;
+    private LocalDateTime rechargeTime;
 
     /**
      * 关联充值会员id
