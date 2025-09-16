@@ -131,6 +131,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
      * @param vipId
      */
     @Override
+    @Transactional
     public void updateVipBalance(Long vipId) {
         List<VipAsset> vipAssets = vipAssetMapper.selectList(Wrappers.lambdaQuery(VipAsset.class)
                 .eq(VipAsset::getVipId, vipId));
@@ -138,10 +139,9 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                 .map(VipAsset::getAssetBalance)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         log.info("会员{}余额为{}", vipId, balance);
-        this.lambdaUpdate()
+        vipInfoMapper.update(null, Wrappers.lambdaUpdate(VipInfo.class)
                 .eq(VipInfo::getId, vipId)
-                .set(VipInfo::getBalance, balance)
-                .update();
+                .set(VipInfo::getBalance, balance));
         log.info("会员{}余额更新成功，余额为{}", vipId, balance);
     }
 
@@ -269,10 +269,9 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         // 更新会员总余额
         updateVipBalance(dto.getVipId());
         // 更新会员最后充值时间
-        this.lambdaUpdate()
+        vipInfoMapper.update(null, Wrappers.lambdaUpdate(VipInfo.class)
                 .eq(VipInfo::getId, dto.getVipId())
-                .set(VipInfo::getLastRechargeTime, LocalDate.now())
-                .update();
+                .set(VipInfo::getLastRechargeTime, LocalDate.now()));
     }
 
     /**
