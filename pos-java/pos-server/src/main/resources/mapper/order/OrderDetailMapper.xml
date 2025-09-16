@@ -9,7 +9,7 @@
         <result column="update_time" property="updateTime" />
         <result column="is_delete" property="isDelete" />
         <result column="remark" property="remark" />
-        <result column="detail_code" property="detaileCode" />
+        <result column="detail_code" property="detailCode" />
         <result column="order_id" property="orderId" />
         <result column="order_code" property="orderCode" />
         <result column="user_id" property="userId" />

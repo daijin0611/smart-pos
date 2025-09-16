@@ -80,12 +80,6 @@ public class OrderDetailVO {
     private Integer detailType;
     
     /**
-     * 业务类型名称
-     */
-    @Schema(description = "业务类型名称")
-    private String detailTypeName;
-    
-    /**
      * 订单业务ID
      */
     @Schema(description = "订单业务ID")
@@ -96,12 +90,6 @@ public class OrderDetailVO {
      */
     @Schema(description = "业务名称（产品名称、服务名称或疗程券名称）")
     private String businessName;
-    
-    /**
-     * 业务编码（产品编码、服务编码或疗程券编码）
-     */
-    @Schema(description = "业务编码（产品编码、服务编码或疗程券编码）")
-    private String businessCode;
     
     /**
      * 标准价格
@@ -120,24 +108,12 @@ public class OrderDetailVO {
      */
     @Schema(description = "销售数量")
     private Integer quantity;
-    
-    /**
-     * 小计金额（实际单价 * 数量）
-     */
-    @Schema(description = "小计金额（实际单价 * 数量）")
-    private BigDecimal subtotalAmount;
-    
+
     /**
      * 上钟类型（0 点钟，1 加钟，2 轮牌）
      */
     @Schema(description = "上钟类型（0 点钟，1 加钟，2 轮牌）")
     private Integer serverType;
-    
-    /**
-     * 上钟类型名称
-     */
-    @Schema(description = "上钟类型名称")
-    private String serverTypeName;
     
     /**
      * 结算时间

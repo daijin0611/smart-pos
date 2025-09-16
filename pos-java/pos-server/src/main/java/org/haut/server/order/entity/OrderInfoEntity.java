@@ -59,7 +59,7 @@ public class OrderInfoEntity {
      * 销售单号
      */
     @Schema(description = "销售单号")
-    private String orderNo;
+    private String orderCode;
 
     /**
      * 开单时间

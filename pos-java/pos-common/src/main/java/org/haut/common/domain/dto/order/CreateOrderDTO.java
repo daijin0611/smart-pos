@@ -27,24 +27,7 @@ public class CreateOrderDTO {
      */
     @Schema(description = "会员ID（可选，散客时为null）")
     private Long vipId;
-    
-    /**
-     * 顾客名称
-     */
-    @Schema(description = "顾客名称")
-    private String vipName;
-    
-    /**
-     * 会员卡号
-     */
-    @Schema(description = "会员卡号")
-    private String vipCardNumber;
-    
-    /**
-     * 会员电话号码
-     */
-    @Schema(description = "会员电话号码")
-    private String vipPhoneNumber;
+
     
     /**
      * 顾客类型（0 会员，1 散客）
@@ -58,7 +41,7 @@ public class CreateOrderDTO {
      */
     @Schema(description = "床位ID(可选)")
     private Long bedId;
-    
+
     /**
      * 床位名称
      */

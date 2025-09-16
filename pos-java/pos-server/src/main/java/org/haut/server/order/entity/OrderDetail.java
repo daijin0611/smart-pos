@@ -1,147 +1,123 @@
 package org.haut.server.order.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import org.springframework.cglib.core.Local;
 
 /**
- * 订单明细表实体类
- * 
- * @author mhding
- * @version 1.0
- * @since 2025-09-01
+ * 订单明细表
  * @TableName order_detail
  */
-@TableName(value = "order_detail")
+@TableName(value ="order_detail")
 @Data
 @Accessors(chain = true)
-@Schema(description = "订单明细表")
-public class OrderDetailEntity {
+public class OrderDetail {
     /**
      * 主键
      */
     @TableId(type = IdType.AUTO)
-    @Schema(description = "主键ID")
     private Long id;
 
     /**
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)
-    @Schema(description = "创建时间")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    @Schema(description = "更新时间")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * 删除状态(0 存在，1 删除)
      */
-    @Schema(description = "删除状态(0 存在，1 删除)")
+    @TableLogic
     private Integer isDelete;
 
     /**
      * 备注
      */
-    @Schema(description = "备注信息")
     private String remark;
 
     /**
-     * 明细编号
+     * 
      */
-    @Schema(description = "明细编号")
     private String detailCode;
 
     /**
      * 订单id
      */
-    @Schema(description = "订单ID")
     private Long orderId;
 
     /**
      * 订单编号
      */
-    @Schema(description = "订单编号")
     private String orderCode;
 
     /**
      * 员工id
      */
-    @Schema(description = "员工ID")
     private Long userId;
 
     /**
-     * 员工名称
+     * 技师名称
      */
-    @Schema(description = "员工名称")
     private String userName;
 
     /**
-     * 业务类型（0 产品，1 服务，2 疗程券）
+     * 业务类型（0 产品，1 服务，2 套餐）
      */
-    @Schema(description = "业务类型（0 产品，1 服务，2 疗程券）")
     private Integer detailType;
 
     /**
      * 订单业务id
      */
-    @Schema(description = "订单业务ID")
-    private Long bid;
+    private Long serverId;
 
     /**
-     * 业务名称
+     * 订单业务id
      */
-    @Schema(description = "业务名称")
-    private String businessName;
+    private Long bid;
 
     /**
      * 标准价
      */
-    @Schema(description = "标准价格")
     private BigDecimal stdPrice;
 
     /**
      * 实际单价
      */
-    @Schema(description = "实际单价")
     private BigDecimal truePrice;
 
     /**
      * 销售数量
      */
-    @Schema(description = "销售数量")
     private Integer quantity;
 
     /**
      * 上钟类型（0 点钟，1 加钟，2 轮牌）
      */
-    @Schema(description = "上钟类型（0 点钟，1 加钟，2 轮牌）")
     private Integer serverType;
 
     /**
      * 结算时间
      */
-    @Schema(description = "结算时间")
     private LocalDateTime settledTime;
 
     /**
      * 订单状态
      */
-    @Schema(description = "订单状态")
     private Integer orderStatus;
 
     /**
-     * 门店id
+     * 机构id
      */
-    @Schema(description = "门店ID")
     private Long orgId;
 }
