@@ -184,6 +184,11 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         }
 
         // 初始化充值记录
+
+        Long count = vipAssetService.lambdaQuery()
+                .eq(VipAsset::getVipId, dto.getVipId())
+                .count();
+
         VipRechargeHistory history = new VipRechargeHistory()
                 .setHistoryCode(CodeUtils.generateByTime(PrefixConst.RECHARGE_HISTORY))
                 .setVipId(dto.getVipId())
@@ -198,7 +203,9 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                 .setRechargeTime(LocalDateTime.now())
                 .setOrgId(auth.getOrgId())
                 .setUserId(auth.getUserId())
-                .setUserName(auth.getUserName());
+                .setUserName(auth.getUserName())
+                .setIsRenewal(count.equals(0L) ? 0 : 1); // 有会员卡说明是续费充值
+
 
         // 创建本金资产
         String assetNum = vipAssetService.createAsset(new AssetCreateDTO()

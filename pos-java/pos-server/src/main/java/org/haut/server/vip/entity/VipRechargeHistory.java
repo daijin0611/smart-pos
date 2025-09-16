@@ -142,4 +142,9 @@ public class VipRechargeHistory {
      * 门店id
      */
     private Long orgId;
+
+    /**
+     * 是否续费充值（0 否，1 是）
+     */
+    private Integer isRenewal;
 }
