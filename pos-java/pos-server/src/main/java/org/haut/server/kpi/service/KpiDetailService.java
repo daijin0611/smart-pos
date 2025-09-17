@@ -1,6 +1,10 @@
 package org.haut.server.kpi.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
+import org.haut.common.domain.query.kpi.KpiListQuery;
+import org.haut.common.domain.vo.kpi.KpiListVO;
 import org.haut.server.kpi.entity.KpiDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -11,5 +15,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface KpiDetailService extends IService<KpiDetail> {
 
-    void createKpiDetail(KpiDetailCreateDTO dto);
+    boolean createKpiDetail(KpiDetailCreateDTO kpiDetailCreateDTO);
+
+    /**
+     * 获取员工业绩明细分页列表
+     *
+     * @param query 查询条件
+     * @return KPI分页列表
+     */
+    PageDTO<KpiListVO> getKpiList(KpiListQuery query);
 }

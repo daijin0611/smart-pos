@@ -1,5 +1,10 @@
 package org.haut.server.kpi.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.lettuce.core.dynamic.annotation.Param;
+import org.haut.common.domain.query.kpi.KpiListQuery;
+import org.haut.common.domain.vo.kpi.KpiListVO;
 import org.haut.server.kpi.entity.KpiDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -11,6 +16,15 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface KpiDetailMapper extends BaseMapper<KpiDetail> {
 
+    /**
+     * 返回值 IPage<KpiListVO>
+     * 根据条件查询员工业绩明细列表（分页）
+     *
+     * @param page 分页参数
+     * @param query 查询条件
+     * @return KPI分页列表
+     */
+    IPage<KpiListVO> selectKpiList(Page<KpiListVO> page, @Param("query") KpiListQuery query);
 }
 
 

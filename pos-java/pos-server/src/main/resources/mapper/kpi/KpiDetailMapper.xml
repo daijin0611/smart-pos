@@ -1,29 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="org.haut.server.kpi.mapper.KpiDetailMapper">
 
-    <resultMap id="BaseResultMap" type="org.haut.server.kpi.entity.KpiDetail">
-            <id property="id" column="id" />
-            <result property="createTime" column="create_time" />
-            <result property="updateTime" column="update_time" />
-            <result property="isDelete" column="is_delete" />
-            <result property="remark" column="remark" />
-            <result property="serviceCode" column="service_code" />
-            <result property="serviceName" column="service_name" />
-            <result property="serviceType" column="service_type" />
-            <result property="itemType" column="item_type" />
-            <result property="userId" column="user_id" />
-            <result property="userName" column="user_name" />
-            <result property="performance" column="performance" />
-            <result property="commission" column="commission" />
-            <result property="orgId" column="org_id"/>
-    </resultMap>
+    <select id="selectKpiList" resultType="org.haut.common.domain.vo.kpi.KpiListVO">
+        SELECT
+        kd.id,
+        su.user_name,
+        so.org_name,
+        kd.commission,
+        kd.create_time
+        FROM
+        kpi_detail kd
+        LEFT JOIN
+        sys_user su ON kd.user_id = su.id
+        LEFT JOIN
+        sys_org so ON su.org_id = so.id
+        <where>
+            <if test="query.username != null and query.username != ''">
+                AND su.username LIKE CONCAT('%', #{query.username}, '%')
+            </if>
+            <if test="query.orgId != null">
+                AND su.org_id = #{query.orgId}
+            </if>
+            <if test="query.beginDate != null and query.beginDate != ''">
+                AND kd.create_time >= #{query.beginDate}
+            </if>
+            <if test="query.endDate != null and query.endDate != ''">
+                AND kd.create_time &lt;= CONCAT(#{query.endDate}, ' 23:59:59')
+            </if>
+        </where>
+        ORDER BY
+        kd.create_time DESC
+    </select>
 
-    <sql id="Base_Column_List">
-        id,create_time,update_time,is_delete,remark,service_code,
-        service_name,service_type,item_type,user_id,user_name,
-        performance,commission,org_id
-    </sql>
 </mapper>
