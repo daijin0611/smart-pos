@@ -72,6 +72,32 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         this.saveBatch(list);
         return orderDetailConvert.toVo(list);
     }
+    
+    /**
+     * 根据订单ID查询订单明细列表
+     *
+     * @param orderId 订单ID
+     * @return 订单明细列表
+     */
+    @Override
+    public List<OrderDetailVO> queryByOrderId(Long orderId) {
+        log.info("查询订单明细列表，订单ID：{}", orderId);
+        
+        if (orderId == null) {
+            throw new BusinessException("订单ID不能为空");
+        }
+        
+        // 使用MyBatis Plus的LambdaQueryWrapper进行查询
+        List<OrderDetailEntity> detailEntities = this.lambdaQuery()
+                .eq(OrderDetailEntity::getOrderId, orderId)
+                .list();
+        
+        // 转换为VO对象
+        List<OrderDetailVO> detailVOs = orderDetailConvert.toVo(detailEntities);
+        
+        log.info("查询到订单明细数量：{}", detailVOs.size());
+        return detailVOs;
+    }
 
     /**
      * 根据不同业务类型处理订单业务信息
