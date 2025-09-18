@@ -17,4 +17,13 @@ public enum ServerItemTypeEnum {
 
     private final Integer value;
     private final String type;
+
+    public static ServerItemTypeEnum getByValue(Integer value) {
+        for (ServerItemTypeEnum item : values()) {
+            if (item.value.equals(value)) {
+                return item;
+            }
+        }
+        return ServerItemTypeEnum.ANOTHER;
+    }
 }
