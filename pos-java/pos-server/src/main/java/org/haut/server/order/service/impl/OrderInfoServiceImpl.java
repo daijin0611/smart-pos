@@ -80,7 +80,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         OrderInfoEntity orderInfo = orderConvert.toEntity(createOrderDTO)
                 .setVipCardNumber(isVip ? vipInfo.getCardNumber() : null)
                 .setVipPhoneNumber(isVip ? vipInfo.getPhoneNumber() : null)
-                .setVipName(isVip ? vipInfo.getName() : createOrderDTO.getCustomName())
+                .setVipName(isVip ? vipInfo.getName() : null)
+                .setCustomerName(isVip ? vipInfo.getName() : createOrderDTO.getCustomerName())
                 .setOrderCode(orderNo)
                 .setOrderTime(new Date())
                 .setOrderStatus(OrderStatusEnum.UNSETTLED.getCode())// 1-未结算
@@ -92,7 +93,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         log.info("订单创建成功，订单号：{}", orderNo);
         return orderConvert.toVO(orderInfo)
-                .setOrderDetailVOList(orderDetailVOS);
+                .setDetails(orderDetailVOS);
     }
     
     @Override
