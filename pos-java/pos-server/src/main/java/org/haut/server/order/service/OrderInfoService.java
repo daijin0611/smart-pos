@@ -31,4 +31,12 @@ public interface OrderInfoService extends IService<OrderInfoEntity> {
      * @return 订单信息VO
      */
     OrderInfoVO settleOrder(OrderSettleDTO settleOrderDTO);
+    
+    /**
+     * 根据订单ID查询订单信息
+     * 
+     * @param orderId 订单ID
+     * @return 订单信息VO
+     */
+    OrderInfoVO queryById(Long orderId);
 }

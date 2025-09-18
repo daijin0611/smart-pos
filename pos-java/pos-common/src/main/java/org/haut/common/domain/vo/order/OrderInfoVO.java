@@ -45,10 +45,10 @@ public class OrderInfoVO {
     private String remark;
     
     /**
-     * 销售单号
+     * 订单编号
      */
-    @Schema(description = "销售单号")
-    private String orderNo;
+    @Schema(description = "订单编号")
+    private String orderCode;
     
     /**
      * 开单时间
@@ -93,16 +93,16 @@ public class OrderInfoVO {
     private String vipPhoneNumber;
     
     /**
-     * 会员余额（结算时的会员余额）
-     */
-    @Schema(description = "会员余额（结算时的会员余额）")
-    private BigDecimal vipBalance;
-    
-    /**
      * 消费前余额
      */
     @Schema(description = "消费前余额")
     private BigDecimal beforeBalance;
+    
+    /**
+     * 消费后余额
+     */
+    @Schema(description = "消费后余额")
+    private BigDecimal afterBalance;
     
     /**
      * 结算时间

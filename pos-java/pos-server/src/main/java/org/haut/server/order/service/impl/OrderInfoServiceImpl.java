@@ -38,6 +38,7 @@ import java.util.*;
 interface OrderConvert {
     OrderInfoEntity toEntity(OrderCreateDTO dto);
     OrderCreateVO toVO(OrderInfoEntity entity);
+    OrderInfoVO toInfoVO(OrderInfoEntity entity);
 }
 
 /**
@@ -100,6 +101,51 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Transactional(rollbackFor = Exception.class)
     public OrderInfoVO settleOrder(OrderSettleDTO settleOrderDTO) {
         return null;
+    }
+    
+    /**
+     * 根据订单ID查询订单信息
+     *
+     * @param orderId 订单ID
+     * @return 订单信息VO
+     */
+    @Override
+    public OrderInfoVO queryById(Long orderId) {
+        log.info("查询订单信息，订单ID：{}", orderId);
+        
+        if (orderId == null) {
+            throw new BusinessException("订单ID不能为空");
+        }
+        
+        // 查询订单基本信息
+        OrderInfoEntity orderInfo = this.getById(orderId);
+        if (orderInfo == null) {
+            throw new BusinessException("订单不存在");
+        }
+        
+        // 转换为VO对象
+        OrderInfoVO orderInfoVO = orderConvert.toInfoVO(orderInfo);
+        
+        // 设置枚举字段名称
+        if (orderInfo.getOrderStatus() != null) {
+            orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfo.getOrderStatus()));
+        }
+        
+        if (orderInfo.getCustomerType() != null) {
+            for (CustomerTypeEnum customerType : CustomerTypeEnum.values()) {
+                if (customerType.getValue().equals(orderInfo.getCustomerType())) {
+                    orderInfoVO.setCustomerTypeName(customerType.getType());
+                    break;
+                }
+            }
+        }
+        
+        // 查询订单明细
+        List<OrderDetailVO> orderDetails = orderDetailService.queryByOrderId(orderId);
+        orderInfoVO.setOrderDetails(orderDetails);
+        
+        log.info("订单查询成功，订单编号：{}", orderInfo.getOrderCode());
+        return orderInfoVO;
     }
 
 }

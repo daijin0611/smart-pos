@@ -33,7 +33,6 @@ public class OrderController {
     
     private final OrderInfoService orderInfoService;
     private final OrderDetailService orderDetailService;
-
     // ==========收银相关接口==========
     @PostMapping("/add-order")
     @Operation(summary = "开单", description = "选择床位进行开单的方法")
@@ -47,6 +46,13 @@ public class OrderController {
     public JsonVO<OrderInfoVO> settleOrder(@Valid @RequestBody OrderSettleDTO settleOrderDTO) {
         log.info("结算订单请求：{}", settleOrderDTO);
         OrderInfoVO orderInfo = orderInfoService.settleOrder(settleOrderDTO);
+        return JsonVO.success(orderInfo);
+    }
+    @GetMapping("/query-by-id/{orderId}")
+    @Operation(summary = "根据订单ID查询订单信息", description = "根据订单ID查询订单详细信息，包含订单明细")
+    public JsonVO<OrderInfoVO> queryById(@PathVariable Long orderId) {
+        log.info("查询订单信息，订单ID：{}", orderId);
+        OrderInfoVO orderInfo = orderInfoService.queryById(orderId);
         return JsonVO.success(orderInfo);
     }
 

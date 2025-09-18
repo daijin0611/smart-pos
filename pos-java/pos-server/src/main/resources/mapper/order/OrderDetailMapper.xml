@@ -25,77 +25,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, create_time, update_time, is_delete, remark, detaile_code, order_id, order_code,
+        id, create_time, update_time, is_delete, remark, detail_code, order_id, order_code,
         user_id, user_name, detail_type, bid, std_price, true_price, quantity, server_type, settled_time
     </sql>
-
-    <!-- 根据订单ID查询订单明细列表 -->
-    <select id="queryByOrderId" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List" />
-        FROM order_detail
-        WHERE order_id = #{orderId} AND is_delete = 0
-        ORDER BY create_time ASC
-    </select>
-
-    <!-- 根据订单编号查询订单明细列表 -->
-    <select id="queryByOrderCode" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List" />
-        FROM order_detail
-        WHERE order_code = #{orderCode} AND is_delete = 0
-        ORDER BY create_time ASC
-    </select>
-
-    <!-- 根据业务类型和业务ID查询订单明细列表 -->
-    <select id="queryByDetailTypeAndBid" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List" />
-        FROM order_detail
-        WHERE detail_type = #{detailType} AND bid = #{bid} AND is_delete = 0
-        ORDER BY create_time DESC
-    </select>
-
-    <!-- 根据员工ID查询订单明细列表 -->
-    <select id="queryByUserId" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List" />
-        FROM order_detail
-        WHERE user_id = #{userId} AND is_delete = 0
-        ORDER BY create_time DESC
-    </select>
-
-    <!-- 批量插入订单明细 -->
-    <insert id="batchInsert">
-        INSERT INTO order_detail (
-            create_time, update_time, is_delete, remark, detail_code, order_id, order_code,
-            user_id, user_name, detail_type, bid, std_price, true_price, quantity, server_type
-        ) VALUES
-        <foreach collection="orderDetails" item="item" separator=",">
-            (
-                #{item.createTime}, #{item.updateTime}, #{item.isDelete}, #{item.remark},
-                #{item.detaileCode}, #{item.orderId}, #{item.orderCode}, #{item.userId},
-                #{item.userName}, #{item.detailType}, #{item.bid}, #{item.stdPrice},
-                #{item.truePrice}, #{item.quantity}, #{item.serverType}
-            )
-        </foreach>
-    </insert>
-
-    <!-- 根据订单ID删除订单明细 -->
-    <update id="deleteByOrderId">
-        UPDATE order_detail
-        SET is_delete = 1, update_time = NOW()
-        WHERE order_id = #{orderId} AND is_delete = 0
-    </update>
-
-    <!-- 更新订单明细结算时间 -->
-    <update id="updateSettledTimeByOrderId">
-        UPDATE order_detail
-        SET settled_time = NOW(), update_time = NOW()
-        WHERE order_id = #{orderId} AND is_delete = 0
-    </update>
-
-    <!-- 统计订单明细数量 -->
-    <select id="countByOrderId" resultType="java.lang.Long">
-        SELECT COUNT(1)
-        FROM order_detail
-        WHERE order_id = #{orderId} AND is_delete = 0
-    </select>
 
 </mapper>
