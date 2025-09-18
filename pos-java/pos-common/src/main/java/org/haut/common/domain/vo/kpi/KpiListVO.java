@@ -23,4 +23,21 @@ public class KpiListVO {
 
     @Schema(description = "创建时间")
     private Date createTime;
+
+
+    @Schema(description = "订单编号")
+    private String serviceCode;
+
+    @Schema(description = "项目名称")
+    private String serviceName;
+
+    @Schema(description = "业务类型")
+    private Integer serviceType;
+
+    @Schema(description = "上钟类型")
+    private Integer itemType;
+
+    @Schema(description = "业绩金额")
+    private BigDecimal performance;
+
 }

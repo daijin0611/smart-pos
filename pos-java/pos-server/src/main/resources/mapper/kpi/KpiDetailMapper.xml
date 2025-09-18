@@ -8,7 +8,12 @@
         su.user_name,
         so.org_name,
         kd.commission,
-        kd.create_time
+        kd.create_time,
+        kd.service_code,
+        kd.service_name,
+        kd.service_type,
+        kd.item_type,
+        kd.performance
         FROM
         kpi_detail kd
         LEFT JOIN
