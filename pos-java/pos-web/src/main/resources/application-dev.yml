@@ -112,3 +112,7 @@ logging:
     org.apache.ibatis: DEBUG
     java.sql: DEBUG
     javax.sql: DEBUG
+
+# 幂等性配置
+idempotent:
+  timeout: 60 # 幂等性超时时间(分钟)

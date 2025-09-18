@@ -1,6 +1,7 @@
 package org.haut.server.vip.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -44,6 +45,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -127,14 +129,23 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     }
 
     /**
-     * 更新会员余额
-     * @param vipId
+     * <h1>刷新会员余额</h1>
+     * <p>根据会员id统计查询该会员名下的所有资产，并更新总余额</p>
+     * @param vipId 会员id
      */
     @Override
     @Transactional
     public void updateVipBalance(Long vipId) {
+        if (vipId == null){
+            log.warn("会员id为空");
+            return;
+        }
         List<VipAsset> vipAssets = vipAssetMapper.selectList(Wrappers.lambdaQuery(VipAsset.class)
                 .eq(VipAsset::getVipId, vipId));
+        if (CollectionUtil.isEmpty(vipAssets)){
+            log.warn("会员下没有资产");
+            return;
+        }
         BigDecimal balance = vipAssets.stream()
                 .map(VipAsset::getAssetBalance)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
