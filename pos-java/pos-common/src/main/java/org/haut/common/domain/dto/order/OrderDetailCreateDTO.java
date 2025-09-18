@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Data
 @Accessors(chain = true)
 @Schema(description = "订单明细DTO")
-public class CreateOrderDetailDTO {
+public class OrderDetailCreateDTO {
 
     /**
      * 员工ID

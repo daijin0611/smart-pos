@@ -13,7 +13,8 @@ public enum ServiceTypeEnum {
     PRODUCT(0, "商品"),
     SERVER(1, "服务"),
     CURE_TICKET(2, "治疗券"),
-    RECHARGE(3, "充值");
+    RECHARGE(3, "充值"),
+    UNKNOWN(4, "未知");
 
     private final Integer value;
     private final String type;
@@ -24,6 +25,6 @@ public enum ServiceTypeEnum {
                 return type;
             }
         }
-        return null;
+        return UNKNOWN;
     }
 }

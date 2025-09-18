@@ -1,14 +1,12 @@
 package org.haut.common.domain.dto.order;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import jakarta.validation.constraints.NotNull;
 import org.haut.common.domain.dto.vip.PaymentInfoDTO;
-import org.haut.common.domain.dto.vip.RechargeDTO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,7 +22,7 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 @Schema(description = "结算订单请求DTO")
-public class SettleOrderDTO extends CreateOrderDTO{
+public class OrderSettleDTO extends OrderCreateDTO{
 
     /**
      * 订单ID

@@ -4,10 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
+
 import java.util.List;
 
 /**
@@ -19,8 +18,8 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-@Schema(description = "创建订单请求DTO")
-public class CreateOrderDTO {
+@Schema(description = "开单请求DTO")
+public class OrderCreateDTO {
     
     /**
      * 会员ID（可选，散客时为null）
@@ -35,7 +34,10 @@ public class CreateOrderDTO {
     @NotNull(message = "顾客类型不能为空")
     @Schema(description = "顾客类型（0 会员，1 散客）")
     private Integer customerType;
-    
+
+    @Schema(description = "散客名称")
+    private String customName;
+
     /**
      * 床位ID
      */
@@ -59,6 +61,6 @@ public class CreateOrderDTO {
      */
     @NotEmpty(message = "订单明细不能为空")
     @Schema(description = "订单明细列表（至少一个项目明细）")
-    private List<CreateOrderDetailDTO> orderDetails;
+    private List<OrderDetailCreateDTO> orderDetails;
 
 }
