@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.exception.BusinessException;
+import org.haut.common.exception.IdempotentException;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestValueException;
@@ -67,5 +68,16 @@ public class GlobalExceptionHandler {
     public JsonVO<String> handleMissingRequestValueException(MissingRequestValueException ex) {
         log.error(ex.getMessage(), ex);
         return JsonVO.fail("缺少必填参数");
+    }
+
+    /**
+     * 接口幂等异常处理
+     * @param ex 幂等异常
+     * @return
+     */
+    @ExceptionHandler(IdempotentException.class)
+    public JsonVO<String> handleIdempotentException(IdempotentException ex) {
+        log.error(ex.getMessage(), ex);
+        return JsonVO.create(null,ResultStatus.REPETITIVE_OPERATION.getCode(),ex.getMessage());
     }
 }

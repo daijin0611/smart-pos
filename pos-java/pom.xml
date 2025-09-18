@@ -23,12 +23,14 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>3.2.0</spring-boot.version>
         <lombok.version>1.18.34</lombok.version>
-        <mysql.version>8.0.20</mysql.version>
+        <mysql.version>8.2.0</mysql.version>
         <mybatis-plus.version>3.5.11</mybatis-plus.version>
         <druid.version>1.2.20</druid.version>
         <knife4j.version>4.3.0</knife4j.version>
         <jakarta-servlet.version>6.0.0</jakarta-servlet.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <aspectj.version>1.9.7</aspectj.version>
+        <hutool.version>5.8.18</hutool.version>
     </properties>
 
     <parent>
@@ -109,24 +111,35 @@
             </dependency>
             <!--Mysql-Driver-->
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
 
-            <!--Knife4j-->
+            <!--Knife4j 接口文档-->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
                 <version>${knife4j.version}</version>
             </dependency>
-
+            <!--Mapstruct 对象转换器-->
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
                 <version>${mapstruct.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

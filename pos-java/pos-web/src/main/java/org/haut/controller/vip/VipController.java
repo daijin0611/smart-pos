@@ -1,9 +1,11 @@
 package org.haut.controller.vip;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.annotation.Idempotent;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.vip.*;
 import org.haut.common.domain.query.vip.VipListQuery;
@@ -53,7 +55,9 @@ public class VipController {
 
     @PostMapping("/recharge")
     @Operation(description = "会员充值", summary = "会员充值")
-    public JsonVO<String> recharge(@RequestBody @Validated RechargeDTO dto){
+    public JsonVO<String> recharge(
+            @RequestBody @Validated RechargeDTO dto,
+            @Schema(description = "幂等校验令牌") String token){
         vipInfoService.recharge(dto);
         return JsonVO.success("充值成功");
     }

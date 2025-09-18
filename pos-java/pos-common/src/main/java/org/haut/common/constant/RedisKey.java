@@ -7,4 +7,5 @@ package org.haut.common.constant;
 public interface RedisKey {
 
     String JWT_BLACK_LIST = "jwt:blacklist"; // JWT黑名单列表
+    String IDEMPOTENT = "idempotent:%s";
 }
