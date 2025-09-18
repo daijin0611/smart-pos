@@ -36,7 +36,7 @@ public class OrderCreateDTO {
     private Integer customerType;
 
     @Schema(description = "散客名称")
-    private String customName;
+    private String customerName;
 
     /**
      * 床位ID

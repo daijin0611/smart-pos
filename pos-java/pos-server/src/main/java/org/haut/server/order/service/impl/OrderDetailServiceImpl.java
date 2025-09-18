@@ -63,7 +63,11 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
             throw new BusinessException("订单不存在");
 
         List<OrderDetailEntity> list = orderDetails.stream()
-                .map(this::handelDetail)
+                .map(e -> this.handelDetail(e)
+                        .setDetailCode(CodeUtils.generateByTime(PrefixConst.ORDER_DETAIL))
+                        .setOrderId(orderId)
+                        .setOrderCode(orderInfo.getOrderCode())
+                        .setOrderStatus(OrderStatusEnum.UNSETTLED.getCode()))
                 .toList();
         this.saveBatch(list);
         return orderDetailConvert.toVo(list);
@@ -75,8 +79,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
      * @return 订单明细VO
      */
     private OrderDetailEntity handelDetail(OrderDetailCreateDTO dto){
-        Integer serverType = dto.getServerType();
-        ServiceTypeEnum type = ServiceTypeEnum.getByValue(serverType);
+        Integer detailType = dto.getDetailType();
+        ServiceTypeEnum type = ServiceTypeEnum.getByValue(detailType);
         OrderDetailEntity detail = orderDetailConvert.toEntity(dto);
         switch (type){
             case SERVER -> {

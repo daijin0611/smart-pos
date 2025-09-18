@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -14,7 +13,7 @@ import java.util.Date;
  * 
  * @author mhding
  * @version 1.0
- * @since 2025-01-29
+ * @since 2025-09-18
  * @TableName order_info
  */
 @TableName(value = "order_info")
@@ -56,9 +55,9 @@ public class OrderInfoEntity {
     private String remark;
 
     /**
-     * 销售单号
+     * 订单编号
      */
-    @Schema(description = "销售单号")
+    @Schema(description = "订单编号")
     private String orderCode;
 
     /**
@@ -74,15 +73,26 @@ public class OrderInfoEntity {
     private Integer orderStatus;
 
     /**
-     * 会员id
+     * 客户姓名
+     */
+    @Schema(description = "客户姓名")
+    private String customerName;
+
+    /**
+     * 顾客类型（0 会员，1 散客）
+     */
+    @Schema(description = "顾客类型（0 会员，1 散客）")
+    private Integer customerType;
+    /**
+     * 会员ID
      */
     @Schema(description = "会员ID")
     private Long vipId;
 
     /**
-     * 顾客名称
+     * 会员名称
      */
-    @Schema(description = "顾客名称")
+    @Schema(description = "会员名称")
     private String vipName;
 
     /**
@@ -92,16 +102,10 @@ public class OrderInfoEntity {
     private String vipCardNumber;
 
     /**
-     * 会员电话号
+     * 会员电话号码
      */
     @Schema(description = "会员电话号码")
     private String vipPhoneNumber;
-
-    /**
-     * 会员余额（结算时的会员余额）
-     */
-    @Schema(description = "会员余额（结算时的会员余额）")
-    private BigDecimal vipBalance;
 
     /**
      * 消费前余额
@@ -110,10 +114,16 @@ public class OrderInfoEntity {
     private BigDecimal beforeBalance;
 
     /**
+     * 消费后余额
+     */
+    @Schema(description = "消费后余额")
+    private BigDecimal afterBalance;
+
+    /**
      * 结算时间
      */
     @Schema(description = "结算时间")
-    private LocalDateTime settleTime;
+    private Date settleTime;
 
     /**
      * 应收金额
@@ -134,28 +144,10 @@ public class OrderInfoEntity {
     private BigDecimal discountAmount;
 
     /**
-     * 床位id
+     * 床位ID
      */
     @Schema(description = "床位ID")
     private Long bedId;
-
-    /**
-     * 收银人id
-     */
-    @Schema(description = "收银人ID")
-    private Long userId;
-
-    /**
-     * 顾客类型（0 会员，1 散客）
-     */
-    @Schema(description = "顾客类型（0 会员，1 散客）")
-    private Integer customerType;
-
-    /**
-     * 收银人名称
-     */
-    @Schema(description = "收银人名称")
-    private String userName;
 
     /**
      * 床位名称
@@ -164,7 +156,19 @@ public class OrderInfoEntity {
     private String bedName;
 
     /**
-     * 门店id
+     * 收银人ID
+     */
+    @Schema(description = "收银人ID")
+    private Long userId;
+
+    /**
+     * 收银人名称
+     */
+    @Schema(description = "收银人名称")
+    private String userName;
+
+    /**
+     * 门店ID
      */
     @Schema(description = "门店ID")
     private Long orgId;
