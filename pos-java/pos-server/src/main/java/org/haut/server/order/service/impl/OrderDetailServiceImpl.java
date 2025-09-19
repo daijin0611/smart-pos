@@ -27,6 +27,7 @@ import org.haut.server.server.service.ServerProductService;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -52,6 +53,13 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     private final ServerItemService serverItemService;
     private final ServerProductService serverProductService;
     private final ServerCureTicketService serverCureTicketService;
+
+    /**
+     * 创建订单明细
+     * @param orderDetails 订单明细
+     * @param orderId 订单ID
+     * @return 订单明细列表
+     */
     @Override
     @Transactional
     public List<OrderDetailVO> createOrderDetails(List<OrderDetailCreateDTO> orderDetails, Long orderId) {
@@ -67,7 +75,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                         .setDetailCode(CodeUtils.generateByTime(PrefixConst.ORDER_DETAIL))
                         .setOrderId(orderId)
                         .setOrderCode(orderInfo.getOrderCode())
-                        .setOrderStatus(OrderStatusEnum.UNSETTLED.getCode()))
+                        .setOrderStatus(OrderStatusEnum.UNSETTLED.getCode())
+                        .setOrgId(auth.getOrgId()))
                 .toList();
         this.saveBatch(list);
         return orderDetailConvert.toVo(list);
@@ -100,6 +109,60 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     }
 
     /**
+     * 添加订单明细
+     * @param dto 订单明细DTO
+     * @param orderId 订单ID
+     * @return 操作结果信息
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String addDetails(OrderDetailCreateDTO dto, Long orderId) {
+        log.info("添加订单明细，订单ID：{}，明细信息：{}", orderId, dto);
+        
+        // 参数校验
+        if (orderId == null) {
+            throw new BusinessException("订单ID不能为空");
+        }
+        if (dto == null) {
+            throw new BusinessException("订单明细信息不能为空");
+        }
+        
+        // 获取当前用户信息
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        
+        // 检查订单是否存在
+        OrderInfoEntity orderInfo = orderInfoMapper.selectById(orderId);
+        if (orderInfo == null) {
+            throw new BusinessException("订单不存在");
+        }
+        
+        // 检查订单状态是否允许添加明细（只有未结算的订单才能添加明细）
+        if (!OrderStatusEnum.UNSETTLED.getCode().equals(orderInfo.getOrderStatus())) {
+            throw new BusinessException("订单已结算，无法添加明细");
+        }
+        
+        // 处理订单明细信息
+        OrderDetailEntity detailEntity = handelDetail(dto)
+                .setDetailCode(CodeUtils.generateByTime(PrefixConst.ORDER_DETAIL))
+                .setOrderId(orderId)
+                .setOrderCode(orderInfo.getOrderCode())
+                .setOrderStatus(OrderStatusEnum.UNSETTLED.getCode())
+                .setOrgId(auth.getOrgId());
+        
+        // 设置实际单价为0（结算前为0，结算时统一计算折扣）
+        detailEntity.setTruePrice(BigDecimal.ZERO);
+        
+        // 保存订单明细
+        boolean saved = this.save(detailEntity);
+        if (!saved) {
+            throw new BusinessException("添加订单明细失败");
+        }
+        
+        log.info("订单明细添加成功，明细编号：{}", detailEntity.getDetailCode());
+        return "订单明细添加成功";
+    }
+
+    /**
      * 根据不同业务类型处理订单业务信息
      * @param dto 订单明细DTO
      * @return 订单明细VO
@@ -113,7 +176,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                 ServerItem item = serverItemService.getById(dto.getBid());
                 detail.setBusinessName(item.getItemName()) // 业务名称
                         .setStdPrice(item.getItemPrice()) // 标准价格
-                        .setTruePrice(item.getVipItemPrice()); // 实际单价
+                        .setTruePrice(item.getItemPrice()); // 实际单价，这里先使用标准价格，后续会根据折扣规则计算
             }
             case PRODUCT -> {
                 ServerProduct product = serverProductService.getById(dto.getBid());
@@ -124,8 +187,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
             case CURE_TICKET -> {
                 ServerCureTicket ticket = serverCureTicketService.getById(dto.getBid());
                 detail.setBusinessName(ticket.getName()) // 业务名称
-                        .setStdPrice(ticket.getPrice()) // 标准价格
-                        .setTruePrice(ticket.getPrice()); // 实际单价
+                        .setStdPrice(ticket.getPrice())
+                        .setTruePrice(ticket.getPrice()); // 标准价格
             }
             default -> throw new BusinessException("未知的业务类型");
         };

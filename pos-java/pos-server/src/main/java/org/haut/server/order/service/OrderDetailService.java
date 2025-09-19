@@ -30,4 +30,12 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
      * @return 订单明细列表
      */
     List<OrderDetailVO> queryByOrderId(Long orderId);
+
+    /**
+     * 添加订单明细
+     * @param dto
+     * @param orderId
+     * @return
+     */
+    String addDetails(OrderDetailCreateDTO dto, Long orderId);
 }

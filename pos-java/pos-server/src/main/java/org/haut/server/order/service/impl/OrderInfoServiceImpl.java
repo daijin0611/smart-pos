@@ -29,6 +29,7 @@ import org.haut.server.vip.service.VipInfoService;
 import org.haut.server.vip.service.VipInfoTicketService;
 import org.haut.server.vip.service.VipTicketService;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,8 @@ import java.util.*;
 @Mapper(componentModel = "spring")
 interface OrderConvert {
     OrderInfoEntity toEntity(OrderCreateDTO dto);
-    OrderCreateVO toVO(OrderInfoEntity entity);
+    @Mapping(target = "orderId", source = "id")
+    OrderCreateVO toCreateVO(OrderInfoEntity entity);
     OrderInfoVO toInfoVO(OrderInfoEntity entity);
 }
 
@@ -93,8 +95,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<OrderDetailVO> orderDetailVOS = orderDetailService.createOrderDetails(createOrderDTO.getOrderDetails(), orderInfo.getId());
 
         log.info("订单创建成功，订单号：{}", orderNo);
-        return orderConvert.toVO(orderInfo)
-                .setDetails(orderDetailVOS);
+        return orderConvert.toCreateVO(orderInfo);
     }
     
     @Override

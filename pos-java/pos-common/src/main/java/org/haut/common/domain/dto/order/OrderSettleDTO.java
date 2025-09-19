@@ -48,6 +48,7 @@ public class OrderSettleDTO extends OrderCreateDTO{
      * 优惠金额
      */
     @Schema(description = "优惠金额")
+    @NotNull(message = "优惠金额不能为空")
     private BigDecimal discountAmount;
 
 

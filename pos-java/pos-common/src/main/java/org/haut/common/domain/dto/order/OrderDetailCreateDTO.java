@@ -43,6 +43,18 @@ public class OrderDetailCreateDTO {
     private Long bid;
 
     /**
+     * 标准单价
+     */
+    @Schema(description = "标准单价",example = "100.00")
+    private BigDecimal stdPrice;
+
+    /**
+     * 实际单价
+     */
+    @Schema(description = "实际单价(结算前和实收价保持一致；结算时更新实际单价)",example = "100.00")
+    private BigDecimal truePrice;
+
+    /**
      * 销售数量
      */
     @NotNull(message = "销售数量不能为空")
