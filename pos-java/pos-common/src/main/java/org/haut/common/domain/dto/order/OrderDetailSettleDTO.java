@@ -15,6 +15,9 @@ public class OrderDetailSettleDTO {
     @Schema(description = "订单明细ID")
     private Long id;
 
+    @Schema(description = "订单明细编号")
+    private String detailCode;
+
     @NotNull(message = "业务类型不能为空")
     @Schema(description = "业务类型（0 产品，1 服务，2 疗程券）")
     private Integer detailType;
@@ -37,7 +40,6 @@ public class OrderDetailSettleDTO {
     private Integer serverType;
 
     @NotNull(message = "员工ID不能为空")
-    @Schema(description = "技师ID")
     private Long userId;
 
     @Schema(description = "技师名称")

@@ -9,6 +9,7 @@ import org.haut.common.domain.dto.order.OrderCreateDTO;
 
 import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
+import org.haut.common.domain.dto.vip.PaymentInfoDTO;
 import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
@@ -33,6 +34,7 @@ import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Mapper(componentModel = "spring")
@@ -101,6 +103,19 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     @Transactional(rollbackFor = Exception.class)
     public OrderInfoVO settleOrder(OrderSettleDTO settleOrderDTO) {
+        // 校验会员信息
+        VipInfo vipInfo = vipInfoService.getById(settleOrderDTO.getVipId());
+        if (vipInfo == null && settleOrderDTO.getCustomerType().equals(CustomerTypeEnum.VIP.getValue()))
+            throw new BusinessException("会员不存在");
+        else if (vipInfo == null)
+            vipInfo = new VipInfo();
+        // 结算订单
+        OrderInfoEntity order = initOrderInfo(settleOrderDTO,vipInfo);
+        saveOrUpdate(order);
+        // 结算订单明细
+        orderDetailService.settleOrderDetail(order,settleOrderDTO.getDetails());
+        // 结算支付信息
+        
         return null;
     }
     
@@ -192,4 +207,35 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return "订单取消成功";
     }
 
+    /**
+     * 初始化一个结算订单
+     * @param dto
+     * @return
+     */
+    private OrderInfoEntity initOrderInfo(OrderSettleDTO dto, VipInfo vipInfo) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        return new OrderInfoEntity()
+                .setId(dto.getOrderId())
+                .setRemark(dto.getRemark())
+                .setOrderCode(CodeUtils.generateByTime(PrefixConst.ORDER))
+                .setOrderTime(dto.getOrderTime())
+                .setOrderStatus(OrderStatusEnum.SETTLED.getCode())
+                .setCustomerName(dto.getCustomerName())
+                .setCustomerType(dto.getCustomerType())
+                .setVipId(vipInfo.getId())
+                .setVipPhoneNumber(vipInfo.getPhoneNumber())
+                .setVipName(vipInfo.getName())
+                .setVipCardNumber(vipInfo.getCardNumber())
+                .setBeforeBalance(vipInfo.getBalance())
+                .setAfterBalance(vipInfo.getBalance().subtract(dto.getActualAmount()))
+                .setSettleTime(new Date())
+                .setTotalAmount(dto.getActualAmount())
+                .setActualAmount(dto.getActualAmount())
+                .setDiscountAmount(dto.getDiscountAmount())
+                .setBedId(dto.getBedId())
+                .setBedName(dto.getBedName())
+                .setUserId(auth.getUserId())
+                .setUserName(auth.getUserName())
+                .setOrgId(auth.getOrgId());
+    }
 }

@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import jakarta.validation.constraints.NotNull;
 import org.haut.common.domain.dto.vip.PaymentInfoDTO;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -84,6 +85,9 @@ public class OrderSettleDTO{
     @Schema(description = "优惠金额")
     @NotNull(message = "优惠金额不能为空")
     private BigDecimal discountAmount;
+
+    @Schema(description = "下单时间")
+    private Date orderTime;
 
     /**
      * 订单明细

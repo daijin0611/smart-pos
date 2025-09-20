@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 @Schema(description = "支付信息")
 public class PaymentInfoDTO {
-    @Schema(description = "支付类型")
+    @Schema(description = "支付类型枚举")
     private Integer paymentType;
     @Schema(description = "支付名称")
     private String paymentName;

@@ -11,8 +11,11 @@ import org.apache.ibatis.executor.BatchResult;
 import org.haut.common.constant.Const;
 import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.dto.stock.StockOutOrderCreateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
+import org.haut.common.domain.vo.ResultStatus;
+import org.haut.common.enums.ServiceTypeEnum;
 import org.haut.server.server.entity.ServerProduct;
 import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockOutItemVO;
@@ -135,11 +138,17 @@ public class StockOutOrderServiceImpl extends ServiceImpl<StockOutOrderMapper, S
         List<ServerProduct> productsToUpdate = getProductToUpdate(outItems, auth);
         stockOutItemMapper.insert(outItems);
         // 更新库存
-        List<BatchResult> batchResults = serverProductMapper.updateById(productsToUpdate);
         // 如果更新为空，说明没有库存变化，可能触发了乐观锁异常，重新获取产品信息
-        if (batchResults.isEmpty()) {
+        int count = 0;
+        while (serverProductMapper.updateById(productsToUpdate).isEmpty()) {
+            if (count == 10){
+                log.error("库存更新冲突");
+                // 响应前端服务器繁忙
+                throw new BusinessException(ResultStatus.SERVER_BUSY.getMessage());
+            }
             productsToUpdate = getProductToUpdate(outItems, auth);
             serverProductMapper.updateById(productsToUpdate);
+            count++;
         }
 
         // 记录库存日志
@@ -177,6 +186,37 @@ public class StockOutOrderServiceImpl extends ServiceImpl<StockOutOrderMapper, S
         StockOutOrderVO vo = BeanUtil.toBean(order, StockOutOrderVO.class);
         vo.setItems(BeanUtil.copyToList(items, StockOutItemVO.class));
         return vo;
+    }
+
+    /**
+     * 出库销售商品
+     * @param consumerOrderDetails 结算订单明细
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handelOrder(List<OrderDetailSettleDTO> consumerOrderDetails) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        // 筛选出产品类型的明细
+        List<OrderDetailSettleDTO> productDetails = consumerOrderDetails.stream()
+                .filter(o -> o.getDetailType().equals(ServiceTypeEnum.PRODUCT.getValue()))
+                .toList();
+        BigDecimal totalPrice = productDetails.stream()
+                .map(OrderDetailSettleDTO::getStdPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        List<StockOutOrderCreateDTO.StockOutItemCreateDTO> itemCreateDTOS = productDetails.stream()
+                .map(p -> new StockOutOrderCreateDTO.StockOutItemCreateDTO()
+                        .setPrice(p.getStdPrice())
+                        .setProductId(p.getBid())
+                        .setQuantity(p.getQuantity())
+                        .setRemark(p.getRemark()))
+                .toList();
+
+        StockOutOrderCreateDTO stockOrder = new StockOutOrderCreateDTO()
+                .setTotalPrice(totalPrice)
+                .setOperator(auth.getUserName())
+                .setRemark("销售出库")
+                .setItems(itemCreateDTOS);
+        addOrder(stockOrder);
     }
 
     /**

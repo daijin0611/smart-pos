@@ -1,5 +1,6 @@
 package org.haut.server.vip.service;
 
+import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.vip.AssetCreateDTO;
 import org.haut.common.domain.vo.vip.VipCountVO;
 import org.haut.server.vip.entity.VipAsset;
@@ -32,4 +33,10 @@ public interface VipAssetService extends IService<VipAsset> {
      * @return 会员资产
      */
     VipCountVO queryAsset(Long vipId);
+
+    /**
+     * 处理下余额扣减
+     * @param dto 订单结算信息
+     */
+    void handelOrder(OrderSettleDTO dto);
 }

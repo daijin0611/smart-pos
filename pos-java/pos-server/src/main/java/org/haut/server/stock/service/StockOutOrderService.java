@@ -1,11 +1,14 @@
 package org.haut.server.stock.service;
 
 import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.dto.stock.StockOutOrderCreateDTO;
 import org.haut.server.stock.entity.StockOutOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockOutOrderVO;
+
+import java.util.List;
 
 /**
  * 出库订单服务接口
@@ -23,4 +26,10 @@ public interface StockOutOrderService extends IService<StockOutOrder> {
     void addOrder(StockOutOrderCreateDTO dto);
 
     StockOutOrderVO getOneByCode(String orderCode);
+
+    /**
+     * 处理订单
+     * @param productDetails 结算订单明细
+     */
+    void handelOrder(List<OrderDetailSettleDTO> productDetails);
 }

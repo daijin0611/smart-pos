@@ -131,7 +131,7 @@ public class OrderDetailEntity {
      * 结算时间
      */
     @Schema(description = "结算时间")
-    private LocalDateTime settledTime;
+    private Date settledTime;
 
     /**
      * 订单状态

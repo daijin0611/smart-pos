@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
  */
 @Data
 @Schema(description = "出库订单创建对象")
+@Accessors(chain = true)
 public class StockOutOrderCreateDTO {
 
     /**
@@ -54,6 +56,7 @@ public class StockOutOrderCreateDTO {
      */
     @Data
     @Schema(description = "出库明细创建对象")
+    @Accessors(chain = true)
     public static class StockOutItemCreateDTO {
 
         /**

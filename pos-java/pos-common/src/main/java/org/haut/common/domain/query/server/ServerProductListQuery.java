@@ -2,9 +2,11 @@ package org.haut.common.domain.query.server;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
 @Schema(description = "服务产品查询对象")
+@Accessors(chain = true)
 public class ServerProductListQuery {
 
 

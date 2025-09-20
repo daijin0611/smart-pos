@@ -3,13 +3,20 @@ package org.haut.server.order.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.order.OrderDetailCreateDTO;
+import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
+import org.haut.common.domain.query.server.ServerItemQuery;
+import org.haut.common.domain.query.server.ServerProductListQuery;
 import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.order.OrderDetailVO;
+import org.haut.common.domain.vo.server.ServerItemVO;
+import org.haut.common.domain.vo.server.ServerProductInfoVO;
 import org.haut.common.enums.OrderStatusEnum;
 import org.haut.common.enums.ServiceTypeEnum;
+import org.haut.common.enums.Status;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
@@ -24,16 +31,19 @@ import org.haut.server.server.entity.ServerProduct;
 import org.haut.server.server.service.ServerCureTicketService;
 import org.haut.server.server.service.ServerItemService;
 import org.haut.server.server.service.ServerProductService;
+import org.haut.server.stock.service.StockOutOrderService;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Mapper(componentModel = "spring")
 interface OrderDetailConvert {
     OrderDetailEntity toEntity(OrderDetailCreateDTO dto);
+    OrderDetailEntity toEntity(OrderDetailSettleDTO dto);
     List<OrderDetailVO> toVo(List<OrderDetailEntity> entityList);
 }
 
@@ -53,6 +63,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     private final ServerItemService serverItemService;
     private final ServerProductService serverProductService;
     private final ServerCureTicketService serverCureTicketService;
+    private final StockOutOrderService stockOutOrderService;
 
     /**
      * 创建订单明细
@@ -160,6 +171,30 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         
         log.info("订单明细添加成功，明细编号：{}", detailEntity.getDetailCode());
         return "订单明细添加成功";
+    }
+
+    /**
+     * 结算订单明细
+     * @param order 订单信息
+     * @param orderDetails 待结算订单明细
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void settleOrderDetail(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails) {
+        // 处理库存明细
+        stockOutOrderService.handelOrder(orderDetails);
+        // 保存订单明细
+        List<OrderDetailEntity> details = orderDetails.stream()
+                .map(e -> orderDetailConvert.toEntity(e)
+                        .setDetailCode(StringUtils.isBlank(e.getDetailCode()) ?
+                                CodeUtils.generateByTime(PrefixConst.ORDER_DETAIL) : e.getDetailCode())
+                        .setOrderId(order.getId())
+                        .setSettledTime(order.getSettleTime())
+                        .setOrderStatus(order.getOrderStatus())
+                        .setOrderId(order.getId()))
+                .toList();
+        // 更新或者保存订单明细
+        saveOrUpdateBatch(details);
     }
 
     /**
