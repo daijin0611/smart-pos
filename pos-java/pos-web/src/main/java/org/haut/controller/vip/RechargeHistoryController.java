@@ -36,7 +36,6 @@ public class RechargeHistoryController {
         return null;
     }
 
-
     @PostMapping("/stat-active")
     @Operation(description = "统计充值活动", summary = "统计充值活动")
     public JsonVO<StatRechargeActiveVO> statRechargeActive(@RequestBody @Validated ActiveStatQuery query){

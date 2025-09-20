@@ -36,10 +36,9 @@ public class VipTicketController {
 
     @GetMapping("/ticket-info")
     @Operation(description = "根据优惠券id查询详细信息", summary = "根据优惠券id查询详细信息")
-    @Deprecated
-    public JsonVO<VipTicketCreateDTO> getInfoById(@RequestParam Long id){
+    public JsonVO<VipTicketVO> getInfoById(@RequestParam Long id){
         log.info("优惠券id：{}",id);
-        return null;
+        return JsonVO.success(vipTicketService.queryById(id));
     }
 
     @PostMapping("/add-ticket")

@@ -23,4 +23,6 @@ public interface VipTicketService extends IService<VipTicket> {
     void updateTicket(VipTicketUpdateDTO ticket);
 
     void updateStatus(Long ticketId, Integer status);
+
+    VipTicketVO queryById(Long ticketId);
 }

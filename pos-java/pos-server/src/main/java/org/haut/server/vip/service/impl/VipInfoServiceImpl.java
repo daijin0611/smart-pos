@@ -1,6 +1,5 @@
 package org.haut.server.vip.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -13,6 +12,7 @@ import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.*;
 import org.haut.common.domain.query.vip.VipListQuery;
+import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.vip.VipInfoVO;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;
 import org.haut.common.enums.*;
@@ -27,10 +27,8 @@ import org.haut.server.server.entity.ServerRechargeRole;
 import org.haut.server.server.mapper.ServerRechargeRoleMapper;
 import org.haut.server.vip.entity.VipAsset;
 import org.haut.server.vip.entity.VipInfo;
-import org.haut.server.vip.entity.VipInfoTicket;
 import org.haut.server.vip.entity.VipRechargeHistory;
 import org.haut.server.vip.mapper.VipAssetMapper;
-import org.haut.server.vip.mapper.VipInfoTicketMapper;
 import org.haut.server.vip.mapper.VipRechargeActiveMapper;
 import org.haut.server.vip.service.VipAssetService;
 import org.haut.server.vip.service.VipInfoService;
@@ -45,10 +43,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 interface VipInfoConvert{
@@ -114,18 +109,14 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
      * 2.根据会员id查询会员详细信息（会员资产表中的余额部分）
      */
     @Override
-    public VipInfoDTO getVipById(Long id) {
+    @Transactional
+    public VipInfoVO getVipById(Long id) {
+        if (lambdaQuery().eq(VipInfo::getId, id).count() == 0)
+            throw new BusinessException("会员不存在");
+        // 查询前先刷新以下会员余额
+        updateVipBalance(id);
         VipInfo vipInfo = getById(id);
-
-        //自定义方法
-        VipAssetDTO vipAssetDTO = vipAssetMapper.selectByVipId(id);
-
-        ////将VipInfo转化为VipInfoDTO
-        VipInfoDTO dto = BeanUtil.toBean(vipInfo, VipInfoDTO.class);
-        if(vipAssetDTO != null){
-            dto.setAssetBalance(vipAssetDTO.getAssetBalance());
-        }
-        return dto;
+        return vipInfoConvert.toVO(vipInfo);
     }
 
     /**
@@ -137,14 +128,12 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     @Transactional
     public void updateVipBalance(Long vipId) {
         if (vipId == null){
-            log.warn("会员id为空");
-            return;
+            throw new BusinessException("会员id不能为空");
         }
         List<VipAsset> vipAssets = vipAssetMapper.selectList(Wrappers.lambdaQuery(VipAsset.class)
                 .eq(VipAsset::getVipId, vipId));
         if (CollectionUtil.isEmpty(vipAssets)){
-            log.warn("会员下没有资产");
-            return;
+            throw new BusinessException("会员没有资产");
         }
         BigDecimal balance = vipAssets.stream()
                 .map(VipAsset::getAssetBalance)

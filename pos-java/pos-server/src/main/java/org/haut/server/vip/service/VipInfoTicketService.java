@@ -14,7 +14,19 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface VipInfoTicketService extends IService<VipInfoTicket> {
 
+    /**
+     * 创建会员信息与优惠券关联
+     * @param dto 优惠券信息
+     * @return 优惠券信息
+     */
     String createVipInfoTicket(VipInfoTicketCreateDTO dto);
 
+    /**
+     * 查询会员优惠券列表
+     * @param query 查询参数
+     * @return 优惠券分页结果
+     */
     PageDTO<TicketCountVO> queryTicketCountPage(VipInfoTicketQuery query);
+
+
 }

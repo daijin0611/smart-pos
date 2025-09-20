@@ -22,7 +22,7 @@
         sys_org so ON su.org_id = so.id
         <where>
             <if test="query.username != null and query.username != ''">
-                AND su.username LIKE CONCAT('%', #{query.username}, '%')
+                AND su.user_name LIKE CONCAT('%', #{query.username}, '%')
             </if>
             <if test="query.orgId != null">
                 AND su.org_id = #{query.orgId}

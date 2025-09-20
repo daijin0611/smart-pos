@@ -100,6 +100,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
 @Mapper(componentModel = "spring")
 interface VipInfoTicketConvert {
     VipInfoTicket toEntity(VipInfoTicketCreateDTO dto);
+    List<TicketCountVO> toVOS(List<VipInfoTicket> entity);
 }
 
 

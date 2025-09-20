@@ -98,7 +98,7 @@ public class VipInfo {
     private String pwd;
 
     /**
-     * 
+     * 机构id
      */
     private Long orgId;
 }

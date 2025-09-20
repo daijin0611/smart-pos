@@ -3,7 +3,6 @@ package org.haut.server.vip.service;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.vip.RechargeDTO;
 import org.haut.common.domain.dto.vip.VipCreateDTO;
-import org.haut.common.domain.dto.vip.VipInfoDTO;
 import org.haut.common.domain.dto.vip.VipUpdateDTO;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.server.vip.entity.VipInfo;
@@ -21,9 +20,9 @@ public interface VipInfoService extends IService<VipInfo> {
     PageDTO<VipInfoVO> getList(VipListQuery query);
 
     /**
-     *根据会员ID查询详细信息（含资产余额）
+     * 根据会员ID查询详细信息（含资产余额）
      */
-    VipInfoDTO getVipById(Long id);
+    VipInfoVO getVipById(Long id);
 
 
     void updateVipBalance(Long vipId);

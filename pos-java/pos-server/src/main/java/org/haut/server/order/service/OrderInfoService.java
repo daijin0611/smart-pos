@@ -39,4 +39,11 @@ public interface OrderInfoService extends IService<OrderInfoEntity> {
      * @return 订单信息VO
      */
     OrderInfoVO queryById(Long orderId);
+
+    /**
+     * 取消订单
+     * @param orderId
+     * @return
+     */
+    String cancelOrder(Long orderId);
 }

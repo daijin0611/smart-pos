@@ -133,12 +133,24 @@ public class OrderInfoVO {
      */
     @Schema(description = "床位ID")
     private Long bedId;
+
+    /**
+     * 床位名称
+     */
+    @Schema(description = "床位名称")
+    private String bedName;
     
     /**
      * 收银人ID
      */
     @Schema(description = "收银人ID")
     private Long userId;
+
+    /**
+     * 收银人名称
+     */
+    @Schema(description = "收银人名称")
+    private String userName;
     
     /**
      * 顾客类型（0 会员，1 散客）
@@ -149,20 +161,11 @@ public class OrderInfoVO {
     /**
      * 顾客类型名称
      */
-    @Schema(description = "顾客类型名称")
-    private String customerTypeName;
+    @Schema(description = "顾客名称")
+    private String customerName;
     
-    /**
-     * 收银人名称
-     */
-    @Schema(description = "收银人名称")
-    private String userName;
-    
-    /**
-     * 床位名称
-     */
-    @Schema(description = "床位名称")
-    private String bedName;
+
+
     
     /**
      * 门店ID

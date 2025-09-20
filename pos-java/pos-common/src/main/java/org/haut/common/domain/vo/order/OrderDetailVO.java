@@ -120,4 +120,11 @@ public class OrderDetailVO {
      */
     @Schema(description = "结算时间")
     private Date settledTime;
+
+    /**
+     * 订单状态
+     */
+    @Schema(description = "订单状态")
+    private Integer orderStatus;
+
 }

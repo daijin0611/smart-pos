@@ -135,7 +135,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (orderInfo.getCustomerType() != null) {
             for (CustomerTypeEnum customerType : CustomerTypeEnum.values()) {
                 if (customerType.getValue().equals(orderInfo.getCustomerType())) {
-                    orderInfoVO.setCustomerTypeName(customerType.getType());
+                    orderInfoVO.setCustomerName(orderInfo.getCustomerName());
                     break;
                 }
             }
@@ -147,6 +147,49 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         
         log.info("订单查询成功，订单编号：{}", orderInfo.getOrderCode());
         return orderInfoVO;
+    }
+
+    /**
+     * 取消订单
+     * @param orderId 订单ID
+     * @return 订单取消结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String cancelOrder(Long orderId) {
+        log.info("开始取消订单，订单ID：{}", orderId);
+        
+        // 查询订单信息
+        OrderInfoEntity orderInfo = this.getById(orderId);
+        if (orderInfo == null) {
+            throw new BusinessException("订单不存在");
+        }
+        
+        // 检查订单状态，只有未结算的订单才能取消
+        if (!OrderStatusEnum.UNSETTLED.getCode().equals(orderInfo.getOrderStatus())) {
+            throw new BusinessException("只有未结算的订单才能取消");
+        }
+        
+        // 更新订单状态为已取消
+        orderInfo.setOrderStatus(OrderStatusEnum.CANCELLED.getCode());
+        this.updateById(orderInfo);
+        
+        // 更新订单明细状态为已取消
+        List<OrderDetailEntity> orderDetails = orderDetailService.lambdaQuery()
+                .eq(OrderDetailEntity::getOrderId, orderId)
+                .list();
+        
+        if (orderDetails != null && !orderDetails.isEmpty()) {
+            List<OrderDetailEntity> updatedDetails = new ArrayList<>();
+            for (OrderDetailEntity detail : orderDetails) {
+                detail.setOrderStatus(OrderStatusEnum.CANCELLED.getCode());
+                updatedDetails.add(detail);
+            }
+            orderDetailService.updateBatchById(updatedDetails);
+        }
+        
+        log.info("订单取消成功，订单编号：{}", orderInfo.getOrderCode());
+        return "订单取消成功";
     }
 
 }

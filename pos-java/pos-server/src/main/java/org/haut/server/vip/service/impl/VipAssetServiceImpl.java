@@ -6,18 +6,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.AssetCreateDTO;
+import org.haut.common.domain.vo.vip.VipAssetVO;
+import org.haut.common.domain.vo.vip.VipCountVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
 import org.haut.server.vip.entity.VipAsset;
 import org.haut.server.vip.entity.VipInfo;
+import org.haut.server.vip.entity.VipInfoTicket;
+import org.haut.server.vip.entity.VipTicket;
 import org.haut.server.vip.mapper.VipInfoMapper;
+import org.haut.server.vip.mapper.VipTicketMapper;
 import org.haut.server.vip.service.VipAssetService;
 import org.haut.server.vip.mapper.VipAssetMapper;
+import org.haut.server.vip.service.VipInfoTicketService;
+import org.haut.server.vip.service.VipTicketService;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
 * @author tinwf
@@ -31,6 +39,9 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
     implements VipAssetService{
     private final VipAssetConvert vipAssetConvert;
     private final VipInfoMapper vipInfoMapper;
+    private final VipInfoTicketService vipInfoTicketService;
+    private final VipInfoConvert vipInfoConvert;
+    private final VipInfoTicketConvert vipInfoTicketConvert;
 
     /**
      * 创建会员资产
@@ -55,12 +66,31 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
         return null;
     }
 
+    /**
+     * 查询单个会员资产(余额+优惠券)
+     * @param vipId 会员id
+     * @return 会员资产
+     */
+    @Override
+    public VipCountVO queryAsset(Long vipId) {
+        VipInfo vipInfo = vipInfoMapper.selectById(vipId);
+        if ( vipInfo == null)
+            throw new BusinessException("会员不存在");
+        List<VipAsset> assets = lambdaQuery().eq(VipAsset::getVipId, vipId).list();
+        List<VipInfoTicket> tickets = vipInfoTicketService.lambdaQuery().eq(VipInfoTicket::getVipInfoId, vipId).list();
+        return new VipCountVO()
+                .setVipAssetVOList(vipAssetConvert.toVOS(assets))
+                .setVipInfoVO(vipInfoConvert.toVO(vipInfo))
+                .setVipTicketVOList(vipInfoTicketConvert.toVOS(tickets));
+    }
+
 
 }
 
 @Mapper(componentModel = "spring")
 interface VipAssetConvert{
     VipAsset toEntity(AssetCreateDTO dto);
+    List<VipAssetVO> toVOS(List<VipAsset> entity);
 }
 
 

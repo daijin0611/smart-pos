@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum OrderStatusEnum {
     UNSETTLED(1,"未结算"),
     SETTLED(2,"已结算"),
-    CANCELED(3,"已取消"),
+    CANCELLED(3,"已取消"),
     ROLLBACK(4,"已冲正")
     ;
     private final Integer code;

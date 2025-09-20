@@ -22,6 +22,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+@Mapper(componentModel = "spring")
+interface VipTicketConvert {
+    @Mapping(target = "remark", source = "ticketDescription")
+    VipTicket toEntity(VipTicketCreateDTO dto);
+    @Mapping(target = "remark", source = "ticketDescription")
+    VipTicket toEntity(VipTicketUpdateDTO dto);
+    @Mapping(target = "ticketDescription", source = "remark")
+    VipTicketVO toVO(VipTicket entity);
+}
 /**
 * @author Cdh
 * @description 针对表【vip_ticket(会员优惠券)】的数据库操作Service实现
@@ -106,6 +115,16 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
                 .set(VipTicket::getTicketStatus, status));
     }
 
+    /**
+     * 查询优惠券详情
+     * @param ticketId 优惠券id
+     * @return 优惠券详情
+     */
+    @Override
+    public VipTicketVO queryById(Long ticketId) {
+        return baseMapper.getOneById(ticketId);
+    }
+
     private void checkDto(VipTicketUpdateDTO ticket) {
         if (ticket.getTicketType().equals(TicketTypeEnum.CONSUMER.getValue())){
             if (ticket.getTicketValue() == null)
@@ -123,15 +142,4 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
                 throw new BusinessException("优惠券限额不能为空");
         }
     }
-}
-
-
-
-
-@Mapper(componentModel = "spring")
-interface VipTicketConvert {
-    @Mapping(target = "remark", source = "ticketDescription")
-    VipTicket toEntity(VipTicketCreateDTO dto);
-    @Mapping(target = "remark", source = "ticketDescription")
-    VipTicket toEntity(VipTicketUpdateDTO dto);
 }

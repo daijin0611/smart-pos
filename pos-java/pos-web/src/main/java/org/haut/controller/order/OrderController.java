@@ -52,8 +52,15 @@ public class OrderController {
         return JsonVO.success(orderInfo);
     }
 
+    @PutMapping("/cancel-order/{orderId}")
+    @Operation(summary = "取消订单", description = "取消一个未结算的订单，将订单状态修改为已取消。")
+    public JsonVO<String> cancelOrder(@PathVariable Long orderId) {
+        log.info("删除订单请求：{}", orderId);
+        return JsonVO.success(orderInfoService.cancelOrder(orderId));
+    }
+
     @PostMapping("/add-detail/{orderId}")
-    @Operation(summary = "添加订单明细", description = "添加订单明细的方法")
+    @Operation(summary = "添加订单明细", description = "为指定订单添加订单明细的方法")
     public JsonVO<String> addDetail(
             @Validated @RequestBody OrderDetailCreateDTO dto,
             @PathVariable Long orderId){
@@ -78,7 +85,5 @@ public class OrderController {
         return JsonVO.success(orderInfo);
     }
 
-
-    // ==========销售数据相关接口==========
 
 }

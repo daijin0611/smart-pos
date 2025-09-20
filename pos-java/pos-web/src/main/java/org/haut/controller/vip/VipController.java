@@ -32,7 +32,7 @@ public class VipController {
 
     @GetMapping("/query-info")
     @Operation(description = "根据会员id查询详细信息", summary = "根据会员id查询详细信息")
-    public JsonVO<VipInfoDTO> getVipById(@RequestParam Long id) {
+    public JsonVO<VipInfoVO> getVipById(@RequestParam Long id) {
         log.info("会员id：{}",id);
         //将VipInfo转化为VipInfoDTO
         //VipInfoDTO vipInfoDTO = BeanUtil.toBean(vipInfoService.getById(id),VipInfoDTO.class);该行代码在VipInfoServiceImpl.java中已经实现

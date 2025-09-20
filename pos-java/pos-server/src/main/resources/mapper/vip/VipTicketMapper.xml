@@ -60,5 +60,13 @@
             and vt.org_id = #{orgId}
         </if>
     </select>
+    <select id="getOneById" resultMap="VipTicketVO">
+        select vt.*, si.id as server_item_id, si.item_name as item_name
+        from vip_ticket vt
+        left join vip_ticket_detail vtd on vt.id = vtd.ticket_id
+        left join server_item si on vtd.server_item_id = si.id and si.is_delete = 0
+        where vt.is_delete = 0
+        and vt.id = #{ticketId}
+    </select>
 
 </mapper>
