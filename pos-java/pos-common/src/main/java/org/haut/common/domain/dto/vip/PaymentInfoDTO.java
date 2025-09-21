@@ -16,4 +16,6 @@ public class PaymentInfoDTO {
     private String paymentName;
     @Schema(description = "支付金额")
     private BigDecimal paymentAmount;
+    @Schema(description = "资产编号")
+    private String assetCode;
 }

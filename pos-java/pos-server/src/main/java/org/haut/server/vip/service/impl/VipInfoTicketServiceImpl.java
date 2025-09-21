@@ -3,15 +3,24 @@ package org.haut.server.vip.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.dto.order.OrderSettleDTO;
+import org.haut.common.domain.dto.order.OrderTicketUseDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.VipInfoTicketCreateDTO;
 import org.haut.common.domain.query.vip.VipInfoTicketQuery;
+import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.vip.TicketCountVO;
+import org.haut.common.domain.vo.vip.VipTicketVO;
 import org.haut.common.enums.TicketStatusEnum;
+import org.haut.common.enums.TicketTypeEnum;
+import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
+import org.haut.server.order.entity.OrderDetailEntity;
+import org.haut.server.order.mapper.OrderDetailMapper;
 import org.haut.server.vip.entity.VipInfoTicket;
 import org.haut.server.vip.entity.VipTicket;
 import org.haut.server.vip.mapper.VipTicketMapper;
@@ -21,10 +30,19 @@ import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+@Mapper(componentModel = "spring")
+interface VipInfoTicketConvert {
+    VipInfoTicket toEntity(VipInfoTicketCreateDTO dto);
+    List<TicketCountVO> toVOS(List<VipInfoTicket> entity);
+}
 /**
 * @author daiji
 * @description 针对表【vip_info_ticket(会员信息与优惠券关联表（优惠券明细）)】的数据库操作Service实现
@@ -32,10 +50,12 @@ import java.util.List;
 */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, VipInfoTicket>
     implements VipInfoTicketService{
     private final VipInfoTicketConvert vipInfoTicketConvert;
     private final VipTicketMapper vipTicketMapper;
+    private final OrderDetailMapper orderDetailMapper;
 
 
     /**
@@ -55,6 +75,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
                     .setStatus(TicketStatusEnum.UNUSED.getStatus())
                     .setClaimTime(LocalDate.now())
                     .setOrgId(auth.getOrgId())
+                    .setTicketType(vipTicket.getTicketType())
                     .setExpiryDate(vipTicket.getTicketEffectiveTime() == -1 ?
                             null : LocalDate.now().plusDays(vipTicket.getTicketEffectiveTime()))
             );
@@ -95,13 +116,80 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
         return PageDTO.create(page, TicketCountVO.class);
     }
 
+    /**
+     * 订单结算处理优惠券
+     * @param settleOrderDTO 订单结算信息
+     * @param orderCode 订单编号
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handelOrder(OrderSettleDTO settleOrderDTO, String orderCode) {
+        // 1. 校验优惠券是否已经使用
+        List<OrderTicketUseDTO> useTickets = settleOrderDTO.getTicketUseList();
+        List<Long> ticketIds = useTickets.stream()
+                .map(OrderTicketUseDTO::getTicketId)
+                .toList();
+        List<VipInfoTicket> vipInfoTickets = listByIds(ticketIds);
+        validateTickets(vipInfoTickets, useTickets, settleOrderDTO.getTotalAmount());
+        // 2. 更新优惠券状态
+        lambdaUpdate()
+            .in(VipInfoTicket::getId, ticketIds)
+            .set(VipInfoTicket::getStatus, TicketStatusEnum.USED.getStatus())
+            .update();
+    }
+
+    /**
+     * 优惠券使用校验
+     * @param vipInfoTickets 优惠券列表
+     */
+    private void validateTickets(List<VipInfoTicket> vipInfoTickets, List<OrderTicketUseDTO> useTickets, BigDecimal totalValue){
+        if (vipInfoTickets.isEmpty())
+            return;
+        List<VipInfoTicket> usedTickets = vipInfoTickets.stream()
+                // 已使用的优惠券
+                .filter(t -> TicketStatusEnum.USED.getStatus().equals(t.getStatus()))
+                .toList();
+        if (!usedTickets.isEmpty())
+            throw new BusinessException("优惠券已使用");
+        List<VipInfoTicket> expireTickets = vipInfoTickets.stream()
+                // 过期优惠券
+                .filter(t -> t.getExpiryDate() != null && t.getExpiryDate().isBefore(LocalDate.now()))
+                .toList();
+        if (!expireTickets.isEmpty())
+            throw new BusinessException("优惠券已过期");
+        for (OrderTicketUseDTO ticket : useTickets){
+            VipTicketVO ticketInfo = vipTicketMapper.getOneById(ticket.getTicketId());
+            OrderDetailEntity detail = orderDetailMapper.selectById(ticket.getDetailId());
+            // 代金券类型
+            //TODO: 目前代金券限额按照标准价校验
+            if (TicketTypeEnum.CONSUMER.getValue().equals(ticket.getTicketType())){
+                if (totalValue.compareTo(ticketInfo.getTicketFullPayment()) < 0)
+                    throw new BusinessException(String.format("代金券需要满足%s元才可使用",
+                            ticketInfo.getTicketFullPayment().toString()));
+            }
+            // 体验券类型
+            else if (TicketTypeEnum.ITEM.getValue().equals(ticket.getTicketType())){
+                if (ticket.getDetailId() == null)
+                    throw new BusinessException("体验券未选择项目");
+                Set<Long> itemIdSet = ticketInfo.getServerItems()
+                        .stream()
+                        .map(VipTicketVO.ServerItemVO::getId)
+                        .collect(Collectors.toSet());
+                if (!itemIdSet.contains(ticket.getDetailId()))
+                    throw new BusinessException(String.format("%s项目不在%s体验券使用范围内！",
+                            detail.getBusinessName(),
+                            ticketInfo.getTicketName()));
+            }
+            // 项目券类型
+            else {
+                log.warn("优惠券类型错误{}",ticket);
+                throw new BusinessException("优惠券类型错误");
+            }
+        }
+    }
+
 }
 
-@Mapper(componentModel = "spring")
-interface VipInfoTicketConvert {
-    VipInfoTicket toEntity(VipInfoTicketCreateDTO dto);
-    List<TicketCountVO> toVOS(List<VipInfoTicket> entity);
-}
 
 
 

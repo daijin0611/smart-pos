@@ -3,10 +3,14 @@ package org.haut.server.kpi.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
+import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.query.kpi.KpiListQuery;
 import org.haut.common.domain.vo.kpi.KpiListVO;
 import org.haut.server.kpi.entity.KpiDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.haut.server.order.entity.OrderInfoEntity;
+
+import java.util.List;
 
 /**
 * @author daiji
@@ -24,4 +28,12 @@ public interface KpiDetailService extends IService<KpiDetail> {
      * @return KPI分页列表
      */
     PageDTO<KpiListVO> getKpiList(KpiListQuery query);
+
+    /**
+     * 处理订单结算
+     *
+     * @param order 订单信息
+     * @param orderDetails 订单明细
+     */
+    void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails);
 }

@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BusinessException.class)
-    public JsonVO<String> handleBusinessException(BusinessException ex) {
+    public JsonVO<Object> handleBusinessException(BusinessException ex) {
         log.error(ex.getMessage(), ex);
         return JsonVO.fail(ex.getMessage());
     }

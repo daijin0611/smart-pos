@@ -20,6 +20,7 @@ import org.haut.common.enums.Status;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
+import org.haut.server.kpi.service.KpiDetailService;
 import org.haut.server.order.entity.OrderDetailEntity;
 import org.haut.server.order.entity.OrderInfoEntity;
 import org.haut.server.order.mapper.OrderDetailMapper;
@@ -64,6 +65,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     private final ServerProductService serverProductService;
     private final ServerCureTicketService serverCureTicketService;
     private final StockOutOrderService stockOutOrderService;
+    private final KpiDetailService kpiDetailService;
 
     /**
      * 创建订单明细
@@ -183,6 +185,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     public void settleOrderDetail(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails) {
         // 处理库存明细
         stockOutOrderService.handelOrder(orderDetails);
+        // 处理业绩提成
+        kpiDetailService.handelOrder(order, orderDetails);
         // 保存订单明细
         List<OrderDetailEntity> details = orderDetails.stream()
                 .map(e -> orderDetailConvert.toEntity(e)
@@ -195,6 +199,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                 .toList();
         // 更新或者保存订单明细
         saveOrUpdateBatch(details);
+
     }
 
     /**

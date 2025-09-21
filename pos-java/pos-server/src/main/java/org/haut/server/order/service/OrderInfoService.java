@@ -28,9 +28,8 @@ public interface OrderInfoService extends IService<OrderInfoEntity> {
      * 结算订单
      * 
      * @param settleOrderDTO 结算订单请求DTO
-     * @return 订单信息VO
      */
-    OrderInfoVO settleOrder(OrderSettleDTO settleOrderDTO);
+    void settleOrder(OrderSettleDTO settleOrderDTO);
     
     /**
      * 根据订单ID查询订单信息

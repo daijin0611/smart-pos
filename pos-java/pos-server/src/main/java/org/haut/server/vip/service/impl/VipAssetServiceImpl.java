@@ -114,7 +114,7 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
                 .map(VipAsset::getAssetDiscountRate)
                 .distinct()
                 .count();
-        if (c > 0)
+        if (c > 1)
             throw new BusinessException("会员资产折扣率不同，请重新选择");
         // 2. 更新余额
         // 筛选会员卡支付的总金额
@@ -130,12 +130,16 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
                 vipAssets.set(vipAssets.indexOf(vipAsset), vipAsset.setAssetBalance(BigDecimal.ZERO));
             }else {
                 // 会员卡余额足够直接扣减
-                vipAssets.set(vipAssets.indexOf(vipAsset), vipAsset.setAssetBalance(totalAmount));
+                vipAssets.set(vipAssets.indexOf(vipAsset),
+                        vipAsset.setAssetBalance(vipAsset.getAssetBalance().subtract(totalAmount)));
+                totalAmount = BigDecimal.ZERO;
             }
         }
+        if (totalAmount.compareTo(BigDecimal.ZERO) > 0)
+            throw new BusinessException("会员资产余额不足");
         int count = 0;
         // 乐观锁
-        while (saveOrUpdateBatch(vipAssets)){
+        while (!saveOrUpdateBatch(vipAssets)){
             if (count > 10){
                 log.error("会员资产更新异常");
                 throw new BusinessException(ResultStatus.SERVER_BUSY.getMessage());

@@ -1,6 +1,7 @@
 package org.haut.server.vip.service;
 
 import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.vip.VipInfoTicketCreateDTO;
 import org.haut.common.domain.query.vip.VipInfoTicketQuery;
 import org.haut.common.domain.vo.vip.TicketCountVO;
@@ -28,5 +29,10 @@ public interface VipInfoTicketService extends IService<VipInfoTicket> {
      */
     PageDTO<TicketCountVO> queryTicketCountPage(VipInfoTicketQuery query);
 
-
+    /**
+     * 订单结算时处理会员优惠券
+     * @param settleOrderDTO 订单结算信息
+     * @param orderCode 订单编号
+     */
+    void handelOrder(OrderSettleDTO settleOrderDTO, String orderCode);
 }

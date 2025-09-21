@@ -163,10 +163,7 @@ public class OrderInfoVO {
      */
     @Schema(description = "顾客名称")
     private String customerName;
-    
 
-
-    
     /**
      * 门店ID
      */

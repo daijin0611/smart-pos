@@ -262,8 +262,8 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         List<PaymentDetail> list = paymentInfoList.stream().map(payment ->
                 new PaymentDetail()
                         .setActiveCode(history.getHistoryCode())
-                        .setActiveType(ServiceTypeEnum.RECHARGE.getValue())
-                        .setActiveName(ServiceTypeEnum.RECHARGE.getType())
+                        .setActiveType(PaymentActiveTypeEnum.RECHARGER.getValue())
+                        .setActiveName(PaymentActiveTypeEnum.RECHARGER.getType())
                         .setPaymentType(payment.getPaymentType())
                         .setTotalAmount(payment.getPaymentAmount())
                         .setPaymentStatus(PaymentStatusEnum.PAID.getStatus())

@@ -19,6 +19,8 @@ public interface VipTicketMapper extends BaseMapper<VipTicket> {
     List<VipTicketVO> getList(@Param("query") VipTicketListQuery query, @Param("orgId") Long orgId);
 
     VipTicketVO getOneById(@Param("ticketId") Long ticketId);
+
+    List<VipTicketVO> getListByIds(@Param("ticketIds") List<Long> ticketIds);
 }
 
 

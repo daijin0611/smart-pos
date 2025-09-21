@@ -18,11 +18,13 @@ import org.haut.common.enums.OrderStatusEnum;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
+import org.haut.server.kpi.service.KpiDetailService;
 import org.haut.server.order.entity.OrderDetailEntity;
 import org.haut.server.order.entity.OrderInfoEntity;
 import org.haut.server.order.mapper.OrderInfoMapper;
 import org.haut.server.order.service.OrderDetailService;
 import org.haut.server.order.service.OrderInfoService;
+import org.haut.server.payment.service.PaymentDetailService;
 import org.haut.server.server.service.ServerProductService;
 import org.haut.server.stock.service.StockOutOrderService;
 import org.haut.server.vip.entity.VipInfo;
@@ -58,12 +60,12 @@ interface OrderConvert {
 public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfoEntity> implements OrderInfoService {
     
     private final OrderDetailService orderDetailService;
-    private final ServerProductService serverProductService;
-    private final StockOutOrderService stockOutOrderService;
     private final VipInfoService vipInfoService;
     private final OrderConvert orderConvert;
-    private final VipTicketService vipTicketService;
     private final VipInfoTicketService vipInfoTicketService;
+    private final PaymentDetailService paymentDetailService;
+    private final KpiDetailService kpiDetailService;
+
     /**
      * 床态界面创建订单信息
      *
@@ -102,7 +104,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public OrderInfoVO settleOrder(OrderSettleDTO settleOrderDTO) {
+    public void settleOrder(OrderSettleDTO settleOrderDTO) {
         // 校验会员信息
         VipInfo vipInfo = vipInfoService.getById(settleOrderDTO.getVipId());
         if (vipInfo == null && settleOrderDTO.getCustomerType().equals(CustomerTypeEnum.VIP.getValue()))
@@ -114,9 +116,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         saveOrUpdate(order);
         // 结算订单明细
         orderDetailService.settleOrderDetail(order,settleOrderDTO.getDetails());
+        // 结算业绩提成
+        kpiDetailService.handelOrder(order, settleOrderDTO.getDetails());
         // 结算支付信息
-        
-        return null;
+        paymentDetailService.handelOrder(settleOrderDTO, order.getOrderCode());
+        // 结算会员优惠券
+        vipInfoTicketService.handelOrder(settleOrderDTO, order.getOrderCode());
     }
     
     /**

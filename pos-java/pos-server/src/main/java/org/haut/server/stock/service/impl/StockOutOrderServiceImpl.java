@@ -252,7 +252,7 @@ public class StockOutOrderServiceImpl extends ServiceImpl<StockOutOrderMapper, S
 
             int newQuantity = product.getQuantity() - item.getQuantity();
             if (newQuantity < 0) {
-                throw new BusinessException("库存不足，产品：" + product.getProductName() + "，当前库存：" + product.getQuantity() + "，出库数量：" + item.getQuantity());
+                throw new BusinessException("库存不足\n产品：" + product.getProductName() + "\n当前库存：" + product.getQuantity() + "\n出库数量：" + item.getQuantity());
             }
             product.setQuantity(newQuantity);
             productsToUpdate.add(product);

@@ -59,6 +59,11 @@ public class VipInfoTicket {
     private Long vipTicketId;
 
     /**
+     * 优惠券类型
+     */
+    private Integer ticketType;
+
+    /**
      * 代金券名称
      */
     private String ticketName;

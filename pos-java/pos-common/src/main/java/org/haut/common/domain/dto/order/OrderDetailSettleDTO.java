@@ -26,6 +26,9 @@ public class OrderDetailSettleDTO {
     @Schema(description = "订单业务ID（产品ID、服务ID或疗程券ID）")
     private Long bid;
 
+    @Schema(description = "业务名称")
+    private String businessName;
+
     @Schema(description = "标准单价",example = "100.00")
     private BigDecimal stdPrice;
 

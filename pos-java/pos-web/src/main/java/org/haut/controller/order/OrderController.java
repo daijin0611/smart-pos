@@ -46,10 +46,10 @@ public class OrderController {
 
     @PostMapping("/settle-order")
     @Operation(summary = "结算", description = "对订单进行结算操作")
-    public JsonVO<OrderInfoVO> settleOrder(@Validated @RequestBody OrderSettleDTO settleOrderDTO) {
+    public JsonVO<String> settleOrder(@Validated @RequestBody OrderSettleDTO settleOrderDTO) {
         log.info("结算订单请求：{}", settleOrderDTO);
-        OrderInfoVO orderInfo = orderInfoService.settleOrder(settleOrderDTO);
-        return JsonVO.success(orderInfo);
+        orderInfoService.settleOrder(settleOrderDTO);
+        return JsonVO.success();
     }
 
     @PutMapping("/cancel-order/{orderId}")

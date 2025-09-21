@@ -33,7 +33,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     druid:
       initial-size: 5  # 连接池初始化大小
-      max-active: 50  # 连接池最大连接数
+      max-active: 20  # 连接池最大连接数
       max-wait: 60000  # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException
       min-idle: 5  # 最小空闲连接数
       test-while-idle: true  # 连接空闲时进行连接有效性检查
@@ -51,7 +51,12 @@ spring:
       keep-alive: true
       validation-query: SELECT 1
       time-between-eviction-runs-millis: 60000
+      keep-alive-between-time-millis: 1800000
       min-evictable-idle-time-millis: 300000
+      test-on-borrow: true
+      test-on-return: false
+
+
   security: # 安全配置
     jwt:
       key: abcdefghijklmnopqrstuvwxyz1234567890  # JWT密钥
@@ -103,15 +108,6 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
-
-
-logging:
-  level:
-    com.baomidou.mybatisplus: DEBUG
-    org.mybatis: DEBUG
-    org.apache.ibatis: DEBUG
-    java.sql: DEBUG
-    javax.sql: DEBUG
 
 # 幂等性配置
 idempotent:

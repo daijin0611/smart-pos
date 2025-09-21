@@ -11,5 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface PaymentDetailService extends IService<PaymentDetail> {
 
-    void handelOrder(OrderSettleDTO orderSettleDTO);
+    void handelOrder(OrderSettleDTO orderSettleDTO, String orderCode);
 }
