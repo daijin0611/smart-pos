@@ -12,6 +12,7 @@ public class OrderTicketUseDTO {
 
     @Schema(description = "优惠券类型")
     private Integer ticketType;
+    // 50 55
 
     /**
      * 订单详情ID，如果为代金券则设置为空

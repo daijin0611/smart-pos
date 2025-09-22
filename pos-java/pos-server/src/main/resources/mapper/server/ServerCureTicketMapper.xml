@@ -63,6 +63,15 @@
             </if>
         </where>
     </select>
+    <select id="getOneById" resultMap="ServerCureTicketVO">
+        select t.*,
+               td.vip_ticket_name as vip_ticket_name,
+               td.vip_ticket_num  as vip_ticket_num,
+               td.vip_ticket_id   as vip_ticket_id
+        from server_cure_ticket as t
+                 left join server_cure_ticket_detail as td on t.id = td.cure_ticket_id and t.is_delete = 0
+        where t.id = #{id}
+    </select>
 
 
 </mapper>

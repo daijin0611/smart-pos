@@ -185,16 +185,21 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     public void settleOrderDetail(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails) {
         // 处理库存明细
         stockOutOrderService.handelOrder(orderDetails);
+        // 处理疗程券
+        serverCureTicketService.handelOrder(orderDetails, order);
+
         // 处理业绩提成
         kpiDetailService.handelOrder(order, orderDetails);
         // 保存订单明细
         List<OrderDetailEntity> details = orderDetails.stream()
                 .map(e -> orderDetailConvert.toEntity(e)
+                        .setOrderCode(order.getOrderCode())
                         .setDetailCode(StringUtils.isBlank(e.getDetailCode()) ?
                                 CodeUtils.generateByTime(PrefixConst.ORDER_DETAIL) : e.getDetailCode())
                         .setOrderId(order.getId())
                         .setSettledTime(order.getSettleTime())
                         .setOrderStatus(order.getOrderStatus())
+                        .setOrgId(order.getOrgId())
                         .setOrderId(order.getId()))
                 .toList();
         // 更新或者保存订单明细

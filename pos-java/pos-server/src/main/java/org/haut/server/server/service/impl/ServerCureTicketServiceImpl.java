@@ -3,12 +3,18 @@ package org.haut.server.server.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.haut.common.constant.PrefixConst;
+import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.dto.server.RelatedTicketDTO;
 import org.haut.common.domain.dto.server.CureTicketCreateDTO;
 import org.haut.common.domain.dto.server.CureTicketStatusDTO;
 import org.haut.common.domain.dto.server.CureTicketUpdateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
+import org.haut.common.domain.vo.vip.VipTicketVO;
+import org.haut.common.enums.TicketStatusEnum;
+import org.haut.common.utils.CodeUtils;
+import org.haut.server.order.entity.OrderInfoEntity;
 import org.haut.server.server.entity.ServerCureTicket;
 import org.haut.server.server.entity.ServerCureTicketDetail;
 import org.haut.common.domain.vo.server.ServerCureTicketVO;
@@ -17,10 +23,16 @@ import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.server.mapper.ServerCureTicketDetailMapper;
 import org.haut.server.server.mapper.ServerCureTicketMapper;
 import org.haut.server.server.service.ServerCureTicketService;
+import org.haut.server.vip.entity.VipInfo;
+import org.haut.server.vip.entity.VipInfoTicket;
+import org.haut.server.vip.mapper.VipTicketMapper;
+import org.haut.server.vip.service.VipInfoTicketService;
+import org.haut.server.vip.service.impl.VipInfoServiceImpl;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -30,6 +42,8 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
     private final ServerCureTicketDetailMapper serverCureTicketDetailMapper;
     private final CureTicketConvert cureTicketConvert;
     private final CureTicketDetailConvert cureTicketDetailConvert;
+    private final VipTicketMapper vipTicketMapper;
+    private final VipInfoTicketService vipInfoTicketService;
 
 
     /**
@@ -126,6 +140,47 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
         updateEntity.setId(cureTicketStatus.getId());
         updateEntity.setStatus(cureTicketStatus.getStatus());
         this.updateById(updateEntity);
+    }
+
+    /**
+     * 处理订单中的疗程券
+     * @param dto
+     */
+    @Override
+    public void handelOrder(List<OrderDetailSettleDTO> dto, OrderInfoEntity order) {
+        if (order.getVipId()==null)
+            throw new BusinessException("购买疗程券必须选择会员");
+        List<VipInfoTicket> insertTicket = new ArrayList<>();
+        dto.forEach(e->{
+            ServerCureTicketVO cureTicketVO = baseMapper.getOneById(e.getBid());
+            List<VipInfoTicket> ticketInfoList = new ArrayList<>();
+            cureTicketVO.getTicketDetails()
+                    .forEach(detail -> {
+                        VipTicketVO ticketInfo = vipTicketMapper.getOneById(detail.getVipTicketId());
+                        VipInfoTicket ticket = new VipInfoTicket()
+                                .setTicketType(ticketInfo.getTicketType())
+                                .setTicketName(ticketInfo.getTicketName())
+                                .setTicketCode(CodeUtils.generateByTime(PrefixConst.TICKET))
+                                .setVipInfoId(order.getVipId())
+                                .setVipTicketId(detail.getVipTicketId())
+                                .setVipName(order.getVipName())
+                                .setVipPhoneNumber(order.getVipPhoneNumber())
+                                .setVipCardNumber(order.getVipCardNumber())
+                                .setStatus(TicketStatusEnum.UNUSED.getStatus())
+                                .setClaimTime(LocalDate.now())
+                                .setExpiryDate(ticketInfo.getTicketEffectiveTime() == -1 ?
+                                        null : LocalDate.now().plusDays(ticketInfo.getTicketEffectiveTime()))
+                                .setActiveId(null)
+                                .setOrgId(order.getOrgId())
+                                .setRemark("疗程券获取")
+                                .setRechargeHistoryCode(null);
+                        for (int i=0; i<detail.getVipTicketNum(); i++){
+                            ticketInfoList.add(ticket);
+                        }
+                    });
+            insertTicket.addAll(ticketInfoList);
+        });
+        vipInfoTicketService.saveBatch(insertTicket);
     }
 
 }

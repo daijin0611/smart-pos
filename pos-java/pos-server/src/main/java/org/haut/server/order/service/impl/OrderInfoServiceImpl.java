@@ -66,6 +66,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private final PaymentDetailService paymentDetailService;
     private final KpiDetailService kpiDetailService;
 
+
     /**
      * 床态界面创建订单信息
      *
@@ -219,11 +220,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      */
     private OrderInfoEntity initOrderInfo(OrderSettleDTO dto, VipInfo vipInfo) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
+        OrderInfoEntity order = getById(dto.getOrderId());
+        if (order!=null && order.getOrderStatus().equals(OrderStatusEnum.SETTLED.getCode())) {
+            throw new BusinessException("订单已结算");
+        }
         return new OrderInfoEntity()
                 .setId(dto.getOrderId())
                 .setRemark(dto.getRemark())
-                .setOrderCode(CodeUtils.generateByTime(PrefixConst.ORDER))
-                .setOrderTime(dto.getOrderTime())
+                .setOrderCode(order==null?
+                        CodeUtils.generateByTime(PrefixConst.ORDER):order.getOrderCode())
+                .setOrderTime(dto.getOrderTime()==null?
+                        new Date():dto.getOrderTime())
                 .setOrderStatus(OrderStatusEnum.SETTLED.getCode())
                 .setCustomerName(dto.getCustomerName())
                 .setCustomerType(dto.getCustomerType())

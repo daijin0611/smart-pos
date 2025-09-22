@@ -129,6 +129,8 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
         List<Long> ticketIds = useTickets.stream()
                 .map(OrderTicketUseDTO::getTicketId)
                 .toList();
+        if (ticketIds.isEmpty())
+            return;
         List<VipInfoTicket> vipInfoTickets = listByIds(ticketIds);
         validateTickets(vipInfoTickets, useTickets, settleOrderDTO.getTotalAmount());
         // 2. 更新优惠券状态
@@ -136,6 +138,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
             .in(VipInfoTicket::getId, ticketIds)
             .set(VipInfoTicket::getStatus, TicketStatusEnum.USED.getStatus())
             .update();
+        log.info("更新优惠券状态完成");
     }
 
     /**
@@ -145,6 +148,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
     private void validateTickets(List<VipInfoTicket> vipInfoTickets, List<OrderTicketUseDTO> useTickets, BigDecimal totalValue){
         if (vipInfoTickets.isEmpty())
             return;
+        log.info("开始校验优惠券");
         List<VipInfoTicket> usedTickets = vipInfoTickets.stream()
                 // 已使用的优惠券
                 .filter(t -> TicketStatusEnum.USED.getStatus().equals(t.getStatus()))
@@ -158,7 +162,8 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
         if (!expireTickets.isEmpty())
             throw new BusinessException("优惠券已过期");
         for (OrderTicketUseDTO ticket : useTickets){
-            VipTicketVO ticketInfo = vipTicketMapper.getOneById(ticket.getTicketId());
+            VipInfoTicket ticketEntity = getById(ticket.getTicketId());
+            VipTicketVO ticketInfo = vipTicketMapper.getOneById(ticketEntity.getVipTicketId());
             OrderDetailEntity detail = orderDetailMapper.selectById(ticket.getDetailId());
             // 代金券类型
             //TODO: 目前代金券限额按照标准价校验
@@ -175,7 +180,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
                         .stream()
                         .map(VipTicketVO.ServerItemVO::getId)
                         .collect(Collectors.toSet());
-                if (!itemIdSet.contains(ticket.getDetailId()))
+                if (!itemIdSet.contains(detail.getBid()))
                     throw new BusinessException(String.format("%s项目不在%s体验券使用范围内！",
                             detail.getBusinessName(),
                             ticketInfo.getTicketName()));
@@ -186,6 +191,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
                 throw new BusinessException("优惠券类型错误");
             }
         }
+        log.info("优惠券校验通过");
     }
 
 }

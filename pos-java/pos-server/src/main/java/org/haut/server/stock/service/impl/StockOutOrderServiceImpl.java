@@ -200,6 +200,8 @@ public class StockOutOrderServiceImpl extends ServiceImpl<StockOutOrderMapper, S
         List<OrderDetailSettleDTO> productDetails = consumerOrderDetails.stream()
                 .filter(o -> o.getDetailType().equals(ServiceTypeEnum.PRODUCT.getValue()))
                 .toList();
+        if (productDetails.isEmpty())
+            return;
         BigDecimal totalPrice = productDetails.stream()
                 .map(OrderDetailSettleDTO::getStdPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
