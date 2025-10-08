@@ -1,8 +1,10 @@
 package org.haut.server.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderCreateDTO;
 import org.haut.common.domain.dto.order.OrderSettleDTO;
+import org.haut.common.domain.query.order.OrderPageQuery;
 import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.server.order.entity.OrderInfoEntity;
@@ -45,4 +47,11 @@ public interface OrderInfoService extends IService<OrderInfoEntity> {
      * @return
      */
     String cancelOrder(Long orderId);
+
+    /**
+     * 分页查询订单信息
+     *
+     * @return 订单信息VO
+     */
+    PageDTO<OrderInfoVO> pageQuery(OrderPageQuery query);
 }

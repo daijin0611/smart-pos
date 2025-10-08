@@ -175,4 +175,10 @@ public class OrderInfoVO {
      */
     @Schema(description = "订单明细列表")
     private List<OrderDetailVO> orderDetails;
+
+    /**
+     * 支付信息列表
+     */
+    @Schema(description = "支付信息列表")
+    private List<PaymentVO> payments;
 }

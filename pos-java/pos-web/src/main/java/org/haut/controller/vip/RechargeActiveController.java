@@ -51,7 +51,6 @@ public class RechargeActiveController {
     @Operation(description = "新增充值活动", summary = "新增充值活动")
     public JsonVO<String> addRechargeActive(@Validated @RequestBody VipRechargeActiveAddDTO addDTO) {
         log.info("新增充值活动，数据：{}", addDTO);
-        // TODO: 实现具体逻辑
         vipRechargeActiveService.addRechargeActive(addDTO);
         return JsonVO.success("新增成功");
     }

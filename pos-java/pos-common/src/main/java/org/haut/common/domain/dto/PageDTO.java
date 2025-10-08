@@ -1,6 +1,7 @@
 package org.haut.common.domain.dto;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,7 @@ public class PageDTO<T> {
      * @param <T>  数据类型
      * @return PageDTO<T>
      */
-    public static <T> PageDTO<T> create(Page<T> page) {
+    public static <T> PageDTO<T> create(IPage<T> page) {
         return new PageDTO<T>()
                 .setPageNum(page.getCurrent())
                 .setPageSize(page.getSize())
@@ -56,7 +57,7 @@ public class PageDTO<T> {
      * @param <T>
      * @param <D>
      */
-    public static <T, D> PageDTO<D> create(Page<T> page, Function<T, D> mapper) {
+    public static <T, D> PageDTO<D> create(IPage<T> page, Function<T, D> mapper) {
         List<D> rows = page.getRecords().stream().map(mapper).toList();
         return new PageDTO<D>()
                 .setPageNum(page.getCurrent())
@@ -74,7 +75,7 @@ public class PageDTO<T> {
      * @param <T>
      * @param <D>
      */
-    public static <T, D> PageDTO<D> create(Page<T> page, Class<D> clazz) {
+    public static <T, D> PageDTO<D> create(IPage<T> page, Class<D> clazz) {
         return create(page, t -> BeanUtil.copyProperties(t, clazz));
     }
 

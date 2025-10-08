@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.kpi.KpiListQuery;
 import org.haut.common.domain.vo.kpi.KpiListVO;
 import org.haut.common.enums.CommissionBaseEnum;
@@ -14,6 +15,7 @@ import org.haut.common.enums.CommissionTypeEnum;
 import org.haut.common.enums.ServerItemTypeEnum;
 import org.haut.common.enums.ServiceTypeEnum;
 import org.haut.common.exception.BusinessException;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.kpi.entity.KpiDetail;
 import org.haut.server.kpi.service.KpiDetailService;
 import org.haut.server.kpi.mapper.KpiDetailMapper;
@@ -70,6 +72,8 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
      */
     @Override
     public PageDTO<KpiListVO> getKpiList(KpiListQuery query) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        query.setOrgId(auth.getOrgId());
         //处理空指针异常
         int pageNum = (query.getPageNum() == null || query.getPageNum() <= 0) ? 1 : query.getPageNum();
         int pageSize = (query.getPageSize() == null || query.getPageSize() <= 0) ? 20 : query.getPageSize();

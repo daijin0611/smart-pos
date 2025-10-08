@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.haut.common.domain.query.order.OrderInfoQuery;
+import org.haut.common.domain.query.order.OrderPageQuery;
+import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.server.order.entity.OrderInfoEntity;
 
 import java.util.List;
@@ -77,4 +79,13 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
      * @return 更新行数
      */
     int updateOrderStatus(@Param("orderId") Long orderId, @Param("orderStatus") Integer orderStatus);
+
+    /**
+     * 分页查询订单信息
+     *
+     * @param page 分页参数
+     * @param query 查询条件
+     * @return 分页结果
+     */
+    IPage<OrderInfoVO> pageQuery(Page<OrderInfoVO> page, @Param("query") OrderPageQuery query);
 }

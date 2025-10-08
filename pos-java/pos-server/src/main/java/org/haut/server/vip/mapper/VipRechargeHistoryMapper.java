@@ -1,5 +1,6 @@
 package org.haut.server.vip.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import org.haut.common.domain.query.vip.RechargeHistoryQuery;
 import org.haut.common.domain.vo.vip.RechargeHistoryVO;
 import org.haut.server.vip.entity.VipRechargeHistory;
@@ -15,7 +16,7 @@ import java.util.List;
 */
 public interface VipRechargeHistoryMapper extends BaseMapper<VipRechargeHistory> {
 
-    List<RechargeHistoryVO> getList(RechargeHistoryQuery query);
+    List<RechargeHistoryVO> getList(@Param("query") RechargeHistoryQuery query, @Param("orgId") Long orgId);
 }
 
 

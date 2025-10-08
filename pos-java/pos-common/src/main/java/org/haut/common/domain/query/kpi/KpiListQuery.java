@@ -14,7 +14,7 @@ public class KpiListQuery {
     @Schema(description = "员工姓名")
     private String username;
 
-    @Schema(description = "机构ID")
+    @Schema(description = "机构ID", hidden = true)
     private Long orgId;
 
     @Schema(description = "查询开始日期")

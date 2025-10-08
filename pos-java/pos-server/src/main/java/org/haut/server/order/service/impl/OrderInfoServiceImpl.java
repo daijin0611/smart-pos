@@ -1,18 +1,23 @@
 package org.haut.server.order.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.constant.PrefixConst;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderCreateDTO;
 
 import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.PaymentInfoDTO;
+import org.haut.common.domain.query.order.OrderPageQuery;
 import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
+import org.haut.common.domain.vo.order.PaymentVO;
 import org.haut.common.enums.CustomerTypeEnum;
 import org.haut.common.enums.OrderStatusEnum;
 import org.haut.common.exception.BusinessException;
@@ -24,6 +29,7 @@ import org.haut.server.order.entity.OrderInfoEntity;
 import org.haut.server.order.mapper.OrderInfoMapper;
 import org.haut.server.order.service.OrderDetailService;
 import org.haut.server.order.service.OrderInfoService;
+import org.haut.server.payment.entity.PaymentDetail;
 import org.haut.server.payment.service.PaymentDetailService;
 import org.haut.server.server.service.ServerProductService;
 import org.haut.server.stock.service.StockOutOrderService;
@@ -165,7 +171,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 查询订单明细
         List<OrderDetailVO> orderDetails = orderDetailService.queryByOrderId(orderId);
         orderInfoVO.setOrderDetails(orderDetails);
-        
+        // 查询支付信息
+        List<PaymentDetail> payments = paymentDetailService.lambdaQuery()
+                .eq(PaymentDetail::getActiveCode, orderInfo.getOrderCode())
+                .list();
+        List<PaymentVO> paymentVOS = BeanUtil.copyToList(payments, PaymentVO.class);
+        orderInfoVO.setPayments(paymentVOS);
         log.info("订单查询成功，订单编号：{}", orderInfo.getOrderCode());
         return orderInfoVO;
     }
@@ -211,6 +222,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         
         log.info("订单取消成功，订单编号：{}", orderInfo.getOrderCode());
         return "订单取消成功";
+    }
+
+    /**
+     * 分页查询订单信息
+     * @param query 查询参数
+     * @return 分页结果 - 订单信息VO列表
+     */
+    @Override
+    public PageDTO<OrderInfoVO> pageQuery(OrderPageQuery query) {
+        Page<OrderInfoVO> page = Page.of(query.getPageNum(), query.getPageSize());
+        IPage<OrderInfoVO> result = baseMapper.pageQuery(page,query);
+        return PageDTO.create(result, OrderInfoVO.class);
     }
 
     /**

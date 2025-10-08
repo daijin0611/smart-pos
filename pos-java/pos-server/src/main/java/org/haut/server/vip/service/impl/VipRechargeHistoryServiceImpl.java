@@ -47,7 +47,8 @@ public class VipRechargeHistoryServiceImpl extends ServiceImpl<VipRechargeHistor
      */
     @Override
     public List<RechargeHistoryVO> getList(RechargeHistoryQuery query) {
-        return this.baseMapper.getList(query);
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        return this.baseMapper.getList(query, auth.getOrgId());
     }
 
 
