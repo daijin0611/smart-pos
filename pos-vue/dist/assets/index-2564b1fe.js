@@ -1,0 +1,1 @@
+import{a1 as e,a2 as r,a7 as t}from"./index-25ebaba6.js";const u=(s={})=>e("/system/user/query-list",s),o=(s={})=>r("/system/user/add-user",s),d=(s={})=>t("/system/user/update-user",s);export{d as a,o as b,u as r};

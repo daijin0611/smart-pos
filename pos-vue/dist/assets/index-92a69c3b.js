@@ -1,0 +1,1 @@
+import{a1 as r,a2 as s,a7 as e,aa as o}from"./index-25ebaba6.js";const d=(t={})=>r("/server/product/query-list",t),c=(t={})=>r("/server/product/query-info",t),u=(t={})=>s("/server/product/add-product",t),p=(t={})=>e("/server/product/update-product",t),n=(t={})=>e("/server/product/update-status",t,o.URLencoded);export{c as a,p as b,u as c,n as d,d as r};
