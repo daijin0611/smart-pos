@@ -231,9 +231,72 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      */
     @Override
     public PageDTO<OrderInfoVO> pageQuery(OrderPageQuery query) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        query.setOrgId(auth.getOrgId());
         Page<OrderInfoVO> page = Page.of(query.getPageNum(), query.getPageSize());
         IPage<OrderInfoVO> result = baseMapper.pageQuery(page,query);
+        result.getRecords().forEach(orderInfoVO -> {
+            orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfoVO.getOrderStatus()));
+        });
         return PageDTO.create(result, OrderInfoVO.class);
+    }
+
+    /**
+     * 根据床位查询订单信息
+     * @param bedId 床位ID
+     * @return 订单信息VO
+     */
+    @Override
+    public OrderInfoVO queryByBedId(Long bedId) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        log.info("根据床位ID查询订单信息，床位ID：{}", bedId);
+        
+        if (bedId == null) {
+            throw new BusinessException("床位ID不能为空");
+        }
+        
+        // 查询该床位下未结算的订单信息
+        List<OrderInfoEntity> orderInfoList = baseMapper.queryUnsettledByBedId(bedId,auth.getOrgId());
+        
+        if (orderInfoList == null || orderInfoList.isEmpty()) {
+            log.info("床位ID：{} 下没有未结算的订单", bedId);
+            return null;
+        }
+        
+        // 取第一个未结算的订单（按创建时间倒序，最新的订单）
+        OrderInfoEntity orderInfo = orderInfoList.get(0);
+        
+        // 转换为VO对象
+        OrderInfoVO orderInfoVO = orderConvert.toInfoVO(orderInfo);
+        
+        // 设置枚举字段名称
+        if (orderInfo.getOrderStatus() != null) {
+            orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfo.getOrderStatus()));
+        }
+        
+        if (orderInfo.getCustomerType() != null) {
+            for (CustomerTypeEnum customerType : CustomerTypeEnum.values()) {
+                if (customerType.getValue().equals(orderInfo.getCustomerType())) {
+                    orderInfoVO.setCustomerName(orderInfo.getCustomerName());
+                    break;
+                }
+            }
+        }
+        
+        // 查询订单明细
+        List<OrderDetailVO> orderDetails = orderDetailService.queryByOrderId(orderInfo.getId());
+        orderInfoVO.setOrderDetails(orderDetails);
+        
+        // 查询支付信息
+        List<PaymentDetail> payments = paymentDetailService.lambdaQuery()
+                .eq(PaymentDetail::getActiveCode, orderInfo.getOrderCode())
+                .eq(PaymentDetail::getOrgId, orderInfo.getOrgId())
+                .list();
+        List<PaymentVO> paymentVOS = BeanUtil.copyToList(payments, PaymentVO.class);
+        orderInfoVO.setPayments(paymentVOS);
+        
+        log.info("根据床位ID查询订单成功，订单编号：{}", orderInfo.getOrderCode());
+        return orderInfoVO;
     }
 
     /**

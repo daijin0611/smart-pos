@@ -37,4 +37,7 @@ public class OrderPageQuery {
 
     @Schema(description = "订单号")
     private String orderCode;
+
+    @Schema(description = "机构ID", hidden = true)
+    private Long orgId;
 }

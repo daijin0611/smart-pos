@@ -61,7 +61,7 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
      * @param bedId 床位ID
      * @return 订单信息列表
      */
-    List<OrderInfoEntity> queryUnsettledByBedId(@Param("bedId") Long bedId);
+    List<OrderInfoEntity> queryUnsettledByBedId(@Param("bedId") Long bedId, @Param("orgId") Long orgId);
     
     /**
      * 统计订单数量

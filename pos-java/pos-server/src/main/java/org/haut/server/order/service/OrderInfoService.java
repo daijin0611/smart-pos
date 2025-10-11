@@ -54,4 +54,12 @@ public interface OrderInfoService extends IService<OrderInfoEntity> {
      * @return 订单信息VO
      */
     PageDTO<OrderInfoVO> pageQuery(OrderPageQuery query);
+
+    /**
+     * 根据床位ID查询订单信息
+     *
+     * @param bedId 床位ID
+     * @return 订单信息VO
+     */
+    OrderInfoVO queryByBedId(Long bedId);
 }

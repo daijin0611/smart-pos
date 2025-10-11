@@ -1,5 +1,6 @@
 package org.haut.controller.order;
 
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -85,5 +86,12 @@ public class OrderController {
         return JsonVO.success(orderInfo);
     }
 
+    @GetMapping("/query-by-bed-id/{bedId}")
+    @Operation(summary = "根据床位ID查询订单信息", description = "根据床位ID查询订单详细信息，包含订单明细")
+    public JsonVO<OrderInfoVO> queryByBedId(@PathVariable Long bedId) {
+        log.info("查询订单信息，床位ID：{}", bedId);
+        OrderInfoVO orderInfo = orderInfoService.queryByBedId(bedId);
+        return JsonVO.success(orderInfo);
+    }
 
 }
