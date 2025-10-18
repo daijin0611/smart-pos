@@ -18,6 +18,7 @@ import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.common.domain.vo.order.PaymentVO;
+import org.haut.common.enums.BedStatusEnum;
 import org.haut.common.enums.CustomerTypeEnum;
 import org.haut.common.enums.OrderStatusEnum;
 import org.haut.common.exception.BusinessException;
@@ -31,6 +32,8 @@ import org.haut.server.order.service.OrderDetailService;
 import org.haut.server.order.service.OrderInfoService;
 import org.haut.server.payment.entity.PaymentDetail;
 import org.haut.server.payment.service.PaymentDetailService;
+import org.haut.server.room.entity.RoomBed;
+import org.haut.server.room.service.RoomBedService;
 import org.haut.server.server.service.ServerProductService;
 import org.haut.server.stock.service.StockOutOrderService;
 import org.haut.server.vip.entity.VipInfo;
@@ -71,6 +74,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private final VipInfoTicketService vipInfoTicketService;
     private final PaymentDetailService paymentDetailService;
     private final KpiDetailService kpiDetailService;
+    private final RoomBedService roomBedService;
 
 
     /**
@@ -103,12 +107,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         this.save(orderInfo);
 
         // 创建订单明细
-        List<OrderDetailVO> orderDetailVOS = orderDetailService.createOrderDetails(createOrderDTO.getOrderDetails(), orderInfo.getId());
-
+        orderDetailService.createOrderDetails(createOrderDTO.getOrderDetails(), orderInfo.getId());
         log.info("订单创建成功，订单号：{}", orderNo);
+
+        // 更新床位状态
+        roomBedService.lambdaUpdate()
+                .eq(RoomBed::getId, orderInfo.getBedId())
+                .set(RoomBed::getStatus, BedStatusEnum.USING.getCode());
+        log.info("床位{}更新状态为:{}", orderInfo.getBedName(), BedStatusEnum.USING.getCode());
         return orderConvert.toCreateVO(orderInfo);
     }
-    
+
+    /**
+     * 结算订单信息
+     * @param settleOrderDTO 结算订单请求DTO
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void settleOrder(OrderSettleDTO settleOrderDTO) {
@@ -121,6 +134,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 结算订单
         OrderInfoEntity order = initOrderInfo(settleOrderDTO,vipInfo);
         saveOrUpdate(order);
+        // 更新床位状态为空闲
+        roomBedService.lambdaUpdate()
+                .eq(RoomBed::getId, order.getBedId())
+                .set(RoomBed::getStatus, BedStatusEnum.FREE);
         // 结算订单明细
         orderDetailService.settleOrderDetail(order,settleOrderDTO.getDetails());
         // 结算业绩提成
@@ -221,6 +238,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         }
         
         log.info("订单取消成功，订单编号：{}", orderInfo.getOrderCode());
+
+        // 更新床位状态
+        roomBedService.lambdaUpdate()
+                .eq(RoomBed::getId, orderInfo.getBedId())
+                .set(RoomBed::getStatus, BedStatusEnum.FREE.getCode());
         return "订单取消成功";
     }
 
