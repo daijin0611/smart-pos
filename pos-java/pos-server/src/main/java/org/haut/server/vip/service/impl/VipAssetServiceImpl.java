@@ -1,5 +1,6 @@
 package org.haut.server.vip.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +10,10 @@ import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.AssetCreateDTO;
 import org.haut.common.domain.dto.vip.PaymentInfoDTO;
 import org.haut.common.domain.vo.ResultStatus;
+import org.haut.common.domain.vo.vip.TicketCountVO;
 import org.haut.common.domain.vo.vip.VipAssetVO;
 import org.haut.common.domain.vo.vip.VipCountVO;
+import org.haut.common.domain.vo.vip.VipTicketVO;
 import org.haut.common.enums.PaymentStatusEnum;
 import org.haut.common.enums.PaymentTypeEnum;
 import org.haut.common.exception.BusinessException;
@@ -33,10 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -55,6 +55,7 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
     private final VipInfoConvert vipInfoConvert;
     private final VipInfoTicketConvert vipInfoTicketConvert;
     private final SysDictItemService sysDictItemService;
+    private final VipTicketService vipTicketService;
 
     /**
      * 创建会员资产
@@ -91,15 +92,27 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
             throw new BusinessException("会员不存在");
         List<VipAsset> assets = lambdaQuery().eq(VipAsset::getVipId, vipId).list();
         List<VipInfoTicket> tickets = vipInfoTicketService.lambdaQuery().eq(VipInfoTicket::getVipInfoId, vipId).list();
+        List<TicketCountVO> ticketCountVOS = vipInfoTicketConvert.toVOS(tickets);
+        if (ticketCountVOS != null && !ticketCountVOS.isEmpty()){
+            List<Long> ticketIds = tickets.stream().map(VipInfoTicket::getVipTicketId).toList();
+            Map<Long, VipTicketVO> vipTicketMap = vipTicketService.queryByIds(ticketIds).stream().collect(Collectors.toMap(
+                    VipTicketVO::getId, e -> e
+            ));
+            for (TicketCountVO ticketCountVO : ticketCountVOS) {
+                if (vipTicketMap.containsKey(ticketCountVO.getVipTicketId())) {
+                    ticketCountVO.setTicketInfo(vipTicketMap.get(ticketCountVO.getVipTicketId()));
+                }
+            }
+        }
         return new VipCountVO()
                 .setVipAssetVOList(vipAssetConvert.toVOS(assets))
                 .setVipInfoVO(vipInfoConvert.toVO(vipInfo))
-                .setVipTicketVOList(vipInfoTicketConvert.toVOS(tickets));
+                .setVipTicketVOList(ticketCountVOS);
     }
 
     /**
      * 处理下余额扣减
-     * 1. 校验余额是否符合要求
+     * 1. 校验余额是否符合要求  [
      * 2. 更新余额和会员信息
      * 3. 记录跨店消费
      * @param dto 订单结算信息

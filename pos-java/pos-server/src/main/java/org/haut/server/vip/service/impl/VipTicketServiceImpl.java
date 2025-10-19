@@ -125,6 +125,11 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
         return baseMapper.getOneById(ticketId);
     }
 
+    @Override
+    public List<VipTicketVO> queryByIds(List<Long> ticketIds) {
+        return baseMapper.getListByIds(ticketIds);
+    }
+
     private void checkDto(VipTicketUpdateDTO ticket) {
         if (ticket.getTicketType().equals(TicketTypeEnum.CONSUMER.getValue())){
             if (ticket.getTicketValue() == null)

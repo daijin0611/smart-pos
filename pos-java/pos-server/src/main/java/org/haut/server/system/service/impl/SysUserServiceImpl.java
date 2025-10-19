@@ -118,6 +118,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
 
     /**
+     * SpringSecurity登录加载用户
      * 根据用户名查询用户
      * @param userCode
      * @return

@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -103,4 +104,9 @@ public class TicketCountVO {
      * 组织id
      */
     private Long orgId;
+
+    /**
+     * 优惠券信息
+     */
+    private VipTicketVO ticketInfo;
 }
