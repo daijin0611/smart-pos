@@ -1,17 +1,14 @@
 package org.haut.controller.vip;
 
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.haut.common.annotation.Idempotent;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.vip.*;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.common.domain.vo.vip.VipAssetVO;
 import org.haut.common.domain.vo.vip.VipCountVO;
 import org.haut.common.domain.vo.vip.VipInfoVO;
 import org.haut.server.vip.service.VipAssetService;
@@ -19,7 +16,6 @@ import org.haut.server.vip.service.VipInfoService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/vip")
@@ -73,5 +69,32 @@ public class VipController {
     @GetMapping("/query-asset-list/{vipId}")
     public JsonVO<VipCountVO> getAssetsByVipId(@PathVariable("vipId") Long vipId){
         return JsonVO.success(vipAssetService.queryAsset(vipId));
+    }
+
+    @Operation(description = "为会员赠送优惠券", summary = "赠送优惠券")
+    @PostMapping("/present-ticket/{vipId}")
+    public JsonVO<String> presentTicket (
+            @PathVariable Long vipId,
+            @RequestBody @Validated PresentTicketDTO dto){
+        vipInfoService.presentTicket(vipId,dto);
+        return JsonVO.success("赠送成功");
+    }
+
+    @Operation(description = "批量取消会员优惠券", summary = "取消会员优惠券")
+    @PostMapping("/cancel-ticket/{vipId}")
+    public JsonVO<String> cancelTicket (
+            @PathVariable Long vipId,
+            @RequestBody @Validated CancelTicketDTO dto){
+        vipInfoService.cancelTicket(vipId,dto);
+        return JsonVO.success("取消成功");
+    }
+
+    @Operation(description = "为会员赠送资产", summary = "赠送资产")
+    @PostMapping("/present-asset/{vipId}")
+    public JsonVO<String> presentAsset (
+            @PathVariable Long vipId,
+            @RequestBody @Validated PresentAssetDTO dto){
+        vipAssetService.presentAsset(vipId,dto);
+        return JsonVO.success("赠送成功");
     }
 }

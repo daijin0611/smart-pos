@@ -1,9 +1,7 @@
 package org.haut.server.vip.service;
 
 import org.haut.common.domain.dto.PageDTO;
-import org.haut.common.domain.dto.vip.RechargeDTO;
-import org.haut.common.domain.dto.vip.VipCreateDTO;
-import org.haut.common.domain.dto.vip.VipUpdateDTO;
+import org.haut.common.domain.dto.vip.*;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.server.vip.entity.VipInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -31,4 +29,21 @@ public interface VipInfoService extends IService<VipInfo> {
     void updateVip(VipUpdateDTO vip);
 
     void recharge(RechargeDTO dto);
+
+    /**
+     * 为会员赠送优惠券
+     * 
+     * @param vipId 会员ID
+     * @param dto 赠送优惠券参数
+     */
+    void presentTicket(Long vipId, PresentTicketDTO dto);
+
+    /**
+     * 批量取消会员优惠券
+     * 
+     * @param vipId 会员ID
+     * @param dto 取消优惠券参数
+     */
+    void cancelTicket(Long vipId, CancelTicketDTO dto);
+
 }

@@ -2,6 +2,7 @@ package org.haut.server.vip.service;
 
 import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.vip.AssetCreateDTO;
+import org.haut.common.domain.dto.vip.PresentAssetDTO;
 import org.haut.common.domain.vo.vip.VipCountVO;
 import org.haut.server.vip.entity.VipAsset;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -39,4 +40,12 @@ public interface VipAssetService extends IService<VipAsset> {
      * @param dto 订单结算信息
      */
     void handelOrder(OrderSettleDTO dto);
+
+    /**
+     * 为会员赠送资产
+     * 
+     * @param vipId 会员ID
+     * @param dto 赠送资产参数
+     */
+    void presentAsset(Long vipId, PresentAssetDTO dto);
 }

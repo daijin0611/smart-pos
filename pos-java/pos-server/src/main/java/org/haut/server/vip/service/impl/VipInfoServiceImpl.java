@@ -1,5 +1,6 @@
 package org.haut.server.vip.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -28,13 +29,11 @@ import org.haut.server.server.mapper.ServerRechargeRoleMapper;
 import org.haut.server.vip.entity.VipAsset;
 import org.haut.server.vip.entity.VipInfo;
 import org.haut.server.vip.entity.VipRechargeHistory;
+import org.haut.server.vip.entity.VipTicket;
 import org.haut.server.vip.mapper.VipAssetMapper;
 import org.haut.server.vip.mapper.VipRechargeActiveMapper;
-import org.haut.server.vip.service.VipAssetService;
-import org.haut.server.vip.service.VipInfoService;
+import org.haut.server.vip.service.*;
 import org.haut.server.vip.mapper.VipInfoMapper;
-import org.haut.server.vip.service.VipInfoTicketService;
-import org.haut.server.vip.service.VipRechargeHistoryService;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,6 +76,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     private final KpiDetailMapper kpiDetailMapper;
     private final PaymentDetailMapper paymentDetailMapper;
     private final VipInfoTicketService vipInfoTicketService;
+    private final VipTicketService vipTicketService;
 
     /**
      * 获取会员列表,条件查询
@@ -279,6 +279,69 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         vipInfoMapper.update(null, Wrappers.lambdaUpdate(VipInfo.class)
                 .eq(VipInfo::getId, dto.getVipId())
                 .set(VipInfo::getLastRechargeTime, LocalDate.now()));
+    }
+
+
+    /**
+     * 为会员赠送优惠券
+     *
+     * @param vipId 会员ID
+     * @param dto 赠送优惠券参数
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void presentTicket(Long vipId, PresentTicketDTO dto) {
+        log.info("为会员{}赠送优惠券，参数：{}", vipId, dto);
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        // TODO: 实现具体的业务逻辑
+        // 1. 验证会员是否存在
+        VipInfo vip = getById(vipId);
+        if (vip == null) {
+            throw new BusinessException("会员不存在");
+        }
+        // 2. 验证优惠券是否存在且可用
+        VipTicket ticket = vipTicketService.getById(dto.getVipTicketId());
+        if (ticket == null) {
+            throw new BusinessException("优惠券不存在");
+        }
+        if (ticket.getTicketStatus().equals(Status.DISABLED.getValue())) {
+            throw new BusinessException("优惠券被禁用");
+        }
+        // 3. 创建会员优惠券关联记录
+        VipInfoTicketCreateDTO createDTO = new VipInfoTicketCreateDTO();
+        BeanUtil.copyProperties(dto, createDTO);
+        createDTO.setRemark(dto.getRemark())
+                .setTicketName(ticket.getTicketName())
+                .setVipInfoId(vipId)
+                .setVipTicketId(ticket.getId())
+                .setVipName(vip.getName())
+                .setVipPhoneNumber(vip.getPhoneNumber())
+                .setVipCardNumber(vip.getCardNumber());
+
+        // 4. 记录赠送日志
+        vipInfoTicketService.createVipInfoTicket(createDTO);
+        log.info("优惠券赠送成功，优惠券名称:{}，优惠券数量{}", ticket.getTicketName(), dto.getNumber());
+
+    }
+
+    /**
+     * 批量取消会员优惠券
+     *
+     * @param vipId 会员ID
+     * @param dto 取消优惠券参数
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelTicket(Long vipId, CancelTicketDTO dto) {
+        log.info("为会员{}批量取消优惠券，参数：{}", vipId, dto);
+
+        // TODO: 实现具体的业务逻辑
+        // 1. 验证会员是否存在
+        // 2. 验证优惠券是否属于该会员且可以取消
+        // 3. 批量更新优惠券状态为已取消
+        // 4. 记录取消日志
+
+        throw new BusinessException("功能暂未实现，请联系开发人员");
     }
 
     /**
