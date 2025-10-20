@@ -4,7 +4,7 @@
     <data-source source="LOCAL" name="pos@39.107.119.113" uuid="1e19db80-e004-4600-bc2a-4e71548fb139">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://39.107.119.113:3366/pos</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
