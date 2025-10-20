@@ -29,13 +29,11 @@ public class PresentAssetDTO {
     private BigDecimal presentAmount;
     
     /**
-     * 折扣率（0-1之间的小数，如0.8表示8折）
+     * 折扣率百分比
      */
-    @Schema(description = "折扣率", example = "1.00")
+    @Schema(description = "折扣率", example = "80")
     @NotNull(message = "折扣率不能为空")
-    @DecimalMin(value = "0.01", message = "折扣率必须大于0")
-    @DecimalMax(value = "1.00", message = "折扣率不能超过1")
-    private BigDecimal discountRate;
+    private Integer discountRate;
     
     /**
      * 折扣基础（0 标准价，1 会员价）

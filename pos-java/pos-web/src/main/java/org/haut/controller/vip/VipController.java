@@ -94,7 +94,7 @@ public class VipController {
     public JsonVO<String> presentAsset (
             @PathVariable Long vipId,
             @RequestBody @Validated PresentAssetDTO dto){
-        vipAssetService.presentAsset(vipId,dto);
+        vipInfoService.presentAsset(vipId,dto);
         return JsonVO.success("赠送成功");
     }
 }

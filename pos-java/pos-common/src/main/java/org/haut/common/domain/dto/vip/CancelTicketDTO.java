@@ -23,7 +23,7 @@ public class CancelTicketDTO {
     /**
      * 优惠券ID列表
      */
-    @Schema(description = "优惠券ID列表", example = "[1, 2, 3]")
+    @Schema(description = "要取消的优惠券ID列表", example = "[1, 2, 3]")
     @NotEmpty(message = "优惠券ID列表不能为空")
     private List<Long> ticketIds;
 }

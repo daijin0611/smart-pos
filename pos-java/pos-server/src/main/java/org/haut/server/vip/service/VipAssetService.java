@@ -41,11 +41,4 @@ public interface VipAssetService extends IService<VipAsset> {
      */
     void handelOrder(OrderSettleDTO dto);
 
-    /**
-     * 为会员赠送资产
-     * 
-     * @param vipId 会员ID
-     * @param dto 赠送资产参数
-     */
-    void presentAsset(Long vipId, PresentAssetDTO dto);
 }

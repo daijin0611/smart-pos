@@ -26,10 +26,7 @@ import org.haut.server.payment.entity.PaymentDetail;
 import org.haut.server.payment.mapper.PaymentDetailMapper;
 import org.haut.server.server.entity.ServerRechargeRole;
 import org.haut.server.server.mapper.ServerRechargeRoleMapper;
-import org.haut.server.vip.entity.VipAsset;
-import org.haut.server.vip.entity.VipInfo;
-import org.haut.server.vip.entity.VipRechargeHistory;
-import org.haut.server.vip.entity.VipTicket;
+import org.haut.server.vip.entity.*;
 import org.haut.server.vip.mapper.VipAssetMapper;
 import org.haut.server.vip.mapper.VipRechargeActiveMapper;
 import org.haut.server.vip.service.*;
@@ -292,8 +289,6 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     @Transactional(rollbackFor = Exception.class)
     public void presentTicket(Long vipId, PresentTicketDTO dto) {
         log.info("为会员{}赠送优惠券，参数：{}", vipId, dto);
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
-        // TODO: 实现具体的业务逻辑
         // 1. 验证会员是否存在
         VipInfo vip = getById(vipId);
         if (vip == null) {
@@ -334,14 +329,48 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     @Transactional(rollbackFor = Exception.class)
     public void cancelTicket(Long vipId, CancelTicketDTO dto) {
         log.info("为会员{}批量取消优惠券，参数：{}", vipId, dto);
-
-        // TODO: 实现具体的业务逻辑
         // 1. 验证会员是否存在
-        // 2. 验证优惠券是否属于该会员且可以取消
-        // 3. 批量更新优惠券状态为已取消
-        // 4. 记录取消日志
+        VipInfo vip = getById(vipId);
+        if (vip == null) {
+            throw new BusinessException("会员不存在");
+        }
 
-        throw new BusinessException("功能暂未实现，请联系开发人员");
+        // 2. 批量更新优惠券状态为已取消
+        vipInfoTicketService.lambdaUpdate()
+                .in(VipInfoTicket::getId,dto.getTicketIds())
+                .set(VipInfoTicket::getStatus, TicketStatusEnum.CANCELLED.getStatus())
+                .update();
+        log.info("优惠券取消成功，优惠券id：{}", dto.getTicketIds());
+    }
+
+    /**
+     * 为会员赠送资产
+     *
+     * @param vipId 会员ID
+     * @param dto 赠送资产参数
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void presentAsset(Long vipId, PresentAssetDTO dto) {
+        log.info("为会员{}赠送资产，参数：{}", vipId, dto);
+
+        // 1. 验证会员是否存在
+        VipInfo vip = getById(vipId);
+        if (vip == null) {
+            throw new BusinessException("会员不存在");
+        }
+        // 2. 创建赠送资产记录
+        vipAssetService.createAsset(new AssetCreateDTO()
+                .setVipId(vipId)
+                .setRemark(dto.getRemark())
+                .setAssetBalance(dto.getPresentAmount())
+                .setAssetType(VipAssetType.PRESENT.getValue())
+                .setAssetDiscountRate(dto.getDiscountRate())
+                .setAssetDiscountBase(dto.getDiscountBase())
+                .setAssetIsCrossStore(dto.getIsCrossStore())
+        );
+        log.info("赠送会员资产成功。会员：{}", vip.getName());
+
     }
 
     /**

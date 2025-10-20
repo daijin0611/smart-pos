@@ -164,25 +164,7 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
         //3. TODO 跨店结算逻辑
     }
 
-    /**
-     * 为会员赠送资产
-     * 
-     * @param vipId 会员ID
-     * @param dto 赠送资产参数
-     */
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void presentAsset(Long vipId, PresentAssetDTO dto) {
-        log.info("为会员{}赠送资产，参数：{}", vipId, dto);
-        
-        // TODO: 实现具体的业务逻辑
-        // 1. 验证会员是否存在
-        // 2. 创建赠送资产记录
-        // 3. 设置资产类型为赠送（1）
-        // 4. 记录赠送日志
-        
-        throw new BusinessException("功能暂未实现，请联系开发人员");
-    }
+
 
 
 }
