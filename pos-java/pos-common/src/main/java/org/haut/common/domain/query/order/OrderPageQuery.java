@@ -1,6 +1,7 @@
 package org.haut.common.domain.query.order;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,9 +13,11 @@ import java.time.LocalDate;
 public class OrderPageQuery {
 
     @Schema(description = "当前页码")
+    @NotNull
     private Long pageNum = 1L;
     
     @Schema(description = "每页大小")
+    @NotNull
     private Long pageSize = 20L;
 
     @Schema(description = "开始日期")

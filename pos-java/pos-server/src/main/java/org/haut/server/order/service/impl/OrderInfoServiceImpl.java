@@ -113,7 +113,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 更新床位状态
         roomBedService.lambdaUpdate()
                 .eq(RoomBed::getId, orderInfo.getBedId())
-                .set(RoomBed::getStatus, BedStatusEnum.USING.getCode());
+                .set(RoomBed::getStatus, BedStatusEnum.USING.getCode())
+                        .update();
         log.info("床位{}更新状态为:{}", orderInfo.getBedName(), BedStatusEnum.USING.getCode());
         return orderConvert.toCreateVO(orderInfo);
     }

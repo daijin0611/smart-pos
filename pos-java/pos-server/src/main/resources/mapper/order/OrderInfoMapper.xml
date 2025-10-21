@@ -312,7 +312,7 @@
             </if>
             <if test="query.vipInfoFiled != null and query.vipInfoFiled != ''">
                 AND (
-                    OR oi.vip_card_number like CONCAT('%', #{query.vipInfoFiled}, '%')
+                    oi.vip_card_number like CONCAT('%', #{query.vipInfoFiled}, '%')
                     OR oi.vip_phone_number like CONCAT('%', #{query.vipInfoFiled}, '%')
                 )
             </if>
