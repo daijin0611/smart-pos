@@ -30,11 +30,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderDataController {
     private final OrderInfoService orderInfoService;
 
+
+
     @PostMapping("/page")
     @Operation(summary = "分页查询销售数据", description = "分页查询销售数据")
     public JsonVO<PageDTO<OrderInfoVO>> pageQuery(OrderPageQuery query){
         return JsonVO.success(orderInfoService.pageQuery(query));
     }
+
 
 
 }

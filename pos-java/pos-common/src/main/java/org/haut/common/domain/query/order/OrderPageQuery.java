@@ -26,7 +26,7 @@ public class OrderPageQuery {
     @Schema(description = "结束日期")
     private LocalDate endDate;
 
-    @Schema(description = "用户ID")
+    @Schema(description = "收银员ID")
     private Long userId;
 
     @Schema(description = "订单状态")
