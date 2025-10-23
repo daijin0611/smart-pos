@@ -9,6 +9,7 @@ import org.haut.common.domain.query.order.OrderInfoQuery;
 import org.haut.common.domain.query.order.OrderPageQuery;
 import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.server.order.entity.OrderInfoEntity;
+import org.haut.server.order.entity.OrderSalesSummary;
 
 import java.util.List;
 
@@ -88,4 +89,6 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
      * @return 分页结果
      */
     IPage<OrderInfoVO> pageQuery(Page<OrderInfoVO> page, @Param("query") OrderPageQuery query);
+
+
 }

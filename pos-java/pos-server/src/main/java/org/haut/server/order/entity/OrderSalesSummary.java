@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * 销售数据汇总表，整合销售、支付、充值相关数据
@@ -16,6 +17,7 @@ import lombok.Data;
  */
 @TableName(value ="order_sales_summary")
 @Data
+@Accessors(chain = true)
 public class OrderSalesSummary {
     /**
      * 主键

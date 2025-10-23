@@ -83,7 +83,7 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
         
         return result;
     }
-    
+
     /**
      * 计算所有记录的汇总数据
      * @param summaries 销售汇总列表

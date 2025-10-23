@@ -15,5 +15,4 @@ import java.util.List;
 public interface OrderSalesSummaryService extends IService<OrderSalesSummary> {
 
     List<OrderSummaryVO> getOrderSummaries(OrderSummaryQuery query);
-
 }
