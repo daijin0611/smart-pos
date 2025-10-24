@@ -34,5 +34,5 @@ public class PaymentVO {
     private BigDecimal totalAmount;
     
     @Schema(description = "资产编码")
-    private String asset_code;
+    private String assetCode;
 }

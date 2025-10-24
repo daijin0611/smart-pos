@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Schema(description = "订单分页查询参数")
 @Data
@@ -19,6 +20,9 @@ public class OrderPageQuery {
     @Schema(description = "每页大小")
     @NotNull
     private Long pageSize = 20L;
+
+    @Schema(description = "开单时段")
+    private LocalDate[] date;
 
     @Schema(description = "开始日期")
     private LocalDate startDate;
@@ -43,4 +47,7 @@ public class OrderPageQuery {
 
     @Schema(description = "机构ID", hidden = true)
     private Long orgId;
+
+    @Schema(description = "进查看支付为0的订单")
+    private Integer payZero;
 }

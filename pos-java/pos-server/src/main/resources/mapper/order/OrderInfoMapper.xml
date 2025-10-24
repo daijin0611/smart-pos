@@ -224,7 +224,7 @@
             <result column="active_type" property="activeType" />
             <result column="active_name" property="activeName" />
             <result column="payment_total_amount" property="totalAmount" />
-            <result column="asset_code" property="asset_code" />
+            <result column="asset_code" property="assetCode" />
             <result column="payment_type" property="paymentType"/>
             <result column="payment_name" property="paymentName"/>
         </collection>
@@ -294,11 +294,8 @@
         
         <where>
             oi.is_delete = 0
-            <if test="query.startDate != null">
-                AND DATE(oi.order_time) &gt;= #{query.startDate}
-            </if>
-            <if test="query.endDate != null">
-                AND DATE(oi.order_time) <![CDATA[<=]]> #{query.endDate}
+            <if test="query.date != null">
+                AND oi.order_time BETWEEN #{query.date[0]} AND #{query.date[1]}
             </if>
             <if test="query.userId != null">
                 AND oi.user_id = #{query.userId}
@@ -318,6 +315,9 @@
             </if>
             <if test="query.orderCode != null and query.orderCode != ''">
                 AND oi.order_code like CONCAT('%', #{query.orderCode}, '%')
+            </if>
+            <if test="query.payZero == 0">
+                AND oi.actual_amount = 0.00
             </if>
             AND oi.org_id = #{query.orgId}
         </where>
