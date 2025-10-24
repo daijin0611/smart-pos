@@ -12,6 +12,7 @@ import org.haut.common.domain.dto.server.CureTicketUpdateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
 import org.haut.common.domain.vo.vip.VipTicketVO;
+import org.haut.common.enums.ServiceTypeEnum;
 import org.haut.common.enums.TicketStatusEnum;
 import org.haut.common.utils.CodeUtils;
 import org.haut.server.order.entity.OrderInfoEntity;
@@ -151,7 +152,9 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
         if (order.getVipId()==null)
             throw new BusinessException("购买疗程券必须选择会员");
         List<VipInfoTicket> insertTicket = new ArrayList<>();
-        dto.forEach(e->{
+        dto.stream()
+                .filter(e -> e.getDetailType().equals(ServiceTypeEnum.CURE_TICKET.getValue()))
+                .forEach(e->{
             ServerCureTicketVO cureTicketVO = baseMapper.getOneById(e.getBid());
             List<VipInfoTicket> ticketInfoList = new ArrayList<>();
             cureTicketVO.getTicketDetails()

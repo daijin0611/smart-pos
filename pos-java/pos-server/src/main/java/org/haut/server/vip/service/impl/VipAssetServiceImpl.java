@@ -30,6 +30,7 @@ import org.haut.server.vip.mapper.VipInfoMapper;
 import org.haut.server.vip.mapper.VipTicketMapper;
 import org.haut.server.vip.service.VipAssetService;
 import org.haut.server.vip.mapper.VipAssetMapper;
+import org.haut.server.vip.service.VipInfoService;
 import org.haut.server.vip.service.VipInfoTicketService;
 import org.haut.server.vip.service.VipTicketService;
 import org.mapstruct.Mapper;
@@ -55,7 +56,6 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
     private final VipInfoTicketService vipInfoTicketService;
     private final VipInfoConvert vipInfoConvert;
     private final VipInfoTicketConvert vipInfoTicketConvert;
-    private final SysDictItemService sysDictItemService;
     private final VipTicketService vipTicketService;
 
     /**
@@ -161,7 +161,8 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
             saveOrUpdateBatch(vipAssets);
             count++;
         }
-        //3. TODO 跨店结算逻辑
+        //TODO 3. 跨店结算逻辑
+
     }
 
 

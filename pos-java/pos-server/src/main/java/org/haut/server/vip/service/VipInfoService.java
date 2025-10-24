@@ -7,6 +7,8 @@ import org.haut.server.vip.entity.VipInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.vo.vip.VipInfoVO;
 
+import java.math.BigDecimal;
+
 /**
 * @author tinwf
 * @description 针对表【vip_info(会员信息表)】的数据库操作Service
@@ -22,7 +24,7 @@ public interface VipInfoService extends IService<VipInfo> {
      */
     VipInfoVO getVipById(Long id);
 
-    void updateVipBalance(Long vipId);
+    BigDecimal updateVipBalance(Long vipId);
 
     void addVip(VipCreateDTO dto);
 

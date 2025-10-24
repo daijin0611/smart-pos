@@ -16,6 +16,7 @@ import org.haut.server.payment.entity.PaymentDetail;
 import org.haut.server.payment.service.PaymentDetailService;
 import org.haut.server.payment.mapper.PaymentDetailMapper;
 import org.haut.server.vip.service.VipAssetService;
+import org.haut.server.vip.service.VipInfoService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;

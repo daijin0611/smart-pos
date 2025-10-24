@@ -123,7 +123,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
      */
     @Override
     @Transactional
-    public void updateVipBalance(Long vipId) {
+    public BigDecimal updateVipBalance(Long vipId) {
         if (vipId == null){
             throw new BusinessException("会员id不能为空");
         }
@@ -140,6 +140,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                 .eq(VipInfo::getId, vipId)
                 .set(VipInfo::getBalance, balance));
         log.info("会员{}余额更新成功，余额为{}", vipId, balance);
+        return balance;
     }
 
     /**

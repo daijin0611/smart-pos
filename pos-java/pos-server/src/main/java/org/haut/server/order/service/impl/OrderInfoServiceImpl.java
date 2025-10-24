@@ -147,6 +147,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         paymentDetailService.handelOrder(settleOrderDTO, order.getOrderCode());
         // 结算会员优惠券
         vipInfoTicketService.handelOrder(settleOrderDTO, order.getOrderCode());
+        // 更新会员余额
+        BigDecimal afterBalance = vipInfoService.updateVipBalance(vipInfo.getId());
+        lambdaUpdate()
+                .eq(OrderInfoEntity::getId, order.getId())
+                .set(OrderInfoEntity::getAfterBalance, afterBalance)
+                .update();
     }
     
     /**
@@ -338,7 +344,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .setRemark(dto.getRemark())
                 .setOrderCode(order==null?
                         CodeUtils.generateByTime(PrefixConst.ORDER):order.getOrderCode())
-                .setOrderTime(dto.getOrderTime()==null?
+                .setOrderTime(dto.getOrderTime()==null ?
                         new Date():dto.getOrderTime())
                 .setOrderStatus(OrderStatusEnum.SETTLED.getCode())
                 .setCustomerName(dto.getCustomerName())
@@ -350,7 +356,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .setBeforeBalance(vipInfo.getBalance())
                 .setAfterBalance(vipInfo.getBalance().subtract(dto.getActualAmount()))
                 .setSettleTime(new Date())
-                .setTotalAmount(dto.getActualAmount())
+                .setTotalAmount(dto.getTotalAmount())
                 .setActualAmount(dto.getActualAmount())
                 .setDiscountAmount(dto.getDiscountAmount())
                 .setBedId(dto.getBedId())
