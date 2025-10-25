@@ -4,18 +4,34 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import lombok.AllArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.order.OrderSummaryQuery;
 import org.haut.common.domain.vo.order.OrderSummaryVO;
+import org.haut.common.enums.*;
 import org.haut.common.utils.AuthContextHolder;
+import org.haut.server.order.entity.OrderDetailEntity;
+import org.haut.server.order.entity.OrderInfoEntity;
 import org.haut.server.order.entity.OrderSalesSummary;
+import org.haut.server.order.service.OrderDetailService;
+import org.haut.server.order.service.OrderInfoService;
 import org.haut.server.order.service.OrderSalesSummaryService;
 import org.haut.server.order.mapper.OrderSalesSummaryMapper;
+import org.haut.server.payment.entity.PaymentDetail;
+import org.haut.server.payment.service.PaymentDetailService;
+import org.haut.server.system.entity.SysOrg;
+import org.haut.server.system.service.SysOrgService;
+import org.haut.server.vip.entity.VipRechargeHistory;
+import org.haut.server.vip.service.VipRechargeHistoryService;
 import org.mapstruct.Mapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,11 +66,17 @@ interface OrderSalesSummaryConvert {
 */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryMapper, OrderSalesSummary>
     implements OrderSalesSummaryService{
 
     private final OrderSalesSummaryConvert orderSalesSummaryConvert;
-
+    private final OrderInfoService orderInfoService;
+    private final VipRechargeHistoryService vipRechargeHistoryService;
+    private final OrderDetailService orderDetailService;
+    private final PaymentDetailService paymentDetailService;
+    private final SysOrgService sysOrgService;
+        
     /**
      * 获取某时间段内的销售数据，并在最后添加汇总记录
      * @param query 查询条件
@@ -82,6 +104,19 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
         }
         
         return result;
+    }
+
+
+    @Override
+    public void executeSummaries() {
+        log.info("开始执行每日销售数据统计任务 - {}", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        // 1. 获取所有机构
+        List<SysOrg> orgList = sysOrgService.lambdaQuery().list();
+        for (SysOrg org : orgList) {
+            // 2. 执行统计任务
+            execute(org);
+            log.info("机构 {} 的销售数据统计任务执行完成", org.getOrgName());
+        }
     }
 
     /**
@@ -162,6 +197,166 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
         }
         
         return totalSummary;
+    }
+
+    /**
+     * 统计单个机构的汇总数据
+     * @param org
+     */
+    private void execute(SysOrg org) {
+        LocalDate statsDate = LocalDate.now().minusDays(1);
+        // 计算统计日期的开始时间（0点）和结束时间（24点）
+        LocalDateTime startTime = statsDate.atStartOfDay();
+        LocalDateTime endTime = statsDate.plusDays(1).atStartOfDay();
+        
+        OrderSalesSummary summary = new OrderSalesSummary();
+        try {
+            // 1. 统计营业额相关（订单+充值）
+            List<OrderInfoEntity> orderList = orderInfoService.lambdaQuery()
+                    .ge(OrderInfoEntity::getCreateTime, startTime)
+                    .lt(OrderInfoEntity::getCreateTime, endTime)
+                    .eq(OrderInfoEntity::getOrderStatus, OrderStatusEnum.SETTLED.getCode())
+                    .eq(OrderInfoEntity::getOrgId, org.getId()).list();
+            List<VipRechargeHistory> rechargeHistoryList = vipRechargeHistoryService.lambdaQuery()
+                    .ge(VipRechargeHistory::getCreateTime, startTime)
+                    .lt(VipRechargeHistory::getCreateTime, endTime)
+                    .eq(VipRechargeHistory::getRechargeStatus, RechargeStatusEnum.SUCCESS.getValue())
+                    .eq(VipRechargeHistory::getOrgId, org.getId())
+                    .list();
+            List<OrderDetailEntity> orderDetailList = orderDetailService.lambdaQuery()
+                    .ge(OrderDetailEntity::getCreateTime, startTime)
+                    .lt(OrderDetailEntity::getCreateTime, endTime)
+                    .eq(OrderDetailEntity::getOrgId, org.getId())
+                    .list();
+
+            // 2. 计算基础统计数据
+            BigDecimal totalTurnover = BigDecimal.ZERO;
+            BigDecimal totalActualReceipt = BigDecimal.ZERO;
+            Integer totalSingleTime = 0;
+            Integer totalPeopleTime = 0;
+            Integer totalProjectCount = 0;
+
+            // 2.1 统计订单相关数据
+            for (OrderInfoEntity order : orderList) {
+                // 累加应收金额（营业额）
+                if (order.getTotalAmount() != null) {
+                    totalTurnover = totalTurnover.add(order.getTotalAmount());
+                }
+                // 累加实收金额
+                if (order.getActualAmount() != null) {
+                    totalActualReceipt = totalActualReceipt.add(order.getActualAmount());
+                }
+                // 累加订单数量（单次数量）
+                totalSingleTime++;
+            }
+
+            // 2.2 统计订单明细相关数据
+            for (OrderDetailEntity detail : orderDetailList) {
+                // 累加人次（订单明细数量）
+                totalPeopleTime++;
+                // 累加项目数量（按销售数量计算）
+                if (detail.getQuantity() != null) {
+                    totalProjectCount += detail.getQuantity();
+                }
+            }
+
+            // 2.3 统计充值相关数据
+            for (VipRechargeHistory recharge : rechargeHistoryList) {
+                // 充值金额计入营业额和实收金额
+                if (recharge.getRechargeValue() != null) {
+                    totalTurnover = totalTurnover.add(recharge.getRechargeValue());
+                    totalActualReceipt = totalActualReceipt.add(recharge.getRechargeValue());
+                }
+            }
+
+            // 3. 统计各种支付方式金额
+            List<PaymentDetail> paymentList = paymentDetailService.lambdaQuery()
+                    .ge(PaymentDetail::getCreateTime, startTime)
+                    .lt(PaymentDetail::getCreateTime, endTime)
+                    .eq(PaymentDetail::getPaymentStatus, PaymentStatusEnum.PAID.getStatus())
+                    .eq(PaymentDetail::getOrgId, org.getId())
+                    .list();
+
+            // 初始化各支付方式金额
+            BigDecimal alipayPayment = BigDecimal.ZERO;
+            BigDecimal bankCardPayment = BigDecimal.ZERO;
+            BigDecimal cashPayment = BigDecimal.ZERO;
+            BigDecimal electronicCouponPayment = BigDecimal.ZERO;
+            BigDecimal membershipCardPayment = BigDecimal.ZERO;
+            BigDecimal otherPayment = BigDecimal.ZERO;
+            BigDecimal wechatPayment = BigDecimal.ZERO;
+
+            // 3.1 统计订单支付方式金额
+            for (PaymentDetail payment : paymentList) {
+                if (PaymentActiveTypeEnum.CONSUMER.getValue().equals(payment.getActiveType())
+                        && payment.getTotalAmount() != null) {
+                    Integer paymentType = payment.getPaymentType();
+                    BigDecimal amount = payment.getTotalAmount();
+
+                    if (PaymentTypeEnum.WECHAT.getCode().equals(String.valueOf(paymentType))) {
+                        wechatPayment = wechatPayment.add(amount);
+                    } else if (PaymentTypeEnum.ALIPAY.getCode().equals(String.valueOf(paymentType))) {
+                        alipayPayment = alipayPayment.add(amount);
+                    } else if (PaymentTypeEnum.CASH.getCode().equals(String.valueOf(paymentType))) {
+                        cashPayment = cashPayment.add(amount);
+                    } else if (PaymentTypeEnum.ASSET.getCode().equals(String.valueOf(paymentType))) {
+                        membershipCardPayment = membershipCardPayment.add(amount);
+                    } else {
+                        otherPayment = otherPayment.add(amount);
+                    }
+                }
+            }
+
+            // 4. 统计充值方式金额
+            BigDecimal cashRecharge = BigDecimal.ZERO;
+            BigDecimal wechatRecharge = BigDecimal.ZERO;
+            BigDecimal otherRecharge = BigDecimal.ZERO;
+
+            // 4.1 统计充值支付方式金额
+            for (PaymentDetail payment : paymentList) {
+                if (PaymentActiveTypeEnum.RECHARGER.getValue().equals(payment.getActiveType())
+                        && payment.getTotalAmount() != null) {
+                    Integer paymentType = payment.getPaymentType();
+                    BigDecimal amount = payment.getTotalAmount();
+
+                    if (PaymentTypeEnum.WECHAT.getCode().equals(String.valueOf(paymentType))) {
+                        wechatRecharge = wechatRecharge.add(amount);
+                    } else if (PaymentTypeEnum.CASH.getCode().equals(String.valueOf(paymentType))) {
+                        cashRecharge = cashRecharge.add(amount);
+                    } else {
+                        otherRecharge = otherRecharge.add(amount);
+                    }
+                }
+            }
+
+            // 5. 构建销售汇总对象
+            summary.setOrgId(org.getId())
+                    .setStatsDate(statsDate)
+                    .setCreateTime(LocalDateTime.now())
+                    .setTotalTurnover(totalTurnover)
+                    .setTotalActualReceipt(totalActualReceipt)
+                    .setTotalSingleTime(totalSingleTime)
+                    .setTotalPeopleTime(totalPeopleTime)
+                    .setTotalProjectCount(totalProjectCount)
+                    .setAlipayPayment(alipayPayment)
+                    .setBankCardPayment(bankCardPayment)
+                    .setCashPayment(cashPayment)
+                    .setElectronicCouponPayment(electronicCouponPayment)
+                    .setMembershipCardPayment(membershipCardPayment)
+                    .setOtherPayment(otherPayment)
+                    .setWechatPayment(wechatPayment)
+                    .setCashRecharge(cashRecharge)
+                    .setWechatRecharge(wechatRecharge)
+                    .setOtherRecharge(otherRecharge);
+
+            // 6. 保存统计结果
+            save(summary);
+
+            log.info("每日销售数据统计任务执行完成 - 统计日期: {}, 营业额: {}, 实收: {}, 订单数: {}, 人次: {}, 项目数: {}",
+                    statsDate, totalTurnover, totalActualReceipt, totalSingleTime, totalPeopleTime, totalProjectCount);
+        } catch (Exception e) {
+            log.error("每日销售数据统计任务执行失败", e);
+        }
     }
 }
 

@@ -14,5 +14,15 @@ import java.util.List;
 */
 public interface OrderSalesSummaryService extends IService<OrderSalesSummary> {
 
+    /**
+     * 获取统计数据
+     * @param query
+     * @return
+     */
     List<OrderSummaryVO> getOrderSummaries(OrderSummaryQuery query);
+
+    /**
+     * 执行统计逻辑
+     */
+    void executeSummaries();
 }

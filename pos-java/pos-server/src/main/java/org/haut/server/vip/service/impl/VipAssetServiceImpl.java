@@ -105,6 +105,7 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
                 }
             }
         }
+
         return new VipCountVO()
                 .setVipAssetVOList(vipAssetConvert.toVOS(assets))
                 .setVipInfoVO(vipInfoConvert.toVO(vipInfo))
