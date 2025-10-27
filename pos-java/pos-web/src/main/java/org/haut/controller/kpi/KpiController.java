@@ -32,9 +32,9 @@ public class KpiController {
         return JsonVO.success(result);
     }
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     @Operation(summary = "获取绩效列表", description = "获取绩效列表")
-    public JsonVO<PageDTO<KpiListVO>> getKpiList(@Valid KpiListQuery kpiListQuery) {
+    public JsonVO<PageDTO<KpiListVO>> getKpiList(@Valid @RequestBody KpiListQuery kpiListQuery) {
         PageDTO<KpiListVO> kpiList = kpiDetailService.getKpiList(kpiListQuery);
         return JsonVO.success(kpiList);
     }

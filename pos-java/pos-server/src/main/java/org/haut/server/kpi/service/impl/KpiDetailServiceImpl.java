@@ -74,6 +74,10 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
     public PageDTO<KpiListVO> getKpiList(KpiListQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         query.setOrgId(auth.getOrgId());
+        if(query.getDate() != null && query.getDate()[0] != null && query.getDate()[1] != null) {
+            query.setBeginDate(query.getDate()[0]);
+            query.setEndDate(query.getDate()[1]);
+        }
         //处理空指针异常
         int pageNum = (query.getPageNum() == null || query.getPageNum() <= 0) ? 1 : query.getPageNum();
         int pageSize = (query.getPageSize() == null || query.getPageSize() <= 0) ? 20 : query.getPageSize();

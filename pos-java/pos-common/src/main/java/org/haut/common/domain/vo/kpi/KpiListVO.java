@@ -40,4 +40,6 @@ public class KpiListVO {
     @Schema(description = "业绩金额")
     private BigDecimal performance;
 
+    @Schema(description = "数量")
+    private Integer quantity;
 }

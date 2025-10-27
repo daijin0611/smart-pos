@@ -54,6 +54,11 @@ public class KpiDetail {
     private String serviceName;
 
     /**
+     * 数量
+     */
+    private Integer quantity;
+
+    /**
      * 业务类型
      */
     private Integer serviceType;
