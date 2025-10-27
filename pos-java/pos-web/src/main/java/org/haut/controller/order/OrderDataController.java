@@ -6,11 +6,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.domain.query.order.OrderDetailPageQuery;
+import org.haut.common.domain.query.order.OrderInfoQuery;
 import org.haut.common.domain.query.order.OrderPageQuery;
 import org.haut.common.domain.query.order.OrderSummaryQuery;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.common.domain.vo.order.OrderSummaryVO;
+import org.haut.server.order.service.OrderDetailService;
 import org.haut.server.order.service.OrderInfoService;
 import org.haut.server.order.service.OrderSalesSummaryService;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +38,7 @@ import java.util.List;
 public class OrderDataController {
     private final OrderInfoService orderInfoService;
     private final OrderSalesSummaryService orderSalesSummaryService;
+    private final OrderDetailService orderDetailService;
 
 
     @PostMapping("/page")
@@ -42,11 +47,16 @@ public class OrderDataController {
         return JsonVO.success(orderInfoService.pageQuery(query));
     }
 
-    @GetMapping("/summary")
+    @PostMapping("/summary")
     @Operation(summary = "获取销售汇总", description = "获取销售汇总")
-    public JsonVO<List<OrderSummaryVO>> getOrderSummary(OrderSummaryQuery query){
+    public JsonVO<List<OrderSummaryVO>> getOrderSummary(@RequestBody OrderSummaryQuery query){
         return JsonVO.success(orderSalesSummaryService.getOrderSummaries(query));
     }
 
+    @PostMapping("/detail/page")
+    @Operation(summary = "分页查询销售明细", description = "分页查询销售明细")
+    public JsonVO<PageDTO<OrderDetailVO>> pageQueryDetails(@RequestBody OrderDetailPageQuery query){
+        return JsonVO.success(orderDetailService.pageQuery(query));
+    }
 
 }

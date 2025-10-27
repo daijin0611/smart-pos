@@ -1,13 +1,16 @@
 package org.haut.server.order.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.haut.common.constant.PrefixConst;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
+import org.haut.common.domain.query.order.OrderDetailPageQuery;
 import org.haut.common.domain.query.server.ServerItemQuery;
 import org.haut.common.domain.query.server.ServerProductListQuery;
 import org.haut.common.domain.vo.ResultStatus;
@@ -37,6 +40,7 @@ import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -205,6 +209,26 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         // 更新或者保存订单明细
         saveOrUpdateBatch(details);
 
+    }
+
+    /**
+     * 分页查询订单明细
+     * @param query
+     * @return
+     */
+    @Override
+    public PageDTO<OrderDetailVO> pageQuery(OrderDetailPageQuery query) {
+        Page<OrderDetailEntity> page = new Page<>(query.getPageNum(), query.getPageSize());
+        LocalDate[] date = query.getDate();
+
+        lambdaQuery().eq(query.getUserId() != null, OrderDetailEntity::getUserId, query.getUserId())
+                .eq(StringUtils.isNotBlank(query.getBusinessCode()), OrderDetailEntity::getBusinessCode, query.getBusinessCode())
+                .eq(OrderDetailEntity::getOrderStatus, OrderStatusEnum.SETTLED.getCode())
+                .between(date != null && date.length >= 2 && date[0] != null && date[1] != null, 
+                        OrderDetailEntity::getCreateTime, date != null && date.length >= 2 ? date[0] : null,
+                        date != null && date.length >= 2 ? date[1] : null)
+                .page(page);
+        return PageDTO.create(page, OrderDetailVO.class);
     }
 
     /**

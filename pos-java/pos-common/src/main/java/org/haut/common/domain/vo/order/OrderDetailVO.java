@@ -92,6 +92,12 @@ public class OrderDetailVO {
     private String businessName;
     
     /**
+     * 业务编码
+     */
+    @Schema(description = "业务编码")
+    private String businessCode;
+    
+    /**
      * 标准价格
      */
     @Schema(description = "标准价格")

@@ -12,7 +12,6 @@ import org.haut.common.domain.dto.order.OrderCreateDTO;
 
 import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
-import org.haut.common.domain.dto.vip.PaymentInfoDTO;
 import org.haut.common.domain.query.order.OrderPageQuery;
 import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderDetailVO;
@@ -47,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 interface OrderConvert {
@@ -264,9 +264,53 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         query.setOrgId(auth.getOrgId());
         Page<OrderInfoVO> page = Page.of(query.getPageNum(), query.getPageSize());
         IPage<OrderInfoVO> result = baseMapper.pageQuery(page,query);
-        result.getRecords().forEach(orderInfoVO -> {
+        
+        List<OrderInfoVO> records = result.getRecords();
+        if (records.isEmpty()) {
+            return PageDTO.create(result, OrderInfoVO.class);
+        }
+        
+        // 批量查询订单明细
+        List<Long> orderIds = records.stream().map(OrderInfoVO::getId).collect(Collectors.toList());
+        List<OrderDetailEntity> allOrderDetails = orderDetailService.lambdaQuery()
+                .in(OrderDetailEntity::getOrderId, orderIds)
+                .list();
+        
+        // 转换为VO对象 - 使用BeanUtil进行转换
+        List<OrderDetailVO> orderDetailVOs = allOrderDetails.stream()
+                .map(entity -> BeanUtil.toBean(entity, OrderDetailVO.class))
+                .collect(Collectors.toList());
+        
+        // 按订单ID分组订单明细
+        Map<Long, List<OrderDetailVO>> orderDetailMap = orderDetailVOs.stream()
+                .collect(Collectors.groupingBy(OrderDetailVO::getOrderId));
+        
+        // 批量查询支付信息
+        List<String> orderCodes = records.stream().map(OrderInfoVO::getOrderCode).collect(Collectors.toList());
+        List<PaymentDetail> allPayments = paymentDetailService.lambdaQuery()
+                .in(PaymentDetail::getActiveCode, orderCodes)
+                .eq(PaymentDetail::getOrgId, auth.getOrgId())
+                .list();
+        List<PaymentVO> paymentVOs = BeanUtil.copyToList(allPayments, PaymentVO.class);
+        
+        // 按订单编码分组支付信息
+        Map<String, List<PaymentVO>> paymentMap = paymentVOs.stream()
+                .collect(Collectors.groupingBy(PaymentVO::getActiveCode));
+        
+        // 为每个订单设置关联数据
+        records.forEach(orderInfoVO -> {
+            // 设置订单状态名称
             orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfoVO.getOrderStatus()));
+            
+            // 设置订单明细
+            List<OrderDetailVO> orderDetails = orderDetailMap.getOrDefault(orderInfoVO.getId(), new ArrayList<>());
+            orderInfoVO.setOrderDetails(orderDetails);
+            
+            // 设置支付信息
+            List<PaymentVO> payments = paymentMap.getOrDefault(orderInfoVO.getOrderCode(), new ArrayList<>());
+            orderInfoVO.setPayments(payments);
         });
+        
         return PageDTO.create(result, OrderInfoVO.class);
     }
 

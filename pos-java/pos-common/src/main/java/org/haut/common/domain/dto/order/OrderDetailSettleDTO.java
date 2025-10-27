@@ -29,6 +29,9 @@ public class OrderDetailSettleDTO {
     @Schema(description = "业务名称")
     private String businessName;
 
+    @Schema(description = "业务编码")
+    private String businessCode;
+
     @Schema(description = "标准单价",example = "100.00")
     private BigDecimal stdPrice;
 

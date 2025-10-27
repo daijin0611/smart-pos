@@ -16,17 +16,21 @@
         <result column="user_name" property="userName" />
         <result column="detail_type" property="detailType" />
         <result column="bid" property="bid" />
+        <result column="business_name" property="businessName" />
+        <result column="business_code" property="businessCode" />
         <result column="std_price" property="stdPrice" />
         <result column="true_price" property="truePrice" />
         <result column="quantity" property="quantity" />
         <result column="server_type" property="serverType" />
         <result column="settled_time" property="settledTime" />
+        <result column="order_status" property="orderStatus" />
+        <result column="org_id" property="orgId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, create_time, update_time, is_delete, remark, detail_code, order_id, order_code,
-        user_id, user_name, detail_type, bid, std_price, true_price, quantity, server_type, settled_time
+        user_id, user_name, detail_type, bid, business_name, business_code, std_price, true_price, quantity, server_type, settled_time, order_status, org_id
     </sql>
 
 </mapper>

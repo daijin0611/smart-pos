@@ -1,9 +1,10 @@
 package org.haut.server.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
-import org.haut.common.domain.dto.order.OrderSettleDTO;
+import org.haut.common.domain.query.order.OrderDetailPageQuery;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.server.order.entity.OrderDetailEntity;
 import org.haut.server.order.entity.OrderInfoEntity;
@@ -48,4 +49,10 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
      * @param orderDetails 待结算订单明细
      */
     void settleOrderDetail(OrderInfoEntity orderInfoEntity, List<OrderDetailSettleDTO> orderDetails);
+
+    /**
+     * 订单明细分页查询
+     * @return
+     */
+    PageDTO<OrderDetailVO> pageQuery(OrderDetailPageQuery query);
 }

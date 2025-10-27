@@ -24,16 +24,12 @@ import org.haut.server.system.service.SysOrgService;
 import org.haut.server.vip.entity.VipRechargeHistory;
 import org.haut.server.vip.service.VipRechargeHistoryService;
 import org.mapstruct.Mapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * OrderSalesSummary转换器
@@ -85,25 +81,16 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
     @Override
     public List<OrderSummaryVO> getOrderSummaries(OrderSummaryQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
+        LocalDate[] date = query.getDate();
+        if (date == null) {
+            date = new LocalDate[]{LocalDate.now(), LocalDate.now()};
+        }
         List<OrderSalesSummary> summaries = lambdaQuery().eq(OrderSalesSummary::getOrgId, auth.getOrgId())
-                .between(
-                        OrderSalesSummary::getStatsDate, query.getStartDate(), query.getEndDate()
-                )
+                .between(OrderSalesSummary::getStatsDate, date[0], date[1])
                 .list();
         
         // 转换为VO对象
-        List<OrderSummaryVO> result = orderSalesSummaryConvert.toVOList(summaries);
-        
-        // 如果有数据，则计算汇总并添加到列表末尾
-        if (!result.isEmpty()) {
-            OrderSummaryVO totalSummary = calculateTotal(result);
-            // 设置汇总记录的特殊标识
-            totalSummary.setId(-1L); // 使用特殊ID标识汇总记录
-            totalSummary.setStatsDate(null); // 汇总记录不显示具体日期
-            result.add(totalSummary);
-        }
-        
-        return result;
+        return orderSalesSummaryConvert.toVOList(summaries);
     }
 
 
