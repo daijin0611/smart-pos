@@ -77,6 +77,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private final RoomBedService roomBedService;
 
 
+
     /**
      * 床态界面创建订单信息
      *
@@ -371,6 +372,52 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         log.info("根据床位ID查询订单成功，订单编号：{}", orderInfo.getOrderCode());
         return orderInfoVO;
     }
+
+    /**
+     * 根据订单编号查询订单信息
+     * @param orderCode 订单编号
+     * @return 订单信息VO
+     */
+    @Override
+    public OrderInfoVO queryByOrderCode(String orderCode) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        log.info("根据订单编号查询订单信息，订单编号：{}", orderCode);
+        OrderInfoEntity orderInfo = lambdaQuery().eq(OrderInfoEntity::getOrderCode, orderCode)
+                .one();
+        if (orderInfo == null) {
+            throw new BusinessException("订单不存在");
+        }
+       // 转换为VO对象
+        OrderInfoVO orderInfoVO = orderConvert.toInfoVO(orderInfo);
+
+        // 设置枚举字段名称
+        if (orderInfo.getOrderStatus() != null) {
+            orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfo.getOrderStatus()));
+        }
+        
+        if (orderInfo.getCustomerType() != null) {
+            for (CustomerTypeEnum customerType : CustomerTypeEnum.values()) {
+                if (customerType.getValue().equals(orderInfo.getCustomerType())) {
+                    orderInfoVO.setCustomerName(orderInfo.getCustomerName());
+                    break;
+                }
+            }
+        }
+        
+        // 查询订单明细
+        List<OrderDetailVO> orderDetails = orderDetailService.queryByOrderId(orderInfo.getId());
+        orderInfoVO.setOrderDetails(orderDetails);
+        
+        // 查询支付信息
+        List<PaymentDetail> payments = paymentDetailService.lambdaQuery()
+                .eq(PaymentDetail::getActiveCode, orderInfo.getOrderCode())
+                .eq(PaymentDetail::getOrgId, orderInfo.getOrgId())
+                .list();
+        List<PaymentVO> paymentVOS = BeanUtil.copyToList(payments, PaymentVO.class);
+        orderInfoVO.setPayments(paymentVOS);
+        return orderInfoVO;
+    }
+
 
     /**
      * 初始化一个结算订单

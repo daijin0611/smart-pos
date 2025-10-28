@@ -8,6 +8,7 @@
         kd.user_name,
         kd.commission,
         kd.create_time,
+        kd.order_code,
         kd.service_code,
         kd.service_name,
         kd.service_type,
@@ -30,6 +31,9 @@
             </if>
             <if test="query.endDate != null">
                 AND kd.create_time &lt;= #{query.endDate}
+            </if>
+            <if test="query.serviceCode != null and query.serviceCode != ''">
+                AND kd.service_code = #{query.serviceCode}
             </if>
         </where>
         ORDER BY

@@ -10,10 +10,13 @@ import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
 import org.haut.common.domain.query.kpi.KpiListQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.kpi.KpiListVO;
+import org.haut.common.domain.vo.kpi.KpiSummaryVO;
 import org.haut.server.kpi.service.KpiDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -34,8 +37,15 @@ public class KpiController {
 
     @PostMapping("/list")
     @Operation(summary = "获取绩效列表", description = "获取绩效列表")
-    public JsonVO<PageDTO<KpiListVO>> getKpiList(@Valid @RequestBody KpiListQuery kpiListQuery) {
+    public JsonVO<PageDTO<KpiListVO>> getKpiList(@Validated @RequestBody KpiListQuery kpiListQuery) {
         PageDTO<KpiListVO> kpiList = kpiDetailService.getKpiList(kpiListQuery);
         return JsonVO.success(kpiList);
+    }
+
+    @PostMapping("/summary")
+    @Operation(summary = "获取绩效总结", description = "获取绩效总结")
+    public JsonVO<List<KpiSummaryVO>> getKpiSummary(@Validated @RequestBody KpiListQuery kpiListQuery) {
+        List<KpiSummaryVO> kpiSummaryVOS = kpiDetailService.getKpiSummary(kpiListQuery);
+        return JsonVO.success(kpiSummaryVOS);
     }
 }

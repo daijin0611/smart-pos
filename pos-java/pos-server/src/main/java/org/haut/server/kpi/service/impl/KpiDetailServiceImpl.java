@@ -10,6 +10,7 @@ import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.kpi.KpiListQuery;
 import org.haut.common.domain.vo.kpi.KpiListVO;
+import org.haut.common.domain.vo.kpi.KpiSummaryVO;
 import org.haut.common.enums.CommissionBaseEnum;
 import org.haut.common.enums.CommissionTypeEnum;
 import org.haut.common.enums.ServerItemTypeEnum;
@@ -75,8 +76,8 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         query.setOrgId(auth.getOrgId());
         if(query.getDate() != null && query.getDate()[0] != null && query.getDate()[1] != null) {
-            query.setBeginDate(query.getDate()[0]);
-            query.setEndDate(query.getDate()[1]);
+            query.setBeginDate(query.getDate()[0].atStartOfDay());
+            query.setEndDate(query.getDate()[1].plusDays(1L).atStartOfDay());
         }
         //处理空指针异常
         int pageNum = (query.getPageNum() == null || query.getPageNum() <= 0) ? 1 : query.getPageNum();
@@ -113,6 +114,11 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                                 .setOrgId(order.getOrgId()))
                 .toList();
         saveBatch(kpis);
+    }
+
+    @Override
+    public List<KpiSummaryVO> getKpiSummary(KpiListQuery kpiListQuery) {
+        return List.of();
     }
 
     public BigDecimal handelCommission(OrderDetailSettleDTO dto) {

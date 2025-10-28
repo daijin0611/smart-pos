@@ -24,8 +24,10 @@ public class KpiListVO {
     @Schema(description = "创建时间")
     private Date createTime;
 
+    @Schema(description = "订单/充值记录编号")
+    private String orderCode;
 
-    @Schema(description = "订单编号")
+    @Schema(description = "项目编号")
     private String serviceCode;
 
     @Schema(description = "项目名称")

@@ -218,6 +218,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
      */
     @Override
     public PageDTO<OrderDetailVO> pageQuery(OrderDetailPageQuery query) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
         Page<OrderDetailEntity> page = new Page<>(query.getPageNum(), query.getPageSize());
         LocalDate[] date = query.getDate();
 
@@ -227,6 +228,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                 .between(date != null && date.length >= 2 && date[0] != null && date[1] != null, 
                         OrderDetailEntity::getCreateTime, date != null && date.length >= 2 ? date[0] : null,
                         date != null && date.length >= 2 ? date[1] : null)
+                .eq(OrderDetailEntity::getOrgId, auth.getOrgId())
+                .orderByDesc(OrderDetailEntity::getSettledTime)
                 .page(page);
         return PageDTO.create(page, OrderDetailVO.class);
     }

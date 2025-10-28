@@ -21,6 +21,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.haut.common.domain.vo.order.PaymentVO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,6 +31,7 @@ interface PaymentDetailConvert {
     @Mapping(target = "totalAmount", source = "paymentAmount")
     PaymentDetail toEntity(PaymentInfoDTO dto);
     List<PaymentDetail> toEntities(List<PaymentInfoDTO> dto);
+    List<PaymentVO> toVos(List<PaymentDetail> entities);
 }
 
 /**

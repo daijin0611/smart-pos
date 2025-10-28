@@ -6,6 +6,7 @@ import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.query.kpi.KpiListQuery;
 import org.haut.common.domain.vo.kpi.KpiListVO;
+import org.haut.common.domain.vo.kpi.KpiSummaryVO;
 import org.haut.server.kpi.entity.KpiDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.server.order.entity.OrderInfoEntity;
@@ -36,4 +37,12 @@ public interface KpiDetailService extends IService<KpiDetail> {
      * @param orderDetails 订单明细
      */
     void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails);
+
+    /**
+     * 获取KPI总结
+     *
+     * @param kpiListQuery 查询条件
+     * @return KPI总结列表
+     */
+    List<KpiSummaryVO> getKpiSummary(KpiListQuery kpiListQuery);
 }

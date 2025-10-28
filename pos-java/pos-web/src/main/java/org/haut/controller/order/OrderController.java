@@ -94,4 +94,12 @@ public class OrderController {
         return JsonVO.success(orderInfo);
     }
 
+    @GetMapping("/query-by-order-code/{orderCode}")
+    @Operation(summary = "根据订单编号查询订单信息", description = "根据订单编号查询订单详细信息，包含订单明细")
+    public JsonVO<OrderInfoVO> queryByOrderNo(@PathVariable String orderCode) {
+        log.info("查询订单信息，订单编号：{}", orderCode);
+        OrderInfoVO orderInfo = orderInfoService.queryByOrderCode(orderCode);
+        return JsonVO.success(orderInfo);
+    }
+
 }

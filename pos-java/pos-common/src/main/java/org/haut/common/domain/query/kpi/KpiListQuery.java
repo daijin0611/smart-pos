@@ -21,13 +21,16 @@ public class KpiListQuery {
     private Long orgId;
 
     @Schema(description = "查询开始日期", hidden = true)
-    private LocalDate beginDate;
+    private LocalDateTime beginDate;
 
     @Schema(description = "查询结束日期", hidden = true)
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @Schema(description = "日期查询范围")
     private LocalDate[] date;
+
+    @Schema(description = "服务编码")
+    private String serviceCode;
 
     @Schema(description = "分页页码 (默认 1)")
     @Min(value = 1, message = "页码必须大于等于 1")

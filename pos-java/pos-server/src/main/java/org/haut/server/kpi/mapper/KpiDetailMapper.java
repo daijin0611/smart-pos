@@ -25,6 +25,9 @@ public interface KpiDetailMapper extends BaseMapper<KpiDetail> {
      * @return KPI分页列表
      */
     IPage<KpiListVO> selectKpiList(Page<KpiListVO> page, @Param("query") KpiListQuery query);
+
+
+
 }
 
 

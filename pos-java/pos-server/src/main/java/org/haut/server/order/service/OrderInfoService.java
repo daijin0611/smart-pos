@@ -62,4 +62,13 @@ public interface OrderInfoService extends IService<OrderInfoEntity> {
      * @return 订单信息VO
      */
     OrderInfoVO queryByBedId(Long bedId);
+
+
+    /**
+     * 根据订单编号查询订单信息
+     *
+     * @param orderCode 订单编号
+     * @return 订单信息VO
+     */
+    OrderInfoVO queryByOrderCode(String orderCode);
 }
