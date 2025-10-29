@@ -1,10 +1,10 @@
 package org.haut.server.kpi.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.query.kpi.KpiListQuery;
+import org.haut.common.domain.query.kpi.KpiSummaryQuery;
 import org.haut.common.domain.vo.kpi.KpiListVO;
 import org.haut.common.domain.vo.kpi.KpiSummaryVO;
 import org.haut.server.kpi.entity.KpiDetail;
@@ -44,5 +44,5 @@ public interface KpiDetailService extends IService<KpiDetail> {
      * @param kpiListQuery 查询条件
      * @return KPI总结列表
      */
-    List<KpiSummaryVO> getKpiSummary(KpiListQuery kpiListQuery);
+    List<KpiSummaryVO> getKpiSummary(KpiSummaryQuery kpiListQuery);
 }

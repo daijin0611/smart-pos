@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
 import org.haut.common.domain.query.kpi.KpiListQuery;
+import org.haut.common.domain.query.kpi.KpiSummaryQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.kpi.KpiListVO;
 import org.haut.common.domain.vo.kpi.KpiSummaryVO;
@@ -44,8 +45,8 @@ public class KpiController {
 
     @PostMapping("/summary")
     @Operation(summary = "获取绩效总结", description = "获取绩效总结")
-    public JsonVO<List<KpiSummaryVO>> getKpiSummary(@Validated @RequestBody KpiListQuery kpiListQuery) {
-        List<KpiSummaryVO> kpiSummaryVOS = kpiDetailService.getKpiSummary(kpiListQuery);
+    public JsonVO<List<KpiSummaryVO>> getKpiSummary(@Validated @RequestBody KpiSummaryQuery query) {
+        List<KpiSummaryVO> kpiSummaryVOS = kpiDetailService.getKpiSummary(query);
         return JsonVO.success(kpiSummaryVOS);
     }
 }

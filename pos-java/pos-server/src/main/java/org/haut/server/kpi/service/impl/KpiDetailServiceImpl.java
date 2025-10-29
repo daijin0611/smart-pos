@@ -1,5 +1,6 @@
 package org.haut.server.kpi.service.impl;
 
+import cn.hutool.core.util.ArrayUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,6 +10,7 @@ import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.kpi.KpiListQuery;
+import org.haut.common.domain.query.kpi.KpiSummaryQuery;
 import org.haut.common.domain.vo.kpi.KpiListVO;
 import org.haut.common.domain.vo.kpi.KpiSummaryVO;
 import org.haut.common.enums.CommissionBaseEnum;
@@ -28,15 +30,11 @@ import org.haut.server.server.service.ServerCureTicketService;
 import org.haut.server.server.service.ServerItemService;
 import org.haut.server.server.service.ServerProductService;
 import org.mapstruct.Mapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-
-import static org.haut.common.enums.ServiceTypeEnum.PRODUCT;
-import static org.haut.common.enums.ServiceTypeEnum.SERVER;
 
 @Mapper(componentModel = "spring")
 interface KpiDetailConvert {
@@ -75,7 +73,8 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
     public PageDTO<KpiListVO> getKpiList(KpiListQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         query.setOrgId(auth.getOrgId());
-        if(query.getDate() != null && query.getDate()[0] != null && query.getDate()[1] != null) {
+
+        if(ArrayUtil.isNotEmpty(query.getDate())) {
             query.setBeginDate(query.getDate()[0].atStartOfDay());
             query.setEndDate(query.getDate()[1].plusDays(1L).atStartOfDay());
         }
@@ -116,9 +115,23 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
         saveBatch(kpis);
     }
 
+    /**
+     * 获取绩效总结
+     * @param kpiListQuery 查询条件
+     * @return 总结列表
+     */
     @Override
-    public List<KpiSummaryVO> getKpiSummary(KpiListQuery kpiListQuery) {
-        return List.of();
+    public List<KpiSummaryVO> getKpiSummary(KpiSummaryQuery kpiListQuery) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        kpiListQuery.setOrgId(auth.getOrgId());
+        
+        // 处理日期查询条件
+        if(ArrayUtil.isNotEmpty(kpiListQuery.getDate())) {
+            kpiListQuery.setBeginDate(kpiListQuery.getDate()[0].atStartOfDay());
+            kpiListQuery.setEndDate(kpiListQuery.getDate()[1].plusDays(1L).atStartOfDay());
+        }
+        
+        return baseMapper.selectKpiSummary(kpiListQuery);
     }
 
     public BigDecimal handelCommission(OrderDetailSettleDTO dto) {

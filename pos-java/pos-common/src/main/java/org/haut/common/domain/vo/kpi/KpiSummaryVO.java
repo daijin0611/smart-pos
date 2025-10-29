@@ -18,9 +18,6 @@ import java.math.BigDecimal;
 @Schema(description = "KPI业绩汇总VO")
 public class KpiSummaryVO {
 
-    @Schema(description = "序号")
-    private Integer rowNumber;
-
     @Schema(description = "技师ID")
     private Long userId;
 

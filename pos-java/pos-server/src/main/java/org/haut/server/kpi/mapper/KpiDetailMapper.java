@@ -4,9 +4,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.haut.common.domain.query.kpi.KpiListQuery;
+import org.haut.common.domain.query.kpi.KpiSummaryQuery;
 import org.haut.common.domain.vo.kpi.KpiListVO;
+import org.haut.common.domain.vo.kpi.KpiSummaryVO;
 import org.haut.server.kpi.entity.KpiDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
 * @author daiji
@@ -26,7 +30,13 @@ public interface KpiDetailMapper extends BaseMapper<KpiDetail> {
      */
     IPage<KpiListVO> selectKpiList(Page<KpiListVO> page, @Param("query") KpiListQuery query);
 
-
+    /**
+     * 获取绩效总结统计数据
+     *
+     * @param query 查询条件
+     * @return 绩效总结列表
+     */
+    List<KpiSummaryVO> selectKpiSummary(@Param("query") KpiSummaryQuery query);
 
 }
 
