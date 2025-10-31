@@ -1,0 +1,1 @@
+import{a5 as t,a6 as a,aa as e,am as o}from"./index-01f17d1b.js";const d=s=>t("/system/org/query-list",s),n=s=>t("/system/org/query-one",{id:s}),g=s=>a("/system/org/add-org",s),p=s=>e("/system/org/update-org",s),m=s=>e("/system/org/update-org-status",s,o.URLencoded);export{d as a,p as b,g as c,m as d,n as r};
