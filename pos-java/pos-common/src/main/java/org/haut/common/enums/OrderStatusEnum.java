@@ -3,6 +3,9 @@ package org.haut.common.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * 订单状态枚举
+ */
 @Getter
 @AllArgsConstructor
 public enum OrderStatusEnum {

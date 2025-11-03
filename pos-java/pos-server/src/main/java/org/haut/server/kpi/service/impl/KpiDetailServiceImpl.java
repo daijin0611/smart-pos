@@ -150,13 +150,14 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                         }
                         // 比例金额提成
                         else if (CommissionTypeEnum.RATIO.getValue().equals(commissionType)) {
+                            BigDecimal commissionRatio = commissionValueAppointment.multiply(BigDecimal.valueOf(0.01));
                             // 标准价提成
                             if (CommissionBaseEnum.STAND.getValue().equals(item.getCommissionBase())){
-                                yield commissionValueAppointment.multiply(dto.getStdPrice());
+                                yield commissionRatio.multiply(dto.getStdPrice());
                             }
                             // 实际价提成
                             else if (CommissionBaseEnum.TRUE.getValue().equals(item.getCommissionBase())) {
-                                yield commissionValueAppointment.multiply(dto.getTruePrice());
+                                yield commissionRatio.multiply(dto.getTruePrice());
                             } else {
                                 throw new BusinessException("未知的提成基基准类型");
                             }
@@ -172,13 +173,14 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                         }
                         // 比例金额提成
                         else if (CommissionTypeEnum.RATIO.getValue().equals(commissionType)) {
+                            BigDecimal commissionRatio = commissionValueExtend.multiply(BigDecimal.valueOf(0.01));
                             // 标准价提成
                             if (CommissionBaseEnum.STAND.getValue().equals(item.getCommissionBase())){
-                                yield commissionValueExtend.multiply(dto.getStdPrice());
+                                yield commissionRatio.multiply(dto.getStdPrice());
                             }
                             // 实际价提成
                             else if (CommissionBaseEnum.TRUE.getValue().equals(item.getCommissionBase())) {
-                                yield commissionValueExtend.multiply(dto.getTruePrice());
+                                yield commissionRatio.multiply(dto.getTruePrice());
                             } else {
                                 throw new BusinessException("未知的提成基基准类型");
                             }
@@ -194,13 +196,14 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                         }
                         // 比例金额提成
                         else if (CommissionTypeEnum.RATIO.getValue().equals(commissionType)) {
+                            BigDecimal commissionRatio = commissionValueRotation.multiply(BigDecimal.valueOf(0.01));
                             // 标准价提成
                             if (CommissionBaseEnum.STAND.getValue().equals(item.getCommissionBase())){
-                                yield commissionValueRotation.multiply(dto.getStdPrice());
+                                yield commissionRatio.multiply(dto.getStdPrice());
                             }
                             // 实际价提成
                             else if (CommissionBaseEnum.TRUE.getValue().equals(item.getCommissionBase())) {
-                                yield commissionValueRotation.multiply(dto.getTruePrice());
+                                yield commissionRatio.multiply(dto.getTruePrice());
                             } else {
                                 throw new BusinessException("未知的提成基基准类型");
                             }
@@ -217,12 +220,13 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                 if (CommissionTypeEnum.FIXED.getValue().equals(commissionType))
                     return product.getCommissionValue();
                 else if (CommissionTypeEnum.RATIO.getValue().equals(commissionType)) {
+                    BigDecimal commissionRatio = product.getCommissionValue().multiply(BigDecimal.valueOf(0.01));
                     // 标准价提成
                     if (CommissionBaseEnum.STAND.getValue().equals(product.getCommissionBase()))
-                        return product.getCommissionValue().multiply(dto.getStdPrice());
+                        return commissionRatio.multiply(dto.getStdPrice());
                     // 实际价提成
                     else if (CommissionBaseEnum.TRUE.getValue().equals(product.getCommissionBase()))
-                        return product.getCommissionValue().multiply(dto.getTruePrice());
+                        return commissionRatio.multiply(dto.getTruePrice());
                     else
                         throw new BusinessException("未知的提成基基准类型");
                 }
@@ -233,12 +237,13 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                 if (CommissionTypeEnum.FIXED.getValue().equals(type))
                     return cureTicket.getCommissionValue();
                 else if (CommissionTypeEnum.RATIO.getValue().equals(type)) {
+                    BigDecimal commissionRatio = cureTicket.getCommissionValue().multiply(BigDecimal.valueOf(0.01));
                     // 标准价提成
                     if (CommissionBaseEnum.STAND.getValue().equals(cureTicket.getCommissionBase()))
-                        return cureTicket.getCommissionValue().multiply(dto.getStdPrice());
+                        return commissionRatio.multiply(dto.getStdPrice());
                         // 实际价提成
                     else if (CommissionBaseEnum.TRUE.getValue().equals(cureTicket.getCommissionBase()))
-                        return cureTicket.getCommissionValue().multiply(dto.getTruePrice());
+                        return commissionRatio.multiply(dto.getTruePrice());
                     else
                         throw new BusinessException("未知的提成基基准类型");
                 }

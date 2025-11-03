@@ -1,6 +1,5 @@
 package org.haut.controller.order;
 
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +14,6 @@ import org.haut.server.order.service.OrderDetailService;
 import org.haut.server.order.service.OrderInfoService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
-
-import java.util.List;
 
 /**
  * 订单管理控制器
