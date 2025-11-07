@@ -124,13 +124,16 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     @Override
     @Transactional
     public BigDecimal updateVipBalance(Long vipId) {
+        log.info("开始更新会员余额");
         if (vipId == null){
-            throw new BusinessException("会员id不能为空");
+            log.info("会员信息不存在");
+            return BigDecimal.ZERO;
         }
         List<VipAsset> vipAssets = vipAssetMapper.selectList(Wrappers.lambdaQuery(VipAsset.class)
                 .eq(VipAsset::getVipId, vipId));
         if (CollectionUtil.isEmpty(vipAssets)){
-            throw new BusinessException("会员没有资产");
+            log.info("会员没有资产");
+            return BigDecimal.ZERO;
         }
         BigDecimal balance = vipAssets.stream()
                 .map(VipAsset::getAssetBalance)
