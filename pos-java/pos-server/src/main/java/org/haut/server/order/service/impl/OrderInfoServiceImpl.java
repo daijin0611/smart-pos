@@ -145,9 +145,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 结算订单明细
         orderDetailService.settleOrderDetail(order,settleOrderDTO.getDetails());
         log.info("订单明细结算完成");
-        // 结算业绩提成
-        kpiDetailService.handelOrder(order, settleOrderDTO.getDetails());
-        log.info("业绩提成结算成功");
         // 结算支付信息
         paymentDetailService.handelOrder(settleOrderDTO, order.getOrderCode());
         log.info("支付信息结算成功");

@@ -187,13 +187,19 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void settleOrderDetail(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails) {
+        log.info("orderCode:{} 开始结算订单明细", order.getOrderCode());
         // 处理库存明细
         stockOutOrderService.handelOrder(orderDetails);
+        log.info("orderCode:{} 处理库存成功订单号", order.getOrderCode());
         // 处理疗程券
         serverCureTicketService.handelOrder(orderDetails, order);
-
+        log.info("orderCode:{} 处理疗程券成功", order.getOrderCode());
         // 处理业绩提成
         kpiDetailService.handelOrder(order, orderDetails);
+        log.info("orderCode:{} 处理疗业绩提成成功", order.getOrderCode());
+        // 删除开单时的明细，具体订单明细由结算时决定
+        lambdaUpdate().eq(OrderDetailEntity::getOrderCode, order.getOrderCode()).remove();
+        log.info("orderCode:{} 删除暂存订单明细成功", order.getOrderCode());
         // 保存订单明细
         List<OrderDetailEntity> details = orderDetails.stream()
                 .map(e -> orderDetailConvert.toEntity(e)
@@ -203,12 +209,12 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                         .setOrderId(order.getId())
                         .setSettledTime(order.getSettleTime())
                         .setOrderStatus(order.getOrderStatus())
-                        .setOrgId(order.getOrgId())
-                        .setOrderId(order.getId()))
+                        .setOrgId(order.getOrgId()))
                 .toList();
+
         // 更新或者保存订单明细
         saveOrUpdateBatch(details);
-
+        log.info("orderCode:{} 订单明细处理成功", order.getOrderCode());
     }
 
     /**
