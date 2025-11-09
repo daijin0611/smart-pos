@@ -102,7 +102,8 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
         List<KpiDetail> kpis = orderDetails.stream()
                 .map(e ->
                         new KpiDetail()
-                                .setServiceCode(order.getOrderCode())
+                                .setOrderCode(order.getOrderCode())
+                                .setServiceCode(e.getBusinessCode())
                                 .setServiceName(e.getBusinessName())
                                 .setServiceType(e.getDetailType())
                                 .setItemType(e.getServerType())

@@ -61,7 +61,7 @@ spring:
 
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
   mapper-locations: classpath*:/mapper/**/*.xml
   global-config:
     db-config:
@@ -107,8 +107,9 @@ knife4j:
 
 logging:
   level:
-    com.baomidou.mybatisplus: DEBUG
-    org.mybatis: DEBUG
-    org.apache.ibatis: DEBUG
-    java.sql: DEBUG
-    javax.sql: DEBUG
+    # 关闭数据库相关的DEBUG日志（生产环境）
+    com.baomidou.mybatisplus: WARN
+    org.mybatis: WARN
+    org.apache.ibatis: WARN
+    com.alibaba.druid: WARN
+    org.springframework.jdbc: WARN

@@ -44,7 +44,12 @@ public class KpiDetail {
     private String remark;
 
     /**
-     * 业务编号
+     * 订单编号(收银订单、充值订单)
+     */
+    private String orderCode;
+
+    /**
+     * 业务编号(产品、服务、优惠券)
      */
     private String serviceCode;
 

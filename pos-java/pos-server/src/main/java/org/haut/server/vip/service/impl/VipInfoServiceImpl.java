@@ -239,7 +239,8 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         }
         List<KpiDetail> kpi = userKpiList.stream().map(kpiUser ->
                 new KpiDetail()
-                        .setServiceCode(history.getHistoryCode())
+                        .setOrderCode(history.getHistoryCode())
+                        .setServiceCode(null)
                         .setServiceName(ServiceTypeEnum.RECHARGE.getType())
                         .setServiceType(ServiceTypeEnum.RECHARGE.getValue())
                         .setItemType(ServerItemTypeEnum.ANOTHER.getValue())
