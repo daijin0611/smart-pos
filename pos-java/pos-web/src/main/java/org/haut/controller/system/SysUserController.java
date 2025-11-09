@@ -75,10 +75,10 @@ public class SysUserController {
     @Operation(description = "添加用户", summary = "添加用户")
     public JsonVO<String> addUser(@Validated @RequestBody UserCreateDTO user){
         if (judgeUserCodeExist(user.getUserCode(), null)) {
-            throw new BusinessException("用户编号"+ user.getUserCode() + "已存在");
+            return JsonVO.fail("用户编号" + user.getUserCode() + "已存在");
         }
         if (!judgeRoleExist(user.getRoleId())) {
-            throw new BusinessException("角色不存在");
+            return JsonVO.fail("角色不存在");
         }
         sysUserService.addUser(user);
         return JsonVO.success("添加成功");

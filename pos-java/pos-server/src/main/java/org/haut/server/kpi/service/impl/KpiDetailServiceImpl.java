@@ -160,10 +160,12 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                             else if (CommissionBaseEnum.TRUE.getValue().equals(item.getCommissionBase())) {
                                 yield commissionRatio.multiply(dto.getTruePrice());
                             } else {
-                                throw new BusinessException("未知的提成基基准类型");
+                                log.warn("未知的提成基基准类型");
+                                yield BigDecimal.ZERO;
                             }
                         } else {
-                            throw new BusinessException("未知的提成类型");
+                            log.warn("未知的提成基基准类型");
+                            yield BigDecimal.ZERO;
                         }
                     }
                     case EXTEND -> {
@@ -183,10 +185,12 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                             else if (CommissionBaseEnum.TRUE.getValue().equals(item.getCommissionBase())) {
                                 yield commissionRatio.multiply(dto.getTruePrice());
                             } else {
-                                throw new BusinessException("未知的提成基基准类型");
+                                log.warn("未知的提成基基准类型");
+                                yield BigDecimal.ZERO;
                             }
                         } else {
-                            throw new BusinessException("未知的提成类型");
+                            log.warn("未知的提成基基准类型");
+                            yield BigDecimal.ZERO;
                         }
                     }
                     case ROTATION -> {
@@ -206,13 +210,18 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                             else if (CommissionBaseEnum.TRUE.getValue().equals(item.getCommissionBase())) {
                                 yield commissionRatio.multiply(dto.getTruePrice());
                             } else {
-                                throw new BusinessException("未知的提成基基准类型");
+                                log.warn("未知的提成基基准类型");
+                                yield BigDecimal.ZERO;
                             }
                         } else {
-                            throw new BusinessException("未知的提成类型");
+                            log.warn("未知的提成基基准类型");
+                            yield BigDecimal.ZERO;
                         }
                     }
-                    case ANOTHER -> throw new BusinessException("未知的上钟类型");
+                    case ANOTHER -> {
+                        log.warn("未知的上钟类型");
+                        yield BigDecimal.ZERO;
+                    }
                 };
             }
             case PRODUCT -> {
@@ -228,8 +237,11 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                     // 实际价提成
                     else if (CommissionBaseEnum.TRUE.getValue().equals(product.getCommissionBase()))
                         return commissionRatio.multiply(dto.getTruePrice());
-                    else
-                        throw new BusinessException("未知的提成基基准类型");
+                    else{
+                        log.warn("未知的提成基基准类型");
+                        return BigDecimal.ZERO;
+                    }
+
                 }
             }
             case CURE_TICKET -> {
@@ -245,11 +257,17 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                         // 实际价提成
                     else if (CommissionBaseEnum.TRUE.getValue().equals(cureTicket.getCommissionBase()))
                         return commissionRatio.multiply(dto.getTruePrice());
-                    else
-                        throw new BusinessException("未知的提成基基准类型");
+                    else {
+                        log.warn("未知的提成基基准类型");
+                        return BigDecimal.ZERO;
+                    }
                 }
             }
-            case UNKNOWN -> throw new BusinessException("未知的业务类型");
+            case UNKNOWN -> {
+                log.warn("未知的提成基基准类型");
+                return BigDecimal.ZERO;
+            }
+
         }
         return BigDecimal.ZERO;
     }

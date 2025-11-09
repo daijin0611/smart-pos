@@ -17,7 +17,6 @@ import java.util.List;
 public class UserCreateDTO {
 
     @Schema(description = "员工编号", example = "EMP001")
-    @NotBlank(message = "员工编号不能为空")
     @Size(max = 20, message = "员工编号长度不能超过20")
     private String userCode;
 
