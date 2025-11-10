@@ -1,5 +1,6 @@
 package org.haut.common.domain.dto.system;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -47,14 +48,14 @@ public class UserCreateDTO {
     private Integer userSex;
 
     @Schema(description = "出生日期", example = "1990-01-01")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date userBirthday;
 
     @Schema(description = "所属部门", example = "管理部")
     private String userDept;
 
     @Schema(description = "入职日期", example = "2020-01-01")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date userEntryDate;
 
     @Schema(description = "在职状态", example = "在职")
@@ -75,6 +76,7 @@ public class UserCreateDTO {
     private String userEdu;
 
     @Schema(description = "健康证到期日", example = "2025-12-31")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date userHealth;
 
     @Schema(description = "角色id")
