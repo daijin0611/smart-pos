@@ -39,7 +39,6 @@ public class VipCreateDTO {
      * 会员卡号
      */
     @Schema(description = "会员卡号")
-    @NotBlank
     private String cardNumber;
 
     /**

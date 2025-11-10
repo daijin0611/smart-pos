@@ -153,7 +153,9 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     @Override
     public void addVip(VipCreateDTO dto) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
+        String vipCardNumber = CodeUtils.generateByTime(PrefixConst.VIP);
         VipInfo entity = vipInfoConvert.toEntity(dto);
+        entity.setCardNumber(vipCardNumber);
         entity.setOrgId(auth.getOrgId());
         log.info("会员信息：{}", entity);
         this.save(entity);

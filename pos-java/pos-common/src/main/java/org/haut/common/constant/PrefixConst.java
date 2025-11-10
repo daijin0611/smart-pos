@@ -15,4 +15,6 @@ public class PrefixConst {
 
     public static final String ORDER = "ORD"; // 订单前缀
     public static final String ORDER_DETAIL = "DTL"; // 订单明细前缀
+
+    public static final String VIP = "VIP";
 }
