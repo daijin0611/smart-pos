@@ -149,15 +149,15 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
      */
     @Override
     public void handelOrder(List<OrderDetailSettleDTO> dto, OrderInfoEntity order) {
-        if (order.getVipId()==null)
-            throw new BusinessException("购买疗程券必须选择会员");
         List<VipInfoTicket> insertTicket = new ArrayList<>();
         dto.stream()
                 .filter(e -> e.getDetailType().equals(ServiceTypeEnum.CURE_TICKET.getValue()))
                 .forEach(e->{
-            ServerCureTicketVO cureTicketVO = baseMapper.getOneById(e.getBid());
-            List<VipInfoTicket> ticketInfoList = new ArrayList<>();
-            cureTicketVO.getTicketDetails()
+                    if (order.getVipId()==null)
+                        throw new BusinessException("购买疗程券必须选择会员");
+                    ServerCureTicketVO cureTicketVO = baseMapper.getOneById(e.getBid());
+                    List<VipInfoTicket> ticketInfoList = new ArrayList<>();
+                    cureTicketVO.getTicketDetails()
                     .forEach(detail -> {
                         VipTicketVO ticketInfo = vipTicketMapper.getOneById(detail.getVipTicketId());
                         VipInfoTicket ticket = new VipInfoTicket()

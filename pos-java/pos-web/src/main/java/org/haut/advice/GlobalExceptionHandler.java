@@ -1,6 +1,7 @@
 package org.haut.advice;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.exception.BusinessException;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.validation.FieldError;
+
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +63,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public JsonVO<Object> handleBusinessException(BusinessException ex) {
-        log.error(ex.getMessage(), ex);
+        List<String> stackTrace = ExceptionUtils.getStackTrace(ex)
+                .lines()
+                .limit(5)
+                .toList();
+        log.error("{}:\n{}",ex.getMessage(),stackTrace);
         return JsonVO.fail(ex.getMessage());
     }
 
