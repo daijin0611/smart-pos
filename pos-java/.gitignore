@@ -6,7 +6,7 @@ target/
 .vercel/
 stock-demo/
 pos-generator
-
+.trae/
 ### IntelliJ IDEA ###
 .idea/
 *.iws
