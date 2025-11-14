@@ -7,9 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.order.OrderCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderSettleDTO;
+import org.haut.common.domain.dto.order.OrderReconcileDTO;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
+import org.haut.common.domain.vo.order.OrderReceiptVO;
 import org.haut.server.order.service.OrderDetailService;
 import org.haut.server.order.service.OrderInfoService;
 import org.springframework.validation.annotation.Validated;
@@ -42,9 +44,24 @@ public class OrderController {
 
     @PostMapping("/settle-order")
     @Operation(summary = "结算", description = "对订单进行结算操作")
-    public JsonVO<String> settleOrder(@Validated @RequestBody OrderSettleDTO settleOrderDTO) {
+    public JsonVO<OrderReceiptVO> settleOrder(@Validated @RequestBody OrderSettleDTO settleOrderDTO) {
         log.info("结算订单请求：{}", settleOrderDTO);
         orderInfoService.settleOrder(settleOrderDTO);
+        OrderReceiptVO receipt = orderInfoService.getReceiptByOrderId(settleOrderDTO.getOrderId());
+        return JsonVO.success(receipt);
+    }
+
+    /**
+     * 对单
+     * 在订单结算后24小时内允许对单，重建订单明细与支付信息；对单完成后订单不可再次修改。
+     * @param dto 对单请求对象
+     * @return 处理结果
+     */
+    @PostMapping("/reconcile-order")
+    @Operation(summary = "订单对单", description = "结算后24小时内对单，允许修改订单明细与支付信息")
+    public JsonVO<String> reconcileOrder(@Validated @RequestBody OrderReconcileDTO dto) {
+        log.info("订单对单请求：{}", dto);
+        orderInfoService.reconcileOrder(dto);
         return JsonVO.success();
     }
 
@@ -75,10 +92,10 @@ public class OrderController {
 
     @GetMapping("/query-by-id/{orderId}")
     @Operation(summary = "根据订单ID查询订单信息", description = "根据订单ID查询订单详细信息，包含订单明细")
-    public JsonVO<OrderInfoVO> queryById(@PathVariable Long orderId) {
+    public JsonVO<OrderReceiptVO> queryById(@PathVariable Long orderId) {
         log.info("查询订单信息，订单ID：{}", orderId);
-        OrderInfoVO orderInfo = orderInfoService.queryById(orderId);
-        return JsonVO.success(orderInfo);
+        OrderReceiptVO receipt = orderInfoService.getReceiptByOrderId(orderId);
+        return JsonVO.success(receipt);
     }
 
     @GetMapping("/query-by-bed-id/{bedId}")

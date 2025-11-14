@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderCreateDTO;
 import org.haut.common.domain.dto.order.OrderSettleDTO;
+import org.haut.common.domain.dto.order.OrderReconcileDTO;
+import org.haut.common.domain.vo.order.OrderReceiptVO;
 import org.haut.common.domain.query.order.OrderPageQuery;
 import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
@@ -32,6 +34,19 @@ public interface OrderInfoService extends IService<OrderInfoEntity> {
      * @param settleOrderDTO 结算订单请求DTO
      */
     void settleOrder(OrderSettleDTO settleOrderDTO);
+
+    /**
+     * 对单（结算后24小时内允许修改订单明细与支付信息）
+     * @param dto 对单请求对象
+     */
+    void reconcileOrder(OrderReconcileDTO dto);
+
+    /**
+     * 根据订单ID装配并返回小票信息
+     * @param orderId 订单ID
+     * @return 小票信息
+     */
+    OrderReceiptVO getReceiptByOrderId(Long orderId);
     
     /**
      * 根据订单ID查询订单信息

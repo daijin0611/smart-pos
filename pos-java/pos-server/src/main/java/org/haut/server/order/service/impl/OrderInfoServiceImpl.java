@@ -11,12 +11,15 @@ import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderCreateDTO;
 
 import org.haut.common.domain.dto.order.OrderSettleDTO;
+import org.haut.common.domain.dto.order.OrderReconcileDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.order.OrderPageQuery;
 import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.common.domain.vo.order.PaymentVO;
+import org.haut.common.domain.vo.order.OrderReceiptVO;
+import org.haut.common.domain.vo.order.ReceiptItemVO;
 import org.haut.common.enums.BedStatusEnum;
 import org.haut.common.enums.CustomerTypeEnum;
 import org.haut.common.enums.OrderStatusEnum;
@@ -460,5 +463,136 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .setUserId(auth.getUserId())
                 .setUserName(auth.getUserName())
                 .setOrgId(auth.getOrgId());
+    }
+
+    /**
+     * 根据订单ID返回小票信息
+     * @param orderId 订单ID
+     * @return 小票信息
+     */
+    @Override
+    public OrderReceiptVO getReceiptByOrderId(Long orderId) {
+        OrderInfoEntity orderInfo = this.getById(orderId);
+        if (orderInfo == null) {
+            throw new BusinessException("订单不存在");
+        }
+        // 明细
+        List<OrderDetailVO> details = orderDetailService.queryByOrderId(orderId);
+        List<ReceiptItemVO> items = details.stream().map(d -> {
+            java.math.BigDecimal qty = new java.math.BigDecimal(d.getQuantity() == null ? 0 : d.getQuantity());
+            java.math.BigDecimal price = d.getTruePrice() == null ? java.math.BigDecimal.ZERO : d.getTruePrice();
+            java.math.BigDecimal amount = price.multiply(qty);
+            return new ReceiptItemVO()
+                    .setItemName(d.getBusinessName())
+                    .setTechnicianName(d.getUserName())
+                    .setQuantity(d.getQuantity())
+                    .setStdPrice(d.getStdPrice())
+                    .setTruePrice(d.getTruePrice())
+                    .setAmount(amount)
+                    .setServerTypeName(serverTypeName(d.getServerType()));
+        }).toList();
+
+        // 支付
+        List<PaymentDetail> payments = paymentDetailService.lambdaQuery()
+                .eq(PaymentDetail::getActiveCode, orderInfo.getOrderCode())
+                .eq(PaymentDetail::getOrgId, orderInfo.getOrgId())
+                .list();
+        List<PaymentVO> paymentVOS = cn.hutool.core.bean.BeanUtil.copyToList(payments, PaymentVO.class);
+
+        // 组装小票
+        return new OrderReceiptVO()
+                .setOrderCode(orderInfo.getOrderCode())
+                .setOrderTime(orderInfo.getOrderTime())
+                .setSettleTime(orderInfo.getSettleTime())
+                .setBedName(orderInfo.getBedName())
+                .setCashierName(orderInfo.getUserName())
+                .setCustomerName(orderInfo.getCustomerName())
+                .setTotalAmount(orderInfo.getTotalAmount())
+                .setActualAmount(orderInfo.getActualAmount())
+                .setDiscountAmount(orderInfo.getDiscountAmount())
+                .setItems(items)
+                .setPayments(paymentVOS);
+    }
+
+    /**
+     * 上钟类型名称映射
+     * @param type 上钟类型值
+     * @return 名称
+     */
+    private String serverTypeName(Integer type) {
+        if (type == null) return null;
+        return switch (type) {
+            case 0 -> "点钟";
+            case 1 -> "加钟";
+            case 2 -> "轮牌";
+            default -> null;
+        };
+    }
+
+    /**
+     * 订单对单处理
+     * 1. 验证订单为已结算状态且在24小时内
+     * 2. 重建已结算的订单明细
+     * 3. 重置支付信息（删除原支付明细并写入新的支付明细）
+     * 4. 更新订单金额信息并标记为已对单（通过remark）
+     * 
+     * @param dto 对单请求对象
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void reconcileOrder(OrderReconcileDTO dto) {
+        log.info("开始订单对单，订单ID：{}", dto.getOrderId());
+        // 载入订单
+        OrderInfoEntity order = this.getById(dto.getOrderId());
+        if (order == null) {
+            throw new BusinessException("订单不存在");
+        }
+        // 必须是已结算订单
+        if (!OrderStatusEnum.SETTLED.getCode().equals(order.getOrderStatus())) {
+            throw new BusinessException("仅支持对已结算订单进行对单");
+        }
+        // 已对单不可再次修改
+        if (order.getRemark() != null && order.getRemark().contains("[RECONCILED]")) {
+            throw new BusinessException("订单已对单，不可再修改");
+        }
+        // 必须在结算后24小时内
+        Date settleTime = order.getSettleTime();
+        if (settleTime == null) {
+            throw new BusinessException("订单结算时间缺失，无法对单");
+        }
+        long now = System.currentTimeMillis();
+        long diffMs = now - settleTime.getTime();
+        long limitMs = 24L * 60 * 60 * 1000;
+        if (diffMs > limitMs) {
+            throw new BusinessException("订单已超过24小时不可对单");
+        }
+
+        // 1) 重建订单明细（按已结算口径）
+        orderDetailService.settleOrderDetail(order, dto.getDetails());
+
+        // 2) 重置支付信息
+        paymentDetailService.reconcileOrderPayments(dto.getPaymentInfoList(), order.getOrderCode());
+
+        // 3) 更新订单金额信息并标记已对单
+        lambdaUpdate()
+                .eq(OrderInfoEntity::getId, order.getId())
+                .set(OrderInfoEntity::getTotalAmount, dto.getTotalAmount())
+                .set(OrderInfoEntity::getActualAmount, dto.getActualAmount())
+                .set(OrderInfoEntity::getDiscountAmount, dto.getDiscountAmount())
+                .set(OrderInfoEntity::getRemark, buildReconciledRemark(order.getRemark(), dto.getRemark()))
+                .update();
+        log.info("订单对单完成，订单编号：{}", order.getOrderCode());
+    }
+
+    /**
+     * 构造已对单备注标识
+     * @param original 原始备注
+     * @param append 追加备注
+     * @return 组合后的备注，包含已对单标记
+     */
+    private String buildReconciledRemark(String original, String append) {
+        String base = original == null ? "" : original;
+        String extra = append == null ? "" : (" " + append.trim());
+        return base + extra + " [RECONCILED]";
     }
 }

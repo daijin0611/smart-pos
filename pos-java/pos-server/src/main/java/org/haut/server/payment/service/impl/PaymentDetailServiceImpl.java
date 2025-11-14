@@ -79,6 +79,35 @@ public class PaymentDetailServiceImpl extends ServiceImpl<PaymentDetailMapper, P
         );
         saveBatch(payments);
     }
+
+    /**
+     * 对单更新支付信息
+     * 会先删除当前订单的所有支付明细，再按传入的支付信息重新入库。
+     * 不进行会员资产的再次处理，避免重复扣减。
+     * @param paymentInfos 支付信息列表
+     * @param orderCode 订单编号
+     */
+    @Override
+    @Transactional(rollbackFor = BusinessException.class)
+    public void reconcileOrderPayments(List<PaymentInfoDTO> paymentInfos, String orderCode) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        // 删除原支付明细
+        lambdaUpdate()
+                .eq(PaymentDetail::getActiveCode, orderCode)
+                .eq(PaymentDetail::getOrgId, auth.getOrgId())
+                .remove();
+        // 重建支付明细
+        List<PaymentDetail> payments = paymentDetailConvert.toEntities(paymentInfos);
+        payments.forEach(payment ->
+                payment.setOrgId(auth.getOrgId())
+                        .setActiveType(PaymentActiveTypeEnum.CONSUMER.getValue())
+                        .setActiveCode(orderCode)
+                        .setActiveName(PaymentActiveTypeEnum.CONSUMER.getType())
+                        .setPaymentStatus(PaymentStatusEnum.PAID.getStatus())
+                        .setOrgId(auth.getOrgId())
+        );
+        saveBatch(payments);
+    }
 }
 
 
