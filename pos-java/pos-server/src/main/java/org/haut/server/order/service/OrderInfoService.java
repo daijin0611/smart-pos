@@ -30,10 +30,11 @@ public interface OrderInfoService extends IService<OrderInfoEntity> {
     
     /**
      * 结算订单
-     * 
+     *
      * @param settleOrderDTO 结算订单请求DTO
+     * @return
      */
-    void settleOrder(OrderSettleDTO settleOrderDTO);
+    Long settleOrder(OrderSettleDTO settleOrderDTO);
 
     /**
      * 对单（结算后24小时内允许修改订单明细与支付信息）

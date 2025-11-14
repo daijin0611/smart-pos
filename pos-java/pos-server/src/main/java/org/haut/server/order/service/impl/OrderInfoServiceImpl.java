@@ -36,12 +36,9 @@ import org.haut.server.payment.entity.PaymentDetail;
 import org.haut.server.payment.service.PaymentDetailService;
 import org.haut.server.room.entity.RoomBed;
 import org.haut.server.room.service.RoomBedService;
-import org.haut.server.server.service.ServerProductService;
-import org.haut.server.stock.service.StockOutOrderService;
 import org.haut.server.vip.entity.VipInfo;
 import org.haut.server.vip.service.VipInfoService;
 import org.haut.server.vip.service.VipInfoTicketService;
-import org.haut.server.vip.service.VipTicketService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
@@ -125,11 +122,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 结算订单信息
+     *
      * @param settleOrderDTO 结算订单请求DTO
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void settleOrder(OrderSettleDTO settleOrderDTO) {
+    public Long settleOrder(OrderSettleDTO settleOrderDTO) {
         // 校验会员信息
         VipInfo vipInfo = vipInfoService.getById(settleOrderDTO.getVipId());
         if (vipInfo == null && settleOrderDTO.getCustomerType().equals(CustomerTypeEnum.VIP.getValue()))
@@ -160,6 +159,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .eq(OrderInfoEntity::getId, order.getId())
                 .set(OrderInfoEntity::getAfterBalance, afterBalance)
                 .update();
+        return order.getId();
     }
     
     /**

@@ -46,8 +46,8 @@ public class OrderController {
     @Operation(summary = "结算", description = "对订单进行结算操作")
     public JsonVO<OrderReceiptVO> settleOrder(@Validated @RequestBody OrderSettleDTO settleOrderDTO) {
         log.info("结算订单请求：{}", settleOrderDTO);
-        orderInfoService.settleOrder(settleOrderDTO);
-        OrderReceiptVO receipt = orderInfoService.getReceiptByOrderId(settleOrderDTO.getOrderId());
+        Long orderId = orderInfoService.settleOrder(settleOrderDTO);
+        OrderReceiptVO receipt = orderInfoService.getReceiptByOrderId(orderId);
         return JsonVO.success(receipt);
     }
 
