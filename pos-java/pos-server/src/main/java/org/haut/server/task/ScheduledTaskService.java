@@ -15,7 +15,7 @@ import org.haut.server.order.service.OrderSalesSummaryService;
 import org.haut.server.payment.entity.PaymentDetail;
 import org.haut.server.payment.service.PaymentDetailService;
 import org.haut.common.enums.PaymentActiveTypeEnum;
-import org.haut.common.enums.PaymentStatusEnum;
+import org.haut.common.enums.PaymentStatusEnum;                       
 import org.haut.common.enums.PaymentTypeEnum;
 import org.haut.server.vip.entity.VipRechargeHistory;
 import org.haut.server.vip.service.VipRechargeHistoryService;
@@ -37,7 +37,7 @@ import java.util.List;
  * @author mhding
  * @version 1.0
  * @since 2025-10-22
- */
+ */  
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -48,9 +48,9 @@ public class ScheduledTaskService {
 
     /**
      * 每日销售数据统计任务
-     * 每天凌晨1点执行，统计前一天的销售数据
+     * 每天中午12点执行，统计前一天的销售数据
      */
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 0 12 * * ?")   
     public void dailySalesStatistics() {
         orderSalesSummaryService.executeSummaries();
     }
