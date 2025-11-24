@@ -109,7 +109,17 @@ public class VipInfoTicket {
     private Long orgId;
 
     /**
-     * 充值记录id
+     * 来源类型（1：充值；2：活动；3：其他）
      */
-    private String rechargeHistoryCode;
+    private Integer sourceType;
+
+    /**
+     * 来源编号
+     */
+    private String sourceCode;
+
+    /**
+     * 使用订单号
+     */
+    private String usedOrderCode;
 }

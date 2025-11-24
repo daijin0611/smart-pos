@@ -12,7 +12,8 @@ public enum OrderStatusEnum {
     UNSETTLED(1,"未结算"),
     SETTLED(2,"已结算"),
     CANCELLED(3,"已取消"),
-    ROLLBACK(4,"已冲正")
+    ROLLBACK(4,"已冲正"),
+    RECONCILED(5,"已对单")
     ;
     private final Integer code;
     private final String message;

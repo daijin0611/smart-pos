@@ -20,6 +20,7 @@
         kpi_detail kd
         LEFT JOIN sys_org so ON so.id = kd.org_id
         <where>
+            AND kd.is_delete = 0
             <if test="query.username != null and query.username != ''">
                 AND kd.user_name LIKE CONCAT('%', #{query.username}, '%')
             </if>

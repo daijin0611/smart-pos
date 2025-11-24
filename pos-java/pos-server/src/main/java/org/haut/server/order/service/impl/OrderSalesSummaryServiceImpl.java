@@ -102,9 +102,38 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
         for (SysOrg org : orgList) {
             // 2. 执行统计任务
             execute(org);
+            // 3. 更新订单状态
+            updateOrderStatus(org);
             log.info("机构 {} 的销售数据统计任务执行完成", org.getOrgName());
         }
     }
+
+    /**
+     * 更新订单状态
+     * @param org 机构
+     */
+    private void updateOrderStatus(SysOrg org) {
+        LocalDate statsDate = LocalDate.now().minusDays(1);
+        // 计算统计日期的开始时间（0点）和结束时间（24点）
+        LocalDateTime startTime = statsDate.atStartOfDay();
+        LocalDateTime endTime = statsDate.plusDays(1).atStartOfDay();
+        // 1. 获取所有待处理订单
+        List<OrderInfoEntity> pendingOrders = orderInfoService.lambdaQuery()
+                .eq(OrderInfoEntity::getOrgId, org.getId())
+                .eq(OrderInfoEntity::getOrderStatus, OrderStatusEnum.SETTLED.getCode())
+                .list();
+        
+        // 2. 更新订单状态为已对单
+        if (!pendingOrders.isEmpty()) {
+            orderInfoService.lambdaUpdate()
+                    .set(OrderInfoEntity::getOrderStatus, OrderStatusEnum.RECONCILED.getCode())
+                    .gt(OrderInfoEntity::getSettleTime, startTime)
+                    .lt(OrderInfoEntity::getSettleTime, endTime)
+                    .in(OrderInfoEntity::getId, pendingOrders)
+                    .update();
+        }
+    }
+
 
     /**
      * 计算所有记录的汇总数据

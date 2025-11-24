@@ -4,10 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.haut.common.domain.dto.order.OrderCreateDTO;
-import org.haut.common.domain.dto.order.OrderDetailCreateDTO;
-import org.haut.common.domain.dto.order.OrderSettleDTO;
-import org.haut.common.domain.dto.order.OrderReconcileDTO;
+import org.haut.common.domain.dto.order.*;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
@@ -58,7 +55,7 @@ public class OrderController {
      * @return 处理结果
      */
     @PostMapping("/reconcile-order")
-    @Operation(summary = "订单对单", description = "结算后24小时内对单，允许修改订单明细与支付信息")
+    @Operation(summary = "订单对单", description = "确认对单")
     public JsonVO<String> reconcileOrder(@Validated @RequestBody OrderReconcileDTO dto) {
         log.info("订单对单请求：{}", dto);
         orderInfoService.reconcileOrder(dto);
@@ -114,4 +111,11 @@ public class OrderController {
         return JsonVO.success(orderInfo);
     }
 
+    @PostMapping("/roll-back")
+    @Operation(summary = "订单冲正", description = "对已结算订单进行冲正操作，将订单状态修改为已取消")
+    public JsonVO<String> rollBackOrder(@Validated @RequestBody OrderRollBackDTO dto) {
+        log.info("订单冲正请求：{}", dto);
+        orderInfoService.rollBackOrder(dto);
+        return JsonVO.success();
+    }
 }

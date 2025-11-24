@@ -42,7 +42,8 @@ public class StockLogServiceImpl extends ServiceImpl<StockLogMapper, StockLog>
                 .like(StringUtils.isNotBlank(query.getOperator()), StockLog::getOperator, query.getOperator())
                 .like(StringUtils.isNotBlank(query.getOrderCode()), StockLog::getOrderCode, query.getOrderCode())
                 .gt(query.getStartDate() != null, StockLog::getCreateTime, query.getStartDate())
-                .lt(query.getEndDate() != null, StockLog::getCreateTime, query.getEndDate());
+                .lt(query.getEndDate() != null, StockLog::getCreateTime, query.getEndDate())
+                .orderByDesc(StockLog::getCreateTime);
         Page<StockLog> page = new Page<>(query.getPageNum(), query.getPageSize());
         this.page(page, queryWrapper);
         return PageDTO.create(page, StockLogVO.class);

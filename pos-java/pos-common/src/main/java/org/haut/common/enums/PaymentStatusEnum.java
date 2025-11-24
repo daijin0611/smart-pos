@@ -12,7 +12,11 @@ import lombok.Getter;
 public enum PaymentStatusEnum {
     CANCELLED("已取消"),
     WAITING("待结算"),
-    PAID("已结算");
+    PAID("已结算"),
+    ROLLBACK("已冲正")
+    ;
+
+
 
     private final String status;
 

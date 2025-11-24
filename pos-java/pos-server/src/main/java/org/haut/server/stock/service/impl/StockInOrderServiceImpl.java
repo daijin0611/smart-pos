@@ -16,10 +16,13 @@ import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockInItemVO;
 import org.haut.common.domain.vo.stock.StockInOrderVO;
+import org.haut.common.enums.ServiceTypeEnum;
 import org.haut.common.enums.Status;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
+import org.haut.server.order.entity.OrderDetailEntity;
+import org.haut.server.order.service.OrderDetailService;
 import org.haut.server.server.mapper.ServerProductMapper;
 import org.haut.server.server.entity.ServerProduct;
 import org.haut.server.stock.entity.StockInItem;
@@ -55,7 +58,7 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
     implements StockInOrderService {
     private final ServerProductMapper serverProductMapper;
     private final StockInItemMapper stockInItemMapper;
-
+    private final OrderDetailService orderDetailService;
     private final StockLogMapper stockLogMapper;
     /**
      * 添加入库订单
@@ -167,6 +170,7 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
         orderVO.setItems(BeanUtil.copyToList(stockInItems, StockInItemVO.class));
         return orderVO;
     }
+
 
     /**
      * 组装需要更新的产品列表，添加库存

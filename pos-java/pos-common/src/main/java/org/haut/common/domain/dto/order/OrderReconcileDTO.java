@@ -29,41 +29,6 @@ public class OrderReconcileDTO {
     private Long orderId;
 
     /**
-     * 应收金额
-     */
-    @Schema(description = "应收金额")
-    @NotNull(message = "应收金额不能为空")
-    private BigDecimal totalAmount;
-
-    /**
-     * 实收金额
-     */
-    @Schema(description = "实收金额")
-    @NotNull(message = "实收金额不能为空")
-    private BigDecimal actualAmount;
-
-    /**
-     * 优惠金额
-     */
-    @Schema(description = "优惠金额")
-    @NotNull(message = "优惠金额不能为空")
-    private BigDecimal discountAmount;
-
-    /**
-     * 对单后的订单明细
-     */
-    @Schema(description = "对单后的订单明细")
-    @NotEmpty(message = "订单明细不能为空")
-    private List<OrderDetailSettleDTO> details;
-
-    /**
-     * 对单后的支付信息
-     */
-    @Schema(description = "对单后的支付信息")
-    @NotEmpty(message = "支付信息不能为空")
-    private List<PaymentInfoDTO> paymentInfoList;
-
-    /**
      * 备注
      */
     @Schema(description = "备注")

@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderCreateDTO;
 
+import org.haut.common.domain.dto.order.OrderRollBackDTO;
 import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.order.OrderReconcileDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
@@ -20,12 +22,11 @@ import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.common.domain.vo.order.PaymentVO;
 import org.haut.common.domain.vo.order.OrderReceiptVO;
 import org.haut.common.domain.vo.order.ReceiptItemVO;
-import org.haut.common.enums.BedStatusEnum;
-import org.haut.common.enums.CustomerTypeEnum;
-import org.haut.common.enums.OrderStatusEnum;
+import org.haut.common.enums.*;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
+import org.haut.server.kpi.entity.KpiDetail;
 import org.haut.server.kpi.service.KpiDetailService;
 import org.haut.server.order.entity.OrderDetailEntity;
 import org.haut.server.order.entity.OrderInfoEntity;
@@ -39,6 +40,11 @@ import org.haut.server.room.service.RoomBedService;
 import org.haut.server.vip.entity.VipInfo;
 import org.haut.server.vip.service.VipInfoService;
 import org.haut.server.vip.service.VipInfoTicketService;
+import org.haut.server.vip.service.VipAssetService;
+import org.haut.server.vip.entity.VipAsset;
+import org.haut.server.vip.entity.VipInfoTicket;
+import org.haut.server.stock.service.StockInOrderService;
+import org.haut.common.domain.dto.stock.StockInOrderCreateDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
@@ -58,7 +64,7 @@ interface OrderConvert {
 
 /**
  * 订单信息服务实现类
- * 
+ *
  * @author mhding
  * @version 1.0
  * @since 2025-01-29
@@ -67,7 +73,7 @@ interface OrderConvert {
 @Service
 @RequiredArgsConstructor
 public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfoEntity> implements OrderInfoService {
-    
+
     private final OrderDetailService orderDetailService;
     private final VipInfoService vipInfoService;
     private final OrderConvert orderConvert;
@@ -75,6 +81,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private final PaymentDetailService paymentDetailService;
     private final KpiDetailService kpiDetailService;
     private final RoomBedService roomBedService;
+    private final VipAssetService vipAssetService;
+    private final StockInOrderService stockInOrderService;
 
 
 
@@ -161,7 +169,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .update();
         return order.getId();
     }
-    
+
     /**
      * 根据订单ID查询订单信息
      *
@@ -171,25 +179,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public OrderInfoVO queryById(Long orderId) {
         log.info("查询订单信息，订单ID：{}", orderId);
-        
+
         if (orderId == null) {
             throw new BusinessException("订单ID不能为空");
         }
-        
+
         // 查询订单基本信息
         OrderInfoEntity orderInfo = this.getById(orderId);
         if (orderInfo == null) {
             throw new BusinessException("订单不存在");
         }
-        
+
         // 转换为VO对象
         OrderInfoVO orderInfoVO = orderConvert.toInfoVO(orderInfo);
-        
+
         // 设置枚举字段名称
         if (orderInfo.getOrderStatus() != null) {
             orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfo.getOrderStatus()));
         }
-        
+
         if (orderInfo.getCustomerType() != null) {
             for (CustomerTypeEnum customerType : CustomerTypeEnum.values()) {
                 if (customerType.getValue().equals(orderInfo.getCustomerType())) {
@@ -198,7 +206,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
         }
-        
+
         // 查询订单明细
         List<OrderDetailVO> orderDetails = orderDetailService.queryByOrderId(orderId);
         orderInfoVO.setOrderDetails(orderDetails);
@@ -221,27 +229,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Transactional(rollbackFor = Exception.class)
     public String cancelOrder(Long orderId) {
         log.info("开始取消订单，订单ID：{}", orderId);
-        
+
         // 查询订单信息
         OrderInfoEntity orderInfo = this.getById(orderId);
         if (orderInfo == null) {
             throw new BusinessException("订单不存在");
         }
-        
+
         // 检查订单状态，只有未结算的订单才能取消
         if (!OrderStatusEnum.UNSETTLED.getCode().equals(orderInfo.getOrderStatus())) {
             throw new BusinessException("只有未结算的订单才能取消");
         }
-        
+
         // 更新订单状态为已取消
         orderInfo.setOrderStatus(OrderStatusEnum.CANCELLED.getCode());
         this.updateById(orderInfo);
-        
+
         // 更新订单明细状态为已取消
         List<OrderDetailEntity> orderDetails = orderDetailService.lambdaQuery()
                 .eq(OrderDetailEntity::getOrderId, orderId)
                 .list();
-        
+
         if (orderDetails != null && !orderDetails.isEmpty()) {
             List<OrderDetailEntity> updatedDetails = new ArrayList<>();
             for (OrderDetailEntity detail : orderDetails) {
@@ -250,7 +258,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             }
             orderDetailService.updateBatchById(updatedDetails);
         }
-        
+
         log.info("订单取消成功，订单编号：{}", orderInfo.getOrderCode());
 
         // 更新床位状态
@@ -271,27 +279,27 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         query.setOrgId(auth.getOrgId());
         Page<OrderInfoVO> page = Page.of(query.getPageNum(), query.getPageSize());
         IPage<OrderInfoVO> result = baseMapper.pageQuery(page,query);
-        
+
         List<OrderInfoVO> records = result.getRecords();
         if (records.isEmpty()) {
             return PageDTO.create(result, OrderInfoVO.class);
         }
-        
+
         // 批量查询订单明细
         List<Long> orderIds = records.stream().map(OrderInfoVO::getId).collect(Collectors.toList());
         List<OrderDetailEntity> allOrderDetails = orderDetailService.lambdaQuery()
                 .in(OrderDetailEntity::getOrderId, orderIds)
                 .list();
-        
+
         // 转换为VO对象 - 使用BeanUtil进行转换
         List<OrderDetailVO> orderDetailVOs = allOrderDetails.stream()
                 .map(entity -> BeanUtil.toBean(entity, OrderDetailVO.class))
                 .collect(Collectors.toList());
-        
+
         // 按订单ID分组订单明细
         Map<Long, List<OrderDetailVO>> orderDetailMap = orderDetailVOs.stream()
                 .collect(Collectors.groupingBy(OrderDetailVO::getOrderId));
-        
+
         // 批量查询支付信息
         List<String> orderCodes = records.stream().map(OrderInfoVO::getOrderCode).collect(Collectors.toList());
         List<PaymentDetail> allPayments = paymentDetailService.lambdaQuery()
@@ -299,25 +307,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .eq(PaymentDetail::getOrgId, auth.getOrgId())
                 .list();
         List<PaymentVO> paymentVOs = BeanUtil.copyToList(allPayments, PaymentVO.class);
-        
+
         // 按订单编码分组支付信息
         Map<String, List<PaymentVO>> paymentMap = paymentVOs.stream()
                 .collect(Collectors.groupingBy(PaymentVO::getActiveCode));
-        
+
         // 为每个订单设置关联数据
         records.forEach(orderInfoVO -> {
             // 设置订单状态名称
             orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfoVO.getOrderStatus()));
-            
+
             // 设置订单明细
             List<OrderDetailVO> orderDetails = orderDetailMap.getOrDefault(orderInfoVO.getId(), new ArrayList<>());
             orderInfoVO.setOrderDetails(orderDetails);
-            
+
             // 设置支付信息
             List<PaymentVO> payments = paymentMap.getOrDefault(orderInfoVO.getOrderCode(), new ArrayList<>());
             orderInfoVO.setPayments(payments);
         });
-        
+
         return PageDTO.create(result, OrderInfoVO.class);
     }
 
@@ -330,30 +338,30 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     public OrderInfoVO queryByBedId(Long bedId) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         log.info("根据床位ID查询订单信息，床位ID：{}", bedId);
-        
+
         if (bedId == null) {
             throw new BusinessException("床位ID不能为空");
         }
-        
+
         // 查询该床位下未结算的订单信息
         List<OrderInfoEntity> orderInfoList = baseMapper.queryUnsettledByBedId(bedId,auth.getOrgId());
-        
+
         if (orderInfoList == null || orderInfoList.isEmpty()) {
             log.info("床位ID：{} 下没有未结算的订单", bedId);
             return null;
         }
-        
+
         // 取第一个未结算的订单（按创建时间倒序，最新的订单）
         OrderInfoEntity orderInfo = orderInfoList.get(0);
-        
+
         // 转换为VO对象
         OrderInfoVO orderInfoVO = orderConvert.toInfoVO(orderInfo);
-        
+
         // 设置枚举字段名称
         if (orderInfo.getOrderStatus() != null) {
             orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfo.getOrderStatus()));
         }
-        
+
         if (orderInfo.getCustomerType() != null) {
             for (CustomerTypeEnum customerType : CustomerTypeEnum.values()) {
                 if (customerType.getValue().equals(orderInfo.getCustomerType())) {
@@ -362,11 +370,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
         }
-        
+
         // 查询订单明细
         List<OrderDetailVO> orderDetails = orderDetailService.queryByOrderId(orderInfo.getId());
         orderInfoVO.setOrderDetails(orderDetails);
-        
+
         // 查询支付信息
         List<PaymentDetail> payments = paymentDetailService.lambdaQuery()
                 .eq(PaymentDetail::getActiveCode, orderInfo.getOrderCode())
@@ -374,7 +382,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .list();
         List<PaymentVO> paymentVOS = BeanUtil.copyToList(payments, PaymentVO.class);
         orderInfoVO.setPayments(paymentVOS);
-        
+
         log.info("根据床位ID查询订单成功，订单编号：{}", orderInfo.getOrderCode());
         return orderInfoVO;
     }
@@ -400,7 +408,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (orderInfo.getOrderStatus() != null) {
             orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfo.getOrderStatus()));
         }
-        
+
         if (orderInfo.getCustomerType() != null) {
             for (CustomerTypeEnum customerType : CustomerTypeEnum.values()) {
                 if (customerType.getValue().equals(orderInfo.getCustomerType())) {
@@ -409,11 +417,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 }
             }
         }
-        
+
         // 查询订单明细
         List<OrderDetailVO> orderDetails = orderDetailService.queryByOrderId(orderInfo.getId());
         orderInfoVO.setOrderDetails(orderDetails);
-        
+
         // 查询支付信息
         List<PaymentDetail> payments = paymentDetailService.lambdaQuery()
                 .eq(PaymentDetail::getActiveCode, orderInfo.getOrderCode())
@@ -422,6 +430,148 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<PaymentVO> paymentVOS = BeanUtil.copyToList(payments, PaymentVO.class);
         orderInfoVO.setPayments(paymentVOS);
         return orderInfoVO;
+    }
+
+    /**
+     * 订单冲正
+     *
+     * 功能点：
+     * - 订单状态/明细状态：已结算 -> 已冲正
+     * - 回滚员工业绩（删除本订单产生的KPI明细）
+     * - 回滚支付信息（支付明细标记为已冲正）
+     * - 会员资产回滚（退还会员卡支付的金额、恢复会员余额）
+     * - 优惠券回滚（恢复本订单使用的优惠券为未使用，取消本订单新增的疗程券）
+     * - 回滚产品库存（按订单中商品明细生成入库单）
+     *
+     * @param dto 订单冲正请求对象
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void rollBackOrder(OrderRollBackDTO dto) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        OrderInfoEntity order = getById(dto.getOrderId());
+        if (order == null) {
+            throw new BusinessException("订单不存在");
+        }
+        if (!OrderStatusEnum.SETTLED.getCode().equals(order.getOrderStatus())) {
+            throw new BusinessException("订单不可冲正");
+        }
+
+        String orderCode = order.getOrderCode();
+
+        // 1) 更新订单与明细为已冲正
+        lambdaUpdate()
+                .eq(OrderInfoEntity::getOrderCode, orderCode)
+                .set(OrderInfoEntity::getOrderStatus, OrderStatusEnum.ROLLBACK.getCode())
+                .set(OrderInfoEntity::getRemark, buildRollbackRemark(order.getRemark(), dto.getReason(), orderCode))
+                .update();
+
+        orderDetailService.lambdaUpdate()
+                .eq(OrderDetailEntity::getOrderCode, orderCode)
+                .set(OrderDetailEntity::getOrderStatus, OrderStatusEnum.ROLLBACK.getCode())
+                .update();
+
+        // 2) 回滚支付信息：标记为已冲正
+        paymentDetailService.lambdaUpdate()
+                .eq(PaymentDetail::getActiveCode, orderCode)
+                .eq(PaymentDetail::getOrgId, auth.getOrgId())
+                .set(PaymentDetail::getPaymentStatus, PaymentStatusEnum.ROLLBACK.getStatus())
+                .update();
+
+        // 3) 会员相关资产回滚（会员卡余额、优惠券）
+        if (order.getVipId() != null) {
+            // 3.1 退还会员卡支付金额
+            List<PaymentDetail> assetPays = paymentDetailService.lambdaQuery()
+                    .eq(PaymentDetail::getActiveCode, orderCode)
+                    .eq(PaymentDetail::getOrgId, auth.getOrgId())
+                    .eq(PaymentDetail::getPaymentType, Integer.parseInt(PaymentTypeEnum.ASSET.getCode()))
+                    .list();
+
+            if (assetPays != null && !assetPays.isEmpty()) {
+                Map<String, BigDecimal> refundMap = new HashMap<>();
+                for (PaymentDetail p : assetPays) {
+                    if (p.getAssetCode() == null || p.getTotalAmount() == null) continue;
+                    refundMap.merge(p.getAssetCode(), p.getTotalAmount(), BigDecimal::add);
+                }
+                if (!refundMap.isEmpty()) {
+                    List<VipAsset> assets = vipAssetService.lambdaQuery()
+                            .in(VipAsset::getAssetNum, refundMap.keySet())
+                            .list();
+                    for (VipAsset asset : assets) {
+                        BigDecimal add = refundMap.getOrDefault(asset.getAssetNum(), BigDecimal.ZERO);
+                        asset.setAssetBalance(asset.getAssetBalance() == null ? add : asset.getAssetBalance().add(add));
+                    }
+                    if (!assets.isEmpty()) {
+                        vipAssetService.saveOrUpdateBatch(assets);
+                        BigDecimal afterBalance = vipInfoService.updateVipBalance(order.getVipId());
+                        lambdaUpdate()
+                                .eq(OrderInfoEntity::getId, order.getId())
+                                .set(OrderInfoEntity::getAfterBalance, afterBalance)
+                                .update();
+                    }
+                }
+            }
+
+            // 3.2 恢复本订单使用的优惠券为未使用
+            vipInfoTicketService.lambdaUpdate()
+                    .eq(VipInfoTicket::getUsedOrderCode, orderCode)
+                    .set(VipInfoTicket::getStatus, TicketStatusEnum.UNUSED.getStatus())
+                    .update();
+
+            // 3.3 取消本订单新增的疗程券（购买疗程券场景）
+            vipInfoTicketService.lambdaUpdate()
+                    .eq(VipInfoTicket::getSourceCode, orderCode)
+                    .remove();
+        }
+
+        // 4) 回滚员工业绩：删除本订单KPI明细
+        kpiDetailService.lambdaUpdate()
+                .eq(KpiDetail::getOrderCode, orderCode)
+                .set(KpiDetail::getRemark, "冲正")
+                .remove();
+
+        // 5) 回滚产品库存：将商品明细数量入库
+        List<OrderDetailEntity> details = orderDetailService.lambdaQuery()
+                .eq(OrderDetailEntity::getOrderCode, orderCode)
+                .list();
+        if (details != null && !details.isEmpty()) {
+            List<OrderDetailEntity> productDetails = details.stream()
+                    .filter(d -> ServiceTypeEnum.PRODUCT.getValue().equals(d.getDetailType()))
+                    .toList();
+            if (!productDetails.isEmpty()) {
+                BigDecimal totalPrice = productDetails.stream()
+                        .map(d -> d.getStdPrice() == null ? BigDecimal.ZERO : d.getStdPrice())
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                List<StockInOrderCreateDTO.StockInItemCreateDTO> items = productDetails.stream()
+                        .map(d -> new StockInOrderCreateDTO.StockInItemCreateDTO()
+                                .setProductId(d.getBid())
+                                .setQuantity(d.getQuantity() == null ? 0 : d.getQuantity())
+                                .setPrice(d.getStdPrice() == null ? BigDecimal.ZERO : d.getStdPrice())
+                                .setRemark("订单冲正入库"))
+                        .toList();
+                StockInOrderCreateDTO inOrder = new StockInOrderCreateDTO()
+                        .setOperator(auth.getUserName())
+                        .setRemark("订单" + orderCode + "冲正入库")
+                        .setTotalPrice(totalPrice)
+                        .setItems(items);
+                stockInOrderService.addOrder(inOrder);
+            }
+        }
+
+        log.info("订单冲正完成，订单编号：{}", orderCode);
+    }
+
+    /**
+     * 构造订单冲正备注标识
+     * @param original 原始备注
+     * @param reason   冲正原因
+     * @param orderCode 订单编号
+     * @return 组合备注
+     */
+    private String buildRollbackRemark(String original, String reason, String orderCode) {
+        String base = original == null ? "" : original;
+        String r = reason == null ? "" : (" " + reason.trim());
+        return base + r + " [ROLLBACK]" + "[ORDER:" + orderCode + "]";
     }
 
 
@@ -444,7 +594,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .setOrderTime(dto.getOrderTime()==null ?
                         new Date():dto.getOrderTime())
                 .setOrderStatus(OrderStatusEnum.SETTLED.getCode())
-                .setCustomerName(dto.getCustomerName())
+                .setCustomerName(StringUtils.isEmpty(dto.getCustomerName())?vipInfo.getName():dto.getCustomerName())
                 .setCustomerType(dto.getCustomerType())
                 .setVipId(vipInfo.getId())
                 .setVipPhoneNumber(vipInfo.getPhoneNumber())
@@ -531,10 +681,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     /**
      * 订单对单处理
-     * 1. 验证订单为已结算状态且在24小时内
-     * 2. 重建已结算的订单明细
-     * 3. 重置支付信息（删除原支付明细并写入新的支付明细）
-     * 4. 更新订单金额信息并标记为已对单（通过remark）
+     * - 更新订单状态为已对单
+     * - 更新订单备注，包含对单标识
      * 
      * @param dto 对单请求对象
      */
@@ -551,36 +699,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (!OrderStatusEnum.SETTLED.getCode().equals(order.getOrderStatus())) {
             throw new BusinessException("仅支持对已结算订单进行对单");
         }
-        // 已对单不可再次修改
-        if (order.getRemark() != null && order.getRemark().contains("[RECONCILED]")) {
-            throw new BusinessException("订单已对单，不可再修改");
-        }
-        // 必须在结算后24小时内
-        Date settleTime = order.getSettleTime();
-        if (settleTime == null) {
-            throw new BusinessException("订单结算时间缺失，无法对单");
-        }
-        long now = System.currentTimeMillis();
-        long diffMs = now - settleTime.getTime();
-        long limitMs = 24L * 60 * 60 * 1000;
-        if (diffMs > limitMs) {
-            throw new BusinessException("订单已超过24小时不可对单");
-        }
+        // 更新状态以及备注
+        lambdaUpdate().eq(OrderInfoEntity::getId, dto.getOrderId())
+                        .set(OrderInfoEntity::getOrderStatus, OrderStatusEnum.RECONCILED.getCode())
+                        .set(OrderInfoEntity::getRemark, buildReconciledRemark(order.getRemark(), dto.getRemark()))
+                        .update();
 
-        // 1) 重建订单明细（按已结算口径）
-        orderDetailService.settleOrderDetail(order, dto.getDetails());
-
-        // 2) 重置支付信息
-        paymentDetailService.reconcileOrderPayments(dto.getPaymentInfoList(), order.getOrderCode());
-
-        // 3) 更新订单金额信息并标记已对单
-        lambdaUpdate()
-                .eq(OrderInfoEntity::getId, order.getId())
-                .set(OrderInfoEntity::getTotalAmount, dto.getTotalAmount())
-                .set(OrderInfoEntity::getActualAmount, dto.getActualAmount())
-                .set(OrderInfoEntity::getDiscountAmount, dto.getDiscountAmount())
-                .set(OrderInfoEntity::getRemark, buildReconciledRemark(order.getRemark(), dto.getRemark()))
-                .update();
         log.info("订单对单完成，订单编号：{}", order.getOrderCode());
     }
 
@@ -593,6 +717,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private String buildReconciledRemark(String original, String append) {
         String base = original == null ? "" : original;
         String extra = append == null ? "" : (" " + append.trim());
-        return base + extra + " [RECONCILED]";
+        return base + extra + " [已对单]";
     }
 }

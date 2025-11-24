@@ -23,4 +23,6 @@ public interface StockInOrderService extends IService<StockInOrder> {
     PageDTO<StockInOrderVO> queryPage(StockOrderQuery query);
 
     StockInOrderVO getOneByCode(String orderCode);
+
+
 }

@@ -137,6 +137,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
         lambdaUpdate()
             .in(VipInfoTicket::getId, ticketIds)
             .set(VipInfoTicket::getStatus, TicketStatusEnum.USED.getStatus())
+                .set(VipInfoTicket::getUsedOrderCode, orderCode)
             .update();
         log.info("更新优惠券状态完成");
     }

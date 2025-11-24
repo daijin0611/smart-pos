@@ -3,6 +3,7 @@ package org.haut.common.domain.dto.stock;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
  */
 @Data
 @Schema(description = "入库订单创建对象")
+@Accessors(chain = true)
 public class StockInOrderCreateDTO {
 
     /**
@@ -51,6 +53,7 @@ public class StockInOrderCreateDTO {
      */
     @Data
     @Schema(description = "入库明细创建对象")
+    @Accessors(chain = true)
     public static class StockInItemCreateDTO {
 
         /**

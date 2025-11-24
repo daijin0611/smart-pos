@@ -13,6 +13,7 @@ import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
 import org.haut.common.domain.vo.vip.VipTicketVO;
 import org.haut.common.enums.ServiceTypeEnum;
+import org.haut.common.enums.TicketSourceType;
 import org.haut.common.enums.TicketStatusEnum;
 import org.haut.common.utils.CodeUtils;
 import org.haut.server.order.entity.OrderInfoEntity;
@@ -175,8 +176,9 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
                                         null : LocalDate.now().plusDays(ticketInfo.getTicketEffectiveTime()))
                                 .setActiveId(null)
                                 .setOrgId(order.getOrgId())
-                                .setRemark("疗程券获取")
-                                .setRechargeHistoryCode(null);
+                                .setRemark("疗程券获取[订单：" + order.getOrderCode() + "]")
+                                .setSourceType(TicketSourceType.ORDER.getCode())
+                                .setSourceCode(order.getOrderCode());
                         for (int i=0; i<detail.getVipTicketNum(); i++){
                             ticketInfoList.add(ticket);
                         }
