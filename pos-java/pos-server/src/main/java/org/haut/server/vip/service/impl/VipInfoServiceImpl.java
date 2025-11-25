@@ -380,6 +380,19 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
 
     }
 
+    @Override
+    public void updateRemark(Long vipId, VipRemarkUpdateDTO dto) {
+        // 1. 验证会员是否存在
+        VipInfo vip = getById(vipId);
+        if (vip == null) {
+            throw new BusinessException("会员不存在");
+        }
+        // 2. 更新会员备注
+        vipInfoMapper.update(null, Wrappers.lambdaUpdate(VipInfo.class)
+                .eq(VipInfo::getId, vipId)
+                .set(VipInfo::getRemark, dto.getRemark()));
+    }
+
     /**
      * 处理充值活动
      * @param dto 充值参数

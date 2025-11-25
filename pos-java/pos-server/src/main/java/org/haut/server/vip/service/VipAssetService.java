@@ -41,4 +41,14 @@ public interface VipAssetService extends IService<VipAsset> {
      */
     void handelOrder(OrderSettleDTO dto);
 
+    /**
+     * 修改会员资产备注
+     *
+     * 根据资产ID更新其备注信息。
+     *
+     * @param assetId 资产ID
+     * @param remark  新的备注内容
+     */
+    void updateAssetRemark(Long assetId, String remark);
+
 }

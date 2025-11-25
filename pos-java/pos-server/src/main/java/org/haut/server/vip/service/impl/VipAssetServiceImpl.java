@@ -82,6 +82,29 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
     }
 
     /**
+     * 修改会员资产备注
+     *
+     * 校验资产是否存在并属于当前机构后，更新其备注。
+     *
+     * @param assetId 资产ID
+     * @param remark  新的备注内容
+     */
+    @Override
+    public void updateAssetRemark(Long assetId, String remark) {
+        AuthInfoDTO authInfo = AuthContextHolder.getAuth();
+        VipAsset asset = getById(assetId);
+        if (asset == null) {
+            throw new BusinessException("会员资产不存在");
+        }
+        // 仅允许更新当前机构下的资产备注
+        if (!authInfo.getOrgId().equals(asset.getOrgId())) {
+            throw new BusinessException("无权修改其他门店的会员资产");
+        }
+        asset.setRemark(remark);
+        this.updateById(asset);
+    }
+
+    /**
      * 查询单个会员资产(余额+优惠券)
      * @param vipId 会员id
      * @return 会员资产

@@ -55,4 +55,12 @@ public interface VipInfoService extends IService<VipInfo> {
      * @param dto 赠送资产参数
      */
     void presentAsset(Long vipId, PresentAssetDTO dto);
+
+     /**
+     * 更新会员备注
+     *
+     * @param vipId 会员ID
+     * @param dto 更新会员备注参数
+     */
+    void updateRemark(Long vipId, VipRemarkUpdateDTO dto);
 }

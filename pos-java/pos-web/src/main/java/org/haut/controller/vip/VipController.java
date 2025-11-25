@@ -17,6 +17,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
+/**
+ * 会员管理控制器
+ *
+ * 提供会员相关接口，包括查询、充值、优惠券与资产赠送，以及修改会员卡备注等功能。
+ *
+ * @author mhding
+ * @version 1.0
+ * @since 2025-11-25
+ */
 @RestController
 @RequestMapping("/vip")
 @Tag(name = "会员管理", description = "会员管理")
@@ -97,4 +106,33 @@ public class VipController {
         vipInfoService.presentAsset(vipId,dto);
         return JsonVO.success("赠送成功");
     }
+
+    @Operation(description = "修改会员备注", summary = "修改会员备注")
+    @PostMapping("/update-remark/{vipId}")
+    public JsonVO<String> updateRemark (
+            @PathVariable Long vipId,
+            @RequestBody @Validated VipRemarkUpdateDTO dto){
+        vipInfoService.updateRemark(vipId,dto);
+        return JsonVO.success("修改成功");
+    }
+
+    /**
+     * 修改会员资产备注
+     *
+     * 根据资产ID更新会员资产备注。
+     *
+     * @param assetId 资产ID
+     * @param dto     修改备注入参
+     * @return 操作结果
+     */
+    @Operation(description = "修改会员资产备注", summary = "修改会员资产备注")
+    @PostMapping("/update-asset-remark/{assetId}")
+    public JsonVO<String> updateAssetRemark (
+            @PathVariable Long assetId,
+            @RequestBody @Validated VipRemarkUpdateDTO dto){
+        vipAssetService.updateAssetRemark(assetId, dto.getRemark());
+        return JsonVO.success("修改成功");
+    }
+
+    
 }

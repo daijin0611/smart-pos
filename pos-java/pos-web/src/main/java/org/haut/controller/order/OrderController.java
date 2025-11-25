@@ -48,19 +48,6 @@ public class OrderController {
         return JsonVO.success(receipt);
     }
 
-    /**
-     * 对单
-     * 在订单结算后24小时内允许对单，重建订单明细与支付信息；对单完成后订单不可再次修改。
-     * @param dto 对单请求对象
-     * @return 处理结果
-     */
-    @PostMapping("/reconcile-order")
-    @Operation(summary = "订单对单", description = "确认对单")
-    public JsonVO<String> reconcileOrder(@Validated @RequestBody OrderReconcileDTO dto) {
-        log.info("订单对单请求：{}", dto);
-        orderInfoService.reconcileOrder(dto);
-        return JsonVO.success();
-    }
 
     @PutMapping("/cancel-order/{orderId}")
     @Operation(summary = "取消订单", description = "取消一个未结算的订单，将订单状态修改为已取消。")
@@ -111,11 +98,31 @@ public class OrderController {
         return JsonVO.success(orderInfo);
     }
 
+    /**
+     * 订单冲正
+     * 对已结算订单进行冲正操作，将订单状态修改为已冲正。
+     * @param dto 冲正请求对象
+     * @return 处理结果
+     */
     @PostMapping("/roll-back")
-    @Operation(summary = "订单冲正", description = "对已结算订单进行冲正操作，将订单状态修改为已取消")
+    @Operation(summary = "订单冲正", description = "对已结算订单进行冲正操作，将订单状态修改为已冲正")
     public JsonVO<String> rollBackOrder(@Validated @RequestBody OrderRollBackDTO dto) {
         log.info("订单冲正请求：{}", dto);
         orderInfoService.rollBackOrder(dto);
+        return JsonVO.success();
+    }
+
+    /**
+     * 对单
+     * 对已结算订单进行对单操作，更新订单状态为已对单。
+     * @param dto 对单请求对象
+     * @return 处理结果
+     */
+    @PostMapping("/reconcile-order")
+    @Operation(summary = "订单对单", description = "确认对单")
+    public JsonVO<String> reconcileOrder(@Validated @RequestBody OrderReconcileDTO dto) {
+        log.info("订单对单请求：{}", dto);
+        orderInfoService.reconcileOrder(dto);
         return JsonVO.success();
     }
 }
