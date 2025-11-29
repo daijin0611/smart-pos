@@ -89,4 +89,10 @@ public class RechargeRoleVO {
      */
     @Schema(description = "机构id")
     private Integer orgId;
+
+    /**
+     * 是否为默认规则
+     */
+    @Schema(description = "是否为默认规则 0-否 1-是")
+    private Integer isDefault;
 }

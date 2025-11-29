@@ -62,6 +62,21 @@ public class ServerRechargeRoleServiceImpl extends ServiceImpl<ServerRechargeRol
         this.updateById(bean);
     }
 
+    @Override
+    public void setDefaultRole(Long roleId) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        // 将该门店下的所有规则都设置为非默认
+        this.lambdaUpdate()
+                .set(ServerRechargeRole::getIsDefault, 0)
+                .eq(ServerRechargeRole::getOrgId, auth.getOrgId())
+                .update();
+        // 将指定的规则设置为默认
+        this.lambdaUpdate()
+                .set(ServerRechargeRole::getIsDefault, 1)
+                .eq(ServerRechargeRole::getId, roleId)
+                .update();
+    }
+
 }
 
 

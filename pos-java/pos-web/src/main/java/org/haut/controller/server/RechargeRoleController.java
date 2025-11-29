@@ -46,6 +46,14 @@ public class RechargeRoleController {
         return JsonVO.success("更新成功");
     }
 
+    @PutMapping("/set-default/{roleId}")
+    @Operation(description = "设置默认充值提成规则", summary = "设置默认充值提成规则")
+    public JsonVO<String> setDefaultRole(@PathVariable Long roleId) {
+        log.info("设置默认充值提成规则，roleId: {}", roleId);
+        serverRechargeRoleService.setDefaultRole(roleId);
+        return JsonVO.success("设置成功");
+    }
+
     @PutMapping("/update-status")
     @Operation(description = "更新充值提成规则状态", summary = "更新充值提成规则状态")
     public JsonVO<String> updateStatus(@RequestParam Long id, @RequestParam Integer status) {

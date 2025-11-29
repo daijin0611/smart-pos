@@ -61,4 +61,10 @@ public class RechargeRoleCreateDTO {
      */
     @Schema(description = "状态（0 启用，1 禁用）")
     private Integer status;
+
+    /**
+     * 是否为默认规则
+     */
+    @Schema(description = "是否为默认规则 0-否 1-是")
+    private Integer isDefault;
 }

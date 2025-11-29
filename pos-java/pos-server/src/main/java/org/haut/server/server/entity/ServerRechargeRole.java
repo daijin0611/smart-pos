@@ -70,4 +70,9 @@ public class ServerRechargeRole {
      * 机构id
      */
     private Long orgId;
+
+    /**
+     * 是否为默认规则 0-否 1-是
+     */
+    private Integer isDefault;
 }

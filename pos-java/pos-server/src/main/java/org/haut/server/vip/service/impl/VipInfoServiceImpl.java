@@ -147,11 +147,12 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     }
 
     /**
-     * 添加vip
-     * @param dto
+     * 添加vip并返回会员信息
+     * @param dto 新增会员入参
+     * @return 创建后的会员信息
      */
     @Override
-    public void addVip(VipCreateDTO dto) {
+    public VipInfoVO addVip(VipCreateDTO dto) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         String vipCardNumber = CodeUtils.generateByTime(PrefixConst.VIP);
         VipInfo entity = vipInfoConvert.toEntity(dto);
@@ -159,6 +160,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         entity.setOrgId(auth.getOrgId());
         log.info("会员信息：{}", entity);
         this.save(entity);
+        return vipInfoConvert.toVO(entity);
     }
 
     /**

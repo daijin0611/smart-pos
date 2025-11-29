@@ -52,10 +52,10 @@ public class VipController {
     }
 
     @PostMapping("/add-vip")
-    @Operation(description = "添加会员", summary = "添加会员")
-    public JsonVO<String> addVip(@Validated @RequestBody VipCreateDTO dto) {
-        vipInfoService.addVip(dto);
-        return JsonVO.success("添加成功");
+    @Operation(description = "添加会员并返回会员信息", summary = "添加会员")
+    public JsonVO<VipInfoVO> addVip(@Validated @RequestBody VipCreateDTO dto) {
+        VipInfoVO vipInfo = vipInfoService.addVip(dto);
+        return JsonVO.success(vipInfo);
     }
 
     @PutMapping("/update-vip")
