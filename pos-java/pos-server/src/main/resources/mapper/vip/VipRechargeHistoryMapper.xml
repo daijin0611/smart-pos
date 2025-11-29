@@ -98,7 +98,7 @@
             kd.performance
         FROM vip_recharge_history vrh
         LEFT JOIN payment_detail pd ON vrh.history_code = pd.active_code
-        LEFT JOIN kpi_detail kd ON vrh.history_code = kd.service_code
+        LEFT JOIN kpi_detail kd ON vrh.history_code = kd.order_code
         <where>
             vrh.is_delete = 0
             AND vrh.org_id = #{orgId}
@@ -118,7 +118,7 @@
             <if test="query.userId != null">
                 AND EXISTS (
                     SELECT 1 FROM kpi_detail kd2 
-                    WHERE kd2.service_code = vrh.history_code 
+                    WHERE kd2.order_code = vrh.history_code 
                     AND kd2.user_id = #{query.userId}
                     AND kd2.is_delete = 0
                 )
