@@ -109,4 +109,16 @@ public class OrgInfoVO {
      */
     @Schema(description = "备注")
     private String remark;
+
+    @Schema(description = "默认折扣率（百分比）")
+    private Integer defaultDiscountRate;
+
+    @Schema(description = "默认折扣基准（0 标准价，1 会员价）")
+    private Integer defaultDiscountBase;
+
+    @Schema(description = "默认跨店结算（0 不允许，1 允许）")
+    private Integer defaultIsCrossStore;
+
+    @Schema(description = "默认充值提成规则ID")
+    private Long defaultRechargeRoleId;
 }

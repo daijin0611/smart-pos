@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.hutool.core.bean.BeanUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.query.system.OrgListQuery;
+import org.haut.common.domain.dto.system.OrgDefaultRuleUpdateDTO;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.domain.vo.system.OrgInfoVO;
 import org.haut.server.system.entity.SysOrg;
 import org.haut.server.system.service.SysOrgService;
@@ -36,6 +39,18 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg>
                 .eq(StringUtils.isNotBlank(query.getOrgCode()), SysOrg::getOrgCode, query.getOrgCode());
         List<SysOrg> list = this.list(queryWrapper);
         return BeanUtil.copyToList(list, OrgInfoVO.class);
+    }
+
+    @Override
+    public void updateDefaultRule(OrgDefaultRuleUpdateDTO dto) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        this.lambdaUpdate()
+                .set(SysOrg::getDefaultDiscountRate, dto.getDefaultDiscountRate())
+                .set(SysOrg::getDefaultDiscountBase, dto.getDefaultDiscountBase())
+                .set(SysOrg::getDefaultIsCrossStore, dto.getDefaultIsCrossStore())
+                .set(SysOrg::getDefaultRechargeRoleId, dto.getDefaultRechargeRoleId())
+                .eq(SysOrg::getId, auth.getOrgId())
+                .update();
     }
 }
 

@@ -1,6 +1,7 @@
 package org.haut.server.system.service;
 
 import org.haut.common.domain.query.system.OrgListQuery;
+import org.haut.common.domain.dto.system.OrgDefaultRuleUpdateDTO;
 import org.haut.common.domain.vo.system.OrgInfoVO;
 import org.haut.server.system.entity.SysOrg;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -15,4 +16,6 @@ import java.util.List;
 public interface SysOrgService extends IService<SysOrg> {
 
     List<OrgInfoVO> queryList(OrgListQuery query);
+
+    void updateDefaultRule(OrgDefaultRuleUpdateDTO dto);
 }

@@ -102,4 +102,24 @@ public class SysOrg {
      * 备注
      */
     private String remark;
+
+    /**
+     * 默认充值角色id
+     */
+    private Integer defaultRechargeRoleId;
+
+    /**
+     * 默认折扣率（百分比）
+     */
+    private Integer defaultDiscountRate;
+
+    /**
+     * 默认折扣基准（0 标准价，1 会员价）
+     */
+    private Integer defaultDiscountBase;
+
+    /**
+     * 默认跨店结算（0 不允许，1 允许）
+     */
+    private Integer defaultIsCrossStore;
 }

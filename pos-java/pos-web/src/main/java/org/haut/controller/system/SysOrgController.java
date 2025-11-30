@@ -19,6 +19,8 @@ import org.haut.common.domain.query.system.OrgListQuery;
 import cn.hutool.core.bean.BeanUtil;
 import org.haut.common.domain.dto.system.OrgCreateDTO;
 import org.haut.common.domain.dto.system.OrgUpdateDTO;
+import org.haut.common.domain.dto.system.OrgDefaultRuleUpdateDTO;
+import org.haut.server.server.service.ServerRechargeRoleService;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
@@ -28,6 +30,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 @RequiredArgsConstructor
 public class SysOrgController {
     private final SysOrgService sysOrgService;
+    private final ServerRechargeRoleService serverRechargeRoleService;
     @GetMapping("/query-list")
     @Operation(description = "获取机构列表", summary = "获取机构列表")
     public JsonVO<List<OrgInfoVO>> queryList(OrgListQuery query) {
@@ -52,6 +55,16 @@ public class SysOrgController {
     public JsonVO<String> updateOrg(@RequestBody OrgUpdateDTO dto) {
         sysOrgService.updateById(BeanUtil.copyProperties(dto, SysOrg.class));
         return JsonVO.success();
+    }
+
+    @PutMapping("/update-default-rule")
+    @Operation(description = "修改门店默认相关规则", summary = "修改门店默认相关规则")
+    public JsonVO<String> updateDefaultRule(@RequestBody OrgDefaultRuleUpdateDTO dto) {
+        sysOrgService.updateDefaultRule(dto);
+        if (dto.getDefaultRechargeRoleId() != null) {
+            serverRechargeRoleService.setDefaultRole(dto.getDefaultRechargeRoleId());
+        }
+        return JsonVO.success("设置成功");
     }
 
     @PutMapping("/update-org-status")
