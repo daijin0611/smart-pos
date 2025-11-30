@@ -77,6 +77,15 @@ public class ServerRechargeRoleServiceImpl extends ServiceImpl<ServerRechargeRol
                 .update();
     }
 
+    @Override
+    public RechargeRoleVO getDefaultRole() {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        ServerRechargeRole role = this.getOne(Wrappers.lambdaQuery(ServerRechargeRole.class)
+                .eq(ServerRechargeRole::getOrgId, auth.getOrgId())
+                .eq(ServerRechargeRole::getIsDefault, 1));
+        return BeanUtil.toBean(role, RechargeRoleVO.class);
+    }
+
 }
 
 

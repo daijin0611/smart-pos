@@ -23,4 +23,6 @@ public interface ServerRechargeRoleService extends IService<ServerRechargeRole> 
     void updateRole(RechargeRoleUpdateDTO role);
 
     void setDefaultRole(Long roleId);
+
+    RechargeRoleVO getDefaultRole();
 }

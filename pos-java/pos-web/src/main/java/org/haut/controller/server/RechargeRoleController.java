@@ -63,4 +63,10 @@ public class RechargeRoleController {
                 .update();
         return JsonVO.success("更新成功");
     }
+
+    @GetMapping("/get-default")
+    @Operation(description = "获取默认充值提成规则", summary = "获取默认充值提成规则")
+    public JsonVO<RechargeRoleVO> getDefaultRole() {
+        return JsonVO.success(serverRechargeRoleService.getDefaultRole());
+    }
 }
