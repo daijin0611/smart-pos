@@ -12,6 +12,10 @@ import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.*;
+import org.haut.common.domain.dto.vip.RechargeReverseDTO;
+import org.haut.common.enums.RechargeStatusEnum;
+import org.haut.common.enums.TicketStatusEnum;
+import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.vip.VipInfoVO;
@@ -393,6 +397,82 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         vipInfoMapper.update(null, Wrappers.lambdaUpdate(VipInfo.class)
                 .eq(VipInfo::getId, vipId)
                 .set(VipInfo::getRemark, dto.getRemark()));
+    }
+
+    /**
+     * 充值冲正
+     * @param dto 冲正参数
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void reverseRecharge(RechargeReverseDTO dto) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        // 1. 验证充值记录
+        VipRechargeHistory history = vipRechargeHistoryService.getOne(Wrappers.lambdaQuery(VipRechargeHistory.class)
+                .eq(VipRechargeHistory::getHistoryCode, dto.getHistoryCode())
+                .eq(VipRechargeHistory::getOrgId, auth.getOrgId()));
+        if (history == null) {
+            throw new BusinessException("充值记录不存在");
+        }
+        if (!RechargeStatusEnum.SUCCESS.getValue().equals(history.getRechargeStatus())) {
+            throw new BusinessException("该记录已冲正或状态异常");
+        }
+
+        // 2. 更新充值记录状态
+        vipRechargeHistoryService.lambdaUpdate()
+                .eq(VipRechargeHistory::getId, history.getId())
+                .set(VipRechargeHistory::getRechargeStatus, RechargeStatusEnum.REVOKE.getValue())
+                .set(VipRechargeHistory::getRemark, dto.getReverseReason())
+                .update();
+
+        // 3. 回退资产
+        // 3.1 本金资产
+        if (StringUtils.isNotBlank(history.getAssetCode())) {
+            VipAsset asset = vipAssetService.getOne(Wrappers.lambdaQuery(VipAsset.class)
+                    .eq(VipAsset::getAssetNum, history.getAssetCode())
+                    .eq(VipAsset::getOrgId, auth.getOrgId()));
+            if (asset != null) {
+                vipAssetService.removeById(asset.getId());
+            }
+        }
+        // 3.2 赠送资产
+        if (StringUtils.isNotBlank(history.getPresentAssetCode())) {
+            VipAsset presentAsset = vipAssetService.getOne(Wrappers.lambdaQuery(VipAsset.class)
+                    .eq(VipAsset::getAssetNum, history.getPresentAssetCode())
+                    .eq(VipAsset::getOrgId, auth.getOrgId()));
+            if (presentAsset != null) {
+                vipAssetService.removeById(presentAsset.getId());
+            }
+        }
+
+        // 4. 回退优惠券
+        List<VipInfoTicket> tickets = vipInfoTicketService.list(Wrappers.lambdaQuery(VipInfoTicket.class)
+                .eq(VipInfoTicket::getSourceCode, history.getHistoryCode())
+                .eq(VipInfoTicket::getSourceType, 1)); // 1: 充值
+        if (!tickets.isEmpty()) {
+            // 检查是否已使用
+            for (VipInfoTicket ticket : tickets) {
+                if (TicketStatusEnum.USED.getStatus().equals(ticket.getStatus())) {
+                    throw new BusinessException("充值赠送的优惠券已被使用，无法冲正");
+                }
+            }
+            List<Long> ticketIds = tickets.stream().map(VipInfoTicket::getId).toList();
+            vipInfoTicketService.removeByIds(ticketIds);
+        }
+
+        // 5. 回退业绩
+        kpiDetailMapper.delete(Wrappers.lambdaQuery(KpiDetail.class)
+                .eq(KpiDetail::getOrderCode, history.getHistoryCode())
+                .eq(KpiDetail::getOrgId, auth.getOrgId()));
+
+        // 6. 回退支付明细
+        paymentDetailMapper.update(Wrappers.lambdaUpdate(PaymentDetail.class)
+                .eq(PaymentDetail::getActiveCode, history.getHistoryCode())
+                .eq(PaymentDetail::getOrgId, auth.getOrgId())
+                .set(PaymentDetail::getPaymentStatus, PaymentStatusEnum.ROLLBACK.getStatus()));
+
+        // 7. 刷新会员余额
+        updateVipBalance(history.getVipId());
     }
 
     /**

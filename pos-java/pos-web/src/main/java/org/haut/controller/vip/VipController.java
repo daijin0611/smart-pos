@@ -134,5 +134,10 @@ public class VipController {
         return JsonVO.success("修改成功");
     }
 
-    
+    @PostMapping("/reverse-recharge")
+    @Operation(description = "充值冲正", summary = "充值冲正")
+    public JsonVO<String> reverseRecharge(@RequestBody @Validated RechargeReverseDTO dto) {
+        vipInfoService.reverseRecharge(dto);
+        return JsonVO.success("冲正成功");
+    }
 }

@@ -63,4 +63,10 @@ public interface VipInfoService extends IService<VipInfo> {
      * @param dto 更新会员备注参数
      */
     void updateRemark(Long vipId, VipRemarkUpdateDTO dto);
+
+    /**
+     * 充值冲正
+     * @param dto 冲正参数
+     */
+    void reverseRecharge(RechargeReverseDTO dto);
 }
