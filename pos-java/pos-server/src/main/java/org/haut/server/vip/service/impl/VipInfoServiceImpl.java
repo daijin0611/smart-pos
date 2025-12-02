@@ -92,7 +92,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         LambdaQueryWrapper<VipInfo> queryWrapper = Wrappers.lambdaQuery(VipInfo.class)
                 .eq(VipInfo::getOrgId,auth.getOrgId());
         // 条件查询
-        if (query.getQueryField() != null) {
+        if (query.getQueryField() != null && StringUtils.isNotBlank(query.getQueryField())) {
             queryWrapper
             .like(VipInfo::getPhoneNumber, query.getQueryField()).or()
             .like(VipInfo::getName, query.getQueryField()).or()

@@ -2,7 +2,6 @@ package org.haut.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.experimental.Accessors;
 
 /**
  * 业务类型枚举
