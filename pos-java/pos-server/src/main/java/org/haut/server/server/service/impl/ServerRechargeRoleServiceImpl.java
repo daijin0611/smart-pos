@@ -52,6 +52,13 @@ public class ServerRechargeRoleServiceImpl extends ServiceImpl<ServerRechargeRol
         ServerRechargeRole bean = BeanUtil.toBean(role, ServerRechargeRole.class);
         bean.setOrgId(auth.getOrgId());
         this.save(bean);
+        if(this.lambdaQuery().eq(ServerRechargeRole::getIsDefault, 1).eq(ServerRechargeRole::getOrgId, auth.getOrgId()).count() == 0){
+            // 如果该门店下没有默认规则，则将新增的规则设置为默认
+            this.lambdaUpdate()
+                    .set(ServerRechargeRole::getIsDefault, 1)
+                    .eq(ServerRechargeRole::getId, bean.getId())
+                    .update();
+        }
     }
 
     @Override

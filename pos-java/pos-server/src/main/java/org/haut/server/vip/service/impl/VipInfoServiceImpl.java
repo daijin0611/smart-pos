@@ -237,6 +237,9 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         log.info("充值记录：{}", history);
 
         // 创建业绩明细，支持多人业绩，为每个销售员都计算业绩
+        if (dto.getRechargeRoleId() == null){
+            throw  new BusinessException("未设置充值提成规则");
+        }
         ServerRechargeRole role = serverRechargeRoleMapper.selectById(dto.getRechargeRoleId());
         List<RechargeDTO.UserKpiDTO> userKpiList = dto.getUserKpiList();
         BigDecimal reduceKpi = userKpiList.stream()

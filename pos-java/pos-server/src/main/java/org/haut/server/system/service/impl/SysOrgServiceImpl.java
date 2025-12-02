@@ -4,16 +4,26 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.hutool.core.bean.BeanUtil;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.query.system.OrgListQuery;
 import org.haut.common.domain.dto.system.OrgDefaultRuleUpdateDTO;
+import org.haut.common.domain.dto.system.OrgCreateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
-import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.domain.vo.system.OrgInfoVO;
+import org.haut.common.exception.BusinessException;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.system.entity.SysOrg;
-import org.haut.server.system.service.SysOrgService;
+import org.haut.server.system.entity.SysRole;
+import org.haut.server.system.entity.SysUser;
+import org.haut.server.system.entity.SysUserRole;
 import org.haut.server.system.mapper.SysOrgMapper;
+import org.haut.server.system.mapper.SysRoleMapper;
+import org.haut.server.system.mapper.SysUserMapper;
+import org.haut.server.system.mapper.SysUserRoleMapper;
+import org.haut.server.system.service.SysOrgService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,8 +33,13 @@ import java.util.List;
 * @createDate 2025-07-12 23:54:18
 */
 @Service
+@RequiredArgsConstructor
 public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg>
     implements SysOrgService{
+
+    private final SysUserMapper sysUserMapper;
+    private final SysUserRoleMapper sysUserRoleMapper;
+    private final SysRoleMapper sysRoleMapper;
 
     /**
      * 获取机构列表
@@ -51,6 +66,37 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg>
                 .set(SysOrg::getDefaultRechargeRoleId, dto.getDefaultRechargeRoleId())
                 .eq(SysOrg::getId, auth.getOrgId())
                 .update();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addOrg(OrgCreateDTO dto) {
+        SysOrg org = BeanUtil.toBean(dto, SysOrg.class);
+        this.save(org);
+
+        SysRole managerRole = sysRoleMapper.selectOne(Wrappers.lambdaQuery(SysRole.class)
+                .eq(SysRole::getRoleCode, "STORE_MANAGER"));
+        if (managerRole == null) {
+            throw new BusinessException("店长角色不存在");
+        }
+
+        SysUser user = new SysUser();
+        String defaultCode = StringUtils.isNotBlank(dto.getOrgLeaderNum())
+                ? dto.getOrgLeaderNum()
+                : dto.getOrgCode() + "_MGR";
+        user.setUserCode(defaultCode);
+        user.setUserPassword("123456");
+        user.setUserName(dto.getOrgLeader());
+        user.setUserNumber(dto.getOrgLeaderNum());
+        user.setUserPosition("店长");
+        user.setOrgId(org.getId());
+        user.setRoleId(managerRole.getId());
+        user.setRemark("门店创建默认用户");
+        sysUserMapper.insert(user);
+
+        sysUserRoleMapper.insert(new SysUserRole()
+                .setUserId(user.getId())
+                .setRoleId(managerRole.getId()));
     }
 }
 

@@ -46,7 +46,7 @@ public class SysOrgController {
     @PostMapping("/add-org")
     @Operation(description = "添加机构", summary = "添加机构")
     public JsonVO<String> addOrg(@RequestBody OrgCreateDTO dto) {
-        sysOrgService.save(BeanUtil.copyProperties(dto, SysOrg.class));
+        sysOrgService.addOrg(dto);
         return JsonVO.success();
     }
 
