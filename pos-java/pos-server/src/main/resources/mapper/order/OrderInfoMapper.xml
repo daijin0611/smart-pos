@@ -133,12 +133,13 @@
         ORDER BY create_time DESC
     </select>
 
-    <!-- 根据床位ID查询未结算的订单信息 -->
-    <select id="queryUnsettledByBedId" resultMap="BaseResultMap">
+    <!-- 根据床位ID查询最新的订单信息 -->
+    <select id="queryLatestByBedId" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List" />
         FROM order_info
-        WHERE bed_id = #{bedId} AND order_status = 1 AND is_delete = 0 AND org_id = #{orgId}
+        WHERE bed_id = #{bedId} AND is_delete = 0 AND org_id = #{orgId}
         ORDER BY create_time DESC
+        LIMIT 1
     </select>
 
     <!-- 统计订单数量 -->

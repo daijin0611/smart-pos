@@ -190,32 +190,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             throw new BusinessException("订单不存在");
         }
 
-        // 转换为VO对象
-        OrderInfoVO orderInfoVO = orderConvert.toInfoVO(orderInfo);
-
-        // 设置枚举字段名称
-        if (orderInfo.getOrderStatus() != null) {
-            orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfo.getOrderStatus()));
-        }
-
-        if (orderInfo.getCustomerType() != null) {
-            for (CustomerTypeEnum customerType : CustomerTypeEnum.values()) {
-                if (customerType.getValue().equals(orderInfo.getCustomerType())) {
-                    orderInfoVO.setCustomerName(orderInfo.getCustomerName());
-                    break;
-                }
-            }
-        }
-
-        // 查询订单明细
-        List<OrderDetailVO> orderDetails = orderDetailService.queryByOrderId(orderId);
-        orderInfoVO.setOrderDetails(orderDetails);
-        // 查询支付信息
-        List<PaymentDetail> payments = paymentDetailService.lambdaQuery()
-                .eq(PaymentDetail::getActiveCode, orderInfo.getOrderCode())
-                .list();
-        List<PaymentVO> paymentVOS = BeanUtil.copyToList(payments, PaymentVO.class);
-        orderInfoVO.setPayments(paymentVOS);
+        OrderInfoVO orderInfoVO = buildOrderInfoVO(orderInfo);
         log.info("订单查询成功，订单编号：{}", orderInfo.getOrderCode());
         return orderInfoVO;
     }
@@ -236,7 +211,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             throw new BusinessException("订单不存在");
         }
 
-        // 检查订单状态，只有未结算的订单才能取消
+        // 检查订单状态
+        if (OrderStatusEnum.CANCELLED.getCode().equals(orderInfo.getOrderStatus())) {
+            throw new BusinessException("订单已取消，请勿重复操作");
+        }
         if (!OrderStatusEnum.UNSETTLED.getCode().equals(orderInfo.getOrderStatus())) {
             throw new BusinessException("只有未结算的订单才能取消");
         }
@@ -246,25 +224,20 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         this.updateById(orderInfo);
 
         // 更新订单明细状态为已取消
-        List<OrderDetailEntity> orderDetails = orderDetailService.lambdaQuery()
+        orderDetailService.lambdaUpdate()
                 .eq(OrderDetailEntity::getOrderId, orderId)
-                .list();
-
-        if (orderDetails != null && !orderDetails.isEmpty()) {
-            List<OrderDetailEntity> updatedDetails = new ArrayList<>();
-            for (OrderDetailEntity detail : orderDetails) {
-                detail.setOrderStatus(OrderStatusEnum.CANCELLED.getCode());
-                updatedDetails.add(detail);
-            }
-            orderDetailService.updateBatchById(updatedDetails);
-        }
+                .set(OrderDetailEntity::getOrderStatus, OrderStatusEnum.CANCELLED.getCode())
+                .update();
 
         log.info("订单取消成功，订单编号：{}", orderInfo.getOrderCode());
 
         // 更新床位状态
-        roomBedService.lambdaUpdate()
-                .eq(RoomBed::getId, orderInfo.getBedId())
-                .set(RoomBed::getStatus, BedStatusEnum.FREE.getCode());
+        if (orderInfo.getBedId() != null) {
+            roomBedService.lambdaUpdate()
+                    .eq(RoomBed::getId, orderInfo.getBedId())
+                    .set(RoomBed::getStatus, BedStatusEnum.FREE.getCode())
+                    .update();
+        }
         return "订单取消成功";
     }
 
@@ -330,45 +303,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
-     * 根据床位查询订单信息
-     * @param bedId 床位ID
+     * 构建订单信息VO
+     * @param orderInfo 订单实体
      * @return 订单信息VO
      */
-    @Override
-    public OrderInfoVO queryByBedId(Long bedId) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
-        log.info("根据床位ID查询订单信息，床位ID：{}", bedId);
-
-        if (bedId == null) {
-            throw new BusinessException("床位ID不能为空");
-        }
-
-        // 查询该床位下未结算的订单信息
-        List<OrderInfoEntity> orderInfoList = baseMapper.queryUnsettledByBedId(bedId,auth.getOrgId());
-
-        if (orderInfoList == null || orderInfoList.isEmpty()) {
-            log.info("床位ID：{} 下没有未结算的订单", bedId);
-            return null;
-        }
-
-        // 取第一个未结算的订单（按创建时间倒序，最新的订单）
-        OrderInfoEntity orderInfo = orderInfoList.get(0);
-
+    private OrderInfoVO buildOrderInfoVO(OrderInfoEntity orderInfo) {
         // 转换为VO对象
         OrderInfoVO orderInfoVO = orderConvert.toInfoVO(orderInfo);
 
         // 设置枚举字段名称
         if (orderInfo.getOrderStatus() != null) {
             orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfo.getOrderStatus()));
-        }
-
-        if (orderInfo.getCustomerType() != null) {
-            for (CustomerTypeEnum customerType : CustomerTypeEnum.values()) {
-                if (customerType.getValue().equals(orderInfo.getCustomerType())) {
-                    orderInfoVO.setCustomerName(orderInfo.getCustomerName());
-                    break;
-                }
-            }
         }
 
         // 查询订单明细
@@ -382,6 +327,39 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .list();
         List<PaymentVO> paymentVOS = BeanUtil.copyToList(payments, PaymentVO.class);
         orderInfoVO.setPayments(paymentVOS);
+
+        return orderInfoVO;
+    }
+
+    /**
+     * 根据床位查询订单信息
+     * @param bedId 床位ID
+     * @return 订单信息VO
+     */
+    @Override
+    public OrderInfoVO queryByBedId(Long bedId) {
+        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        log.info("根据床位ID查询订单信息，床位ID：{}", bedId);
+
+        if (bedId == null) {
+            throw new BusinessException("床位ID不能为空");
+        }
+
+        // 查询该床位下最新的订单信息
+        OrderInfoEntity orderInfo = baseMapper.queryLatestByBedId(bedId, auth.getOrgId());
+
+        if (orderInfo == null) {
+            log.info("床位ID：{} 下没有订单", bedId);
+            return null;
+        }
+
+        // 检查订单状态，只有未结算的订单才返回
+        if (!OrderStatusEnum.UNSETTLED.getCode().equals(orderInfo.getOrderStatus())) {
+            log.info("床位ID：{} 最新的订单不是未结算状态，状态：{}", bedId, orderInfo.getOrderStatus());
+            return null;
+        }
+
+        OrderInfoVO orderInfoVO = buildOrderInfoVO(orderInfo);
 
         log.info("根据床位ID查询订单成功，订单编号：{}", orderInfo.getOrderCode());
         return orderInfoVO;
@@ -401,35 +379,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         if (orderInfo == null) {
             throw new BusinessException("订单不存在");
         }
-       // 转换为VO对象
-        OrderInfoVO orderInfoVO = orderConvert.toInfoVO(orderInfo);
-
-        // 设置枚举字段名称
-        if (orderInfo.getOrderStatus() != null) {
-            orderInfoVO.setOrderStatusName(OrderStatusEnum.getMessageByCode(orderInfo.getOrderStatus()));
-        }
-
-        if (orderInfo.getCustomerType() != null) {
-            for (CustomerTypeEnum customerType : CustomerTypeEnum.values()) {
-                if (customerType.getValue().equals(orderInfo.getCustomerType())) {
-                    orderInfoVO.setCustomerName(orderInfo.getCustomerName());
-                    break;
-                }
-            }
-        }
-
-        // 查询订单明细
-        List<OrderDetailVO> orderDetails = orderDetailService.queryByOrderId(orderInfo.getId());
-        orderInfoVO.setOrderDetails(orderDetails);
-
-        // 查询支付信息
-        List<PaymentDetail> payments = paymentDetailService.lambdaQuery()
-                .eq(PaymentDetail::getActiveCode, orderInfo.getOrderCode())
-                .eq(PaymentDetail::getOrgId, orderInfo.getOrgId())
-                .list();
-        List<PaymentVO> paymentVOS = BeanUtil.copyToList(payments, PaymentVO.class);
-        orderInfoVO.setPayments(paymentVOS);
-        return orderInfoVO;
+        return buildOrderInfoVO(orderInfo);
     }
 
     /**

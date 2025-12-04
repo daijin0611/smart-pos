@@ -59,46 +59,46 @@ public class ScheduledTaskService {
      * 每周销售数据统计任务
      * 每周一凌晨2点执行，统计上周的销售数据
      */
-    @Scheduled(cron = "0 0 2 ? * MON")
-    public void weeklySalesStatistics() {
-        log.info("开始执行每周销售数据统计任务 - {}", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    // @Scheduled(cron = "0 0 2 ? * MON")
+    // public void weeklySalesStatistics() {
+    //     log.info("开始执行每周销售数据统计任务 - {}", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         
-        try {
-            // TODO: 实现周销售数据统计逻辑
-            // 1. 统计周订单总数和总金额
-            // 2. 统计周销售趋势
-            // 3. 统计热门服务项目排行
-            // 4. 统计技师周业绩排行
-            // 5. 统计会员消费活跃度
-            // 6. 生成销售周报表
+    //     try {
+    //         // TODO: 实现周销售数据统计逻辑
+    //         // 1. 统计周订单总数和总金额
+    //         // 2. 统计周销售趋势
+    //         // 3. 统计热门服务项目排行
+    //         // 4. 统计技师周业绩排行
+    //         // 5. 统计会员消费活跃度
+    //         // 6. 生成销售周报表
             
-            log.info("每周销售数据统计任务执行完成");
-        } catch (Exception e) {
-            log.error("每周销售数据统计任务执行失败", e);
-        }
-    }
+    //         log.info("每周销售数据统计任务执行完成");
+    //     } catch (Exception e) {
+    //         log.error("每周销售数据统计任务执行失败", e);
+    //     }
+    // }
 
     /**
      * 每月销售数据统计任务
      * 每月1号凌晨3点执行，统计上月的销售数据
      */
-    @Scheduled(cron = "0 0 3 1 * ?")
-    public void monthlySalesStatistics() {
-        log.info("开始执行每月销售数据统计任务 - {}", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    // @Scheduled(cron = "0 0 3 1 * ?")
+    // public void monthlySalesStatistics() {
+    //     log.info("开始执行每月销售数据统计任务 - {}", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         
-        try {
-            // TODO: 实现月销售数据统计逻辑
-            // 1. 统计月订单总数和总金额
-            // 2. 统计月销售增长率
-            // 3. 统计服务项目月销售排行
-            // 4. 统计技师月业绩和提成汇总
-            // 5. 统计会员消费分析
-            // 6. 统计营销活动效果
-            // 7. 生成销售月报表
+    //     try {
+    //         // TODO: 实现月销售数据统计逻辑
+    //         // 1. 统计月订单总数和总金额
+    //         // 2. 统计月销售增长率
+    //         // 3. 统计服务项目月销售排行
+    //         // 4. 统计技师月业绩和提成汇总
+    //         // 5. 统计会员消费分析
+    //         // 6. 统计营销活动效果
+    //         // 7. 生成销售月报表
             
-            log.info("每月销售数据统计任务执行完成");
-        } catch (Exception e) {
-            log.error("每月销售数据统计任务执行失败", e);
-        }
-    }
+    //         log.info("每月销售数据统计任务执行完成");
+    //     } catch (Exception e) {
+    //         log.error("每月销售数据统计任务执行失败", e);
+    //     }
+    // }
 }

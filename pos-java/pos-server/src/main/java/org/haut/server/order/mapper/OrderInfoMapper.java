@@ -57,12 +57,12 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
     List<OrderInfoEntity> queryByVipId(@Param("vipId") Long vipId);
     
     /**
-     * 根据床位ID查询未结算的订单信息
+     * 根据床位ID查询最新的订单信息
      * 
      * @param bedId 床位ID
-     * @return 订单信息列表
+     * @return 订单信息
      */
-    List<OrderInfoEntity> queryUnsettledByBedId(@Param("bedId") Long bedId, @Param("orgId") Long orgId);
+    OrderInfoEntity queryLatestByBedId(@Param("bedId") Long bedId, @Param("orgId") Long orgId);
     
     /**
      * 统计订单数量
