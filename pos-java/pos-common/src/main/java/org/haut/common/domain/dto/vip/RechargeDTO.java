@@ -13,7 +13,7 @@ import java.util.List;
 @Schema(description = "会员充值DTO")
 public class RechargeDTO {
     @Schema(description = "会员id")
-    @NotNull
+    @NotNull(message = "会员不能为空")
     private Long vipId;
     @Schema(description = "会员姓名")
     private String vipName;
@@ -27,7 +27,7 @@ public class RechargeDTO {
     @Schema(description = "活动名称")
     private String activeName;
     @Schema(description = "充值金额")
-    @NotNull
+    @NotNull(message = "充值金额不能为空")
     private BigDecimal rechargeValue;
 
     @Schema(description = "资产折扣率")
@@ -37,7 +37,7 @@ public class RechargeDTO {
     @Schema(description = "资产是否允许跨店（0 不允许，1 允许）")
     private Integer assetIsCrossStore;
     @Schema(description = "充值提成规则id")
-    @NotNull
+    @NotNull(message = "充值提成规则不能为空")
     private Long rechargeRoleId;
 
     @Schema(description = "业绩技师信息(支持多人业绩)")
