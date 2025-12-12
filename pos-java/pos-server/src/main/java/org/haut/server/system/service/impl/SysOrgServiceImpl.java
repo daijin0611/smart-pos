@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.query.system.OrgListQuery;
 import org.haut.common.domain.dto.system.OrgDefaultRuleUpdateDTO;
 import org.haut.common.domain.dto.system.OrgCreateDTO;
+import org.haut.common.domain.dto.system.OrgPrintWidthUpdateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.vo.system.OrgInfoVO;
 import org.haut.common.exception.BusinessException;
@@ -97,6 +98,20 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg>
         sysUserRoleMapper.insert(new SysUserRole()
                 .setUserId(user.getId())
                 .setRoleId(managerRole.getId()));
+    }
+
+    @Override
+    public void updatePrintWidth(OrgPrintWidthUpdateDTO dto) {
+        // 校验门店是否存在
+        SysOrg org = this.getById(dto.getId());
+        if (org == null) {
+            throw new BusinessException("门店不存在");
+        }
+        // 更新打印宽度
+        this.lambdaUpdate()
+                .set(SysOrg::getPrintWidth, dto.getPrintWidth())
+                .eq(SysOrg::getId, dto.getId())
+                .update();
     }
 }
 

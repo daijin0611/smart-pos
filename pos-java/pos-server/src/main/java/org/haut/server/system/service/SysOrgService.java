@@ -3,6 +3,7 @@ package org.haut.server.system.service;
 import org.haut.common.domain.query.system.OrgListQuery;
 import org.haut.common.domain.dto.system.OrgDefaultRuleUpdateDTO;
 import org.haut.common.domain.dto.system.OrgCreateDTO;
+import org.haut.common.domain.dto.system.OrgPrintWidthUpdateDTO;
 import org.haut.common.domain.vo.system.OrgInfoVO;
 import org.haut.server.system.entity.SysOrg;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -21,4 +22,10 @@ public interface SysOrgService extends IService<SysOrg> {
     void updateDefaultRule(OrgDefaultRuleUpdateDTO dto);
 
     void addOrg(OrgCreateDTO dto);
+
+    /**
+     * 更新门店打印宽度
+     * @param dto 打印宽度更新对象
+     */
+    void updatePrintWidth(OrgPrintWidthUpdateDTO dto);
 }

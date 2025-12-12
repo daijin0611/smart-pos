@@ -122,4 +122,9 @@ public class SysOrg {
      * 默认跨店结算（0 不允许，1 允许）
      */
     private Integer defaultIsCrossStore;
+
+    /**
+     * 打印宽度（毫米），默认58
+     */
+    private Integer printWidth;
 }

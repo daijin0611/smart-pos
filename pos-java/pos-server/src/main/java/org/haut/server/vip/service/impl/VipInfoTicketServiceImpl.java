@@ -13,6 +13,7 @@ import org.haut.common.domain.dto.vip.VipInfoTicketCreateDTO;
 import org.haut.common.domain.query.vip.VipInfoTicketQuery;
 import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.vip.TicketCountVO;
+import org.haut.common.domain.vo.server.ServerItemVO;
 import org.haut.common.domain.vo.vip.VipTicketVO;
 import org.haut.common.enums.TicketStatusEnum;
 import org.haut.common.enums.TicketTypeEnum;

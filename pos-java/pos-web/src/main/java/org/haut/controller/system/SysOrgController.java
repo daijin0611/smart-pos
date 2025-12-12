@@ -20,6 +20,8 @@ import cn.hutool.core.bean.BeanUtil;
 import org.haut.common.domain.dto.system.OrgCreateDTO;
 import org.haut.common.domain.dto.system.OrgUpdateDTO;
 import org.haut.common.domain.dto.system.OrgDefaultRuleUpdateDTO;
+import org.haut.common.domain.dto.system.OrgPrintWidthUpdateDTO;
+import org.springframework.validation.annotation.Validated;
 import org.haut.server.server.service.ServerRechargeRoleService;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -77,5 +79,11 @@ public class SysOrgController {
         return JsonVO.success();
     }
 
+    @PutMapping("/update-print-width")
+    @Operation(description = "修改门店打印宽度", summary = "修改门店打印宽度")
+    public JsonVO<String> updatePrintWidth(@RequestBody @Validated OrgPrintWidthUpdateDTO dto) {
+        sysOrgService.updatePrintWidth(dto);
+        return JsonVO.success();
+    }
 
 }

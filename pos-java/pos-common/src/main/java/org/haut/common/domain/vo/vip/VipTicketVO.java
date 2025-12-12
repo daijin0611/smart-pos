@@ -3,7 +3,6 @@ package org.haut.common.domain.vo.vip;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.haut.common.domain.vo.server.ServerItemVO;
 
 import java.math.BigDecimal;
 import java.util.Date;

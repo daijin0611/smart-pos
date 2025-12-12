@@ -121,4 +121,7 @@ public class OrgInfoVO {
 
     @Schema(description = "默认充值提成规则ID")
     private Long defaultRechargeRoleId;
+
+    @Schema(description = "打印宽度（毫米）")
+    private Integer printWidth;
 }
