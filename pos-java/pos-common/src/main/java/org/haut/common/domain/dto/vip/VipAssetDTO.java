@@ -44,7 +44,10 @@ public class VipAssetDTO {
     @Schema(description = "实体卡号", example = "N145900101")
     @NotNull(message = "实体卡号不能为空")
     @Size(min = 8, max = 20, message = "实体卡号长度必须在8到20位之间")
-    private Integer assetCardNumber;
+    private String assetCardNumber;
+
+    @Schema(description = "会员卡号", example = "VIP001")
+    private String vipCardNumber;
 
 
 

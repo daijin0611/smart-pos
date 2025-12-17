@@ -69,6 +69,13 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
         AuthInfoDTO authInfo = AuthContextHolder.getAuth();
         VipAsset vipAsset = vipAssetConvert.toEntity(dto);
         String assetNum = CodeUtils.generateByTime(PrefixConst.ASSET);
+
+        // 获取会员信息并设置会员卡号
+        VipInfo vipInfo = vipInfoMapper.selectById(dto.getVipId());
+        if (vipInfo != null) {
+            vipAsset.setVipCardNumber(vipInfo.getCardNumber());
+        }
+
         vipAsset.setAssetNum(assetNum)
                 .setOrgId(authInfo.getOrgId());
         this.save(vipAsset);
@@ -114,7 +121,11 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
         VipInfo vipInfo = vipInfoMapper.selectById(vipId);
         if ( vipInfo == null)
             throw new BusinessException("会员不存在");
-        List<VipAsset> assets = lambdaQuery().eq(VipAsset::getVipId, vipId).list();
+        List<VipAsset> assets = lambdaQuery()
+                .eq(VipAsset::getVipId, vipId)
+                .or()
+                .eq(VipAsset::getVipCardNumber, vipInfo.getCardNumber())
+                .list();
         List<VipInfoTicket> tickets = vipInfoTicketService.lambdaQuery().eq(VipInfoTicket::getVipInfoId, vipId).list();
         List<TicketCountVO> ticketCountVOS = vipInfoTicketConvert.toVOS(tickets);
         if (ticketCountVOS != null && !ticketCountVOS.isEmpty()){

@@ -94,9 +94,11 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         // 条件查询
         if (query.getQueryField() != null && StringUtils.isNotBlank(query.getQueryField())) {
             queryWrapper
-            .like(VipInfo::getPhoneNumber, query.getQueryField()).or()
-            .like(VipInfo::getName, query.getQueryField()).or()
-            .like(VipInfo::getCardNumber, query.getQueryField());
+            .and(wrapper -> wrapper
+                .like(VipInfo::getPhoneNumber, query.getQueryField()).or()
+                .like(VipInfo::getName, query.getQueryField()).or()
+                .like(VipInfo::getCardNumber, query.getQueryField())
+            );
         }
         //查询数据库
         Page<VipInfo> page = new Page<>(query.getPageNum(), query.getPageSize());
@@ -501,16 +503,21 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         }
         // 创建赠送金资产
         if (!active.getActiveType().equals(RechargeActiveTypeEnum.TICKET.getValue())){
-            String code = vipAssetService.createAsset(new AssetCreateDTO()
-                    .setVipId(dto.getVipId())
-                    .setAssetBalance(active.getPresentValue())
-                    .setAssetType(VipAssetType.PRESENT.getValue())
-                    .setAssetDiscountRate(active.getPresentDiscount())
-                    .setAssetDiscountBase(active.getPresentBase())
-                    .setAssetIsCrossStore(active.getPresentIsCrossStore())
-            );
-            history.setPresentAssetCode(code)
-                    .setPresentValue(active.getPresentValue());
+            if (active.getPresentValue().compareTo(BigDecimal.ZERO) > 0){
+                String code = vipAssetService.createAsset(new AssetCreateDTO()
+                        .setVipId(dto.getVipId())
+                        .setAssetBalance(active.getPresentValue())
+                        .setAssetType(VipAssetType.PRESENT.getValue())
+                        .setAssetDiscountRate(active.getPresentDiscount())
+                        .setAssetDiscountBase(active.getPresentBase())
+                        .setAssetIsCrossStore(active.getPresentIsCrossStore())
+                );
+                history.setPresentAssetCode(code)
+                        .setPresentValue(active.getPresentValue());
+                log.info("创建赠送金资产成功，资产编号：{}", code);
+            }else {
+                log.info("赠送金金额为0，不创建赠送资产");
+            }
         }
         // 创建优惠券资产
         if (!active.getActiveType().equals(RechargeActiveTypeEnum.AMOUNT.getValue())){

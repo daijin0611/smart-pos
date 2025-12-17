@@ -79,6 +79,17 @@ public class VipAsset {
     private String assetCardNumber;
 
     /**
+     * 会员卡号
+     */
+    private String vipCardNumber;
+
+
+    /**
+     * 兼容美管家会员卡类型分类ID
+     */
+    private String cardTypeId;
+
+    /**
      * 会员id
      */
     private Long vipId;

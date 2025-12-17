@@ -86,6 +86,12 @@ public class VipAssetVO {
     private String assetCardNumber;
 
     /**
+     * 会员卡号
+     */
+    @Schema(description = "会员卡号")
+    private String vipCardNumber;
+
+    /**
      * 会员id
      */
     @Schema(description = "会员id")
