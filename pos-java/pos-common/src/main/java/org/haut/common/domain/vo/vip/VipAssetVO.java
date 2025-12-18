@@ -50,6 +50,12 @@ public class VipAssetVO {
     private String assetNum;
 
     /**
+     * 资产名称
+     */
+    @Schema(description = "资产名称")
+    private String assetName;
+
+    /**
      * 余额
      */
     @Schema(description = "余额")
@@ -90,6 +96,12 @@ public class VipAssetVO {
      */
     @Schema(description = "会员卡号")
     private String vipCardNumber;
+
+    /**
+     * 兼容美管家会员卡类型分类ID
+     */
+    @Schema(description = "兼容美管家会员卡类型分类ID")
+    private String cardTypeId;
 
     /**
      * 会员id

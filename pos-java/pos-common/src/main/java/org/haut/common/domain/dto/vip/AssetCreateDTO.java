@@ -15,6 +15,8 @@ public class AssetCreateDTO {
     private Long vipId;
     @Schema(description = "会员资产备注")
     private String remark;
+    @Schema(description = "会员资产名称")
+    private String assetName;
     @Schema(description = "会员资产余额")
     private BigDecimal assetBalance;
     @Schema(description = "会员资产类型(0 充值， 1 赠送)")
@@ -27,5 +29,8 @@ public class AssetCreateDTO {
     private Integer assetIsCrossStore;
     @Schema(description = "会员资产实体卡号")
     private String assetCardNumber;
+
+    @Schema(description = "兼容美管家会员卡类型分类ID")
+    private String cardTypeId;
 
 }

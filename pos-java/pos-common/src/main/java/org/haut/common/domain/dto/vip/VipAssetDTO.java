@@ -16,6 +16,9 @@ public class VipAssetDTO {
     @Size(min = 8, max = 20, message = "会员资产编号长度必须在8到20位之间")
     private  String assetNum;
 
+    @Schema(description = "会员资产名称", example = "充值卡")
+    private String assetName;
+
     @Schema(description = "会员资产余额", example = "100.00")
     @NotNull(message = "会员资产余额不能为空")
     @Size(min = 0, max = 20, message = "会员资产余额不合法")
@@ -49,8 +52,8 @@ public class VipAssetDTO {
     @Schema(description = "会员卡号", example = "VIP001")
     private String vipCardNumber;
 
-
-
+    @Schema(description = "兼容美管家会员卡类型分类ID", example = "type001")
+    private String cardTypeId;
 
     public @NotNull(message = "会员资产余额不能为空") @Size(min = 0, max = 20, message = "会员资产余额不合法") Double getAssetBalance() {
         return assetBalance;

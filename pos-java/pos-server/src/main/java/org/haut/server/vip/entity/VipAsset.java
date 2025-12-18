@@ -49,6 +49,11 @@ public class VipAsset {
     private String assetNum;
 
     /**
+     * 资产名称
+     */
+    private String assetName;
+
+    /**
      * 余额
      */
     private BigDecimal assetBalance;
