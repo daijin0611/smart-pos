@@ -1,0 +1,6 @@
+-- 根据card_type_id.json数据更新vip_asset表的折扣率和名称
+-- 将JSON中的discount字段转换为asset_discount_rate（百分比整数形式）
+-- 例如："discount"="6.9" → asset_discount_rate = 69
+-- "discount"="0" → asset_discount_rate = 100
+-- 折扣率基础均为标准价（asset_discount_base = 0）
+-- 同时更新asset_name为cardtypename
