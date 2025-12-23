@@ -121,3 +121,6 @@ logging:
     org.apache.ibatis: WARN
     com.alibaba.druid: WARN
     org.springframework.jdbc: WARN
+task:
+  scheduled:
+    enabled: false

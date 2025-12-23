@@ -10,7 +10,7 @@ import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.auth.AuthorizeVO;
 import org.haut.common.utils.UserContextHolder;
 import org.haut.filter.JwtAuthorizeFilter;
-import org.haut.common.utils.JwtUtils;
+import org.haut.common.component.JwtUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;

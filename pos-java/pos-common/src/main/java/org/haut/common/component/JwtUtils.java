@@ -1,4 +1,4 @@
-package org.haut.common.utils;
+package org.haut.common.component;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -199,7 +199,6 @@ public class JwtUtils {
     private boolean isInvalidToken(String jwtId) {
         Boolean isInvalid = redisTemplate.hasKey(RedisKey.JWT_BLACK_LIST + jwtId);
         if (isInvalid) log.info("JWT令牌已失效，ID: {}", jwtId);
-        else log.info("JWT令牌未失效，ID: {}", jwtId);
         return isInvalid;
     }
 }

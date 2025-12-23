@@ -1,5 +1,6 @@
 package org.haut.controller.order;
 
+import cn.hutool.json.JSONUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class OrderController {
     @PostMapping("/add-order")
     @Operation(summary = "开单", description = "选择床位进行开单的方法")
     public JsonVO<OrderCreateVO> addOrder(@Validated @RequestBody OrderCreateDTO createOrderDTO) {
-        log.info("创建订单请求：{}", createOrderDTO);
+        log.info("创建订单请求：\n{}", JSONUtil.parse(createOrderDTO).toStringPretty());
         return JsonVO.success(orderInfoService.addOrderWithBed(createOrderDTO));
     }
 

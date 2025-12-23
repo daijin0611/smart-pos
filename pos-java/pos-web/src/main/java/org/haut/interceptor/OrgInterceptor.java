@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.utils.AuthContextHolder;
-import org.haut.common.utils.JwtUtils;
+import org.haut.common.component.JwtUtils;
 import org.haut.server.system.entity.SysUser;
 import org.haut.server.system.mapper.SysUserMapper;
 import org.springframework.stereotype.Component;
