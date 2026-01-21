@@ -1,1 +1,0 @@
-import{a1 as t,a2 as s,a7 as r,aa as a}from"./index-25ebaba6.js";const m=(e={})=>t("/server/item/query-list",e),o=e=>t("/server/item/query-info",{id:e}),c=(e={})=>s("/server/item/add-item",e),d=(e={})=>r("/server/item/update-item",e),n=(e={})=>r("/server/item/update-status",e,a.URLencoded);export{o as a,d as b,c,n as d,m as r};
