@@ -51,6 +51,14 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
     void settleOrderDetail(OrderInfoEntity orderInfoEntity, List<OrderDetailSettleDTO> orderDetails);
 
     /**
+     * 结算订单明细（返回保存后的实体列表）
+     * @param orderInfoEntity 订单信息
+     * @param orderDetails 待结算订单明细
+     * @return 保存后的订单明细实体列表
+     */
+    List<OrderDetailEntity> settleOrderDetailAndReturn(OrderInfoEntity orderInfoEntity, List<OrderDetailSettleDTO> orderDetails);
+
+    /**
      * 订单明细分页查询
      * @return
      */

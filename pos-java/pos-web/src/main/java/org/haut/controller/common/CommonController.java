@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.server.common.IdempotentService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

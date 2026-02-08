@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.haut.common.enums.ServiceTypeEnum;
+
 @Mapper(componentModel = "spring")
 interface VipInfoTicketConvert {
     VipInfoTicket toEntity(VipInfoTicketCreateDTO dto);
@@ -121,10 +123,11 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
      * 订单结算处理优惠券
      * @param settleOrderDTO 订单结算信息
      * @param orderCode 订单编号
+     * @param orderDetails 已保存的订单明细列表（用于索引关联）
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void handelOrder(OrderSettleDTO settleOrderDTO, String orderCode) {
+    public void handelOrder(OrderSettleDTO settleOrderDTO, String orderCode, List<OrderDetailEntity> orderDetails) {
         // 1. 校验优惠券是否已经使用
         List<OrderTicketUseDTO> useTickets = settleOrderDTO.getTicketUseList();
         List<Long> ticketIds = useTickets.stream()
@@ -133,7 +136,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
         if (ticketIds.isEmpty())
             return;
         List<VipInfoTicket> vipInfoTickets = listByIds(ticketIds);
-        validateTickets(vipInfoTickets, useTickets, settleOrderDTO.getTotalAmount());
+        validateTickets(vipInfoTickets, useTickets, settleOrderDTO.getTotalAmount(), orderDetails);
         // 2. 更新优惠券状态
         lambdaUpdate()
             .in(VipInfoTicket::getId, ticketIds)
@@ -146,8 +149,14 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
     /**
      * 优惠券使用校验
      * @param vipInfoTickets 优惠券列表
+     * @param useTickets 优惠券使用信息列表
+     * @param totalValue 订单总金额
+     * @param orderDetails 已保存的订单明细列表
      */
-    private void validateTickets(List<VipInfoTicket> vipInfoTickets, List<OrderTicketUseDTO> useTickets, BigDecimal totalValue){
+    private void validateTickets(List<VipInfoTicket> vipInfoTickets,
+                                 List<OrderTicketUseDTO> useTickets,
+                                 BigDecimal totalValue,
+                                 List<OrderDetailEntity> orderDetails){
         if (vipInfoTickets.isEmpty())
             return;
         log.info("开始校验优惠券");
@@ -166,7 +175,8 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
         for (OrderTicketUseDTO ticket : useTickets){
             VipInfoTicket ticketEntity = getById(ticket.getTicketId());
             VipTicketVO ticketInfo = vipTicketMapper.getOneById(ticketEntity.getVipTicketId());
-            OrderDetailEntity detail = orderDetailMapper.selectById(ticket.getDetailId());
+            // 获取订单明细（支持索引和ID两种方式）
+            OrderDetailEntity detail = getOrderDetail(ticket, orderDetails);
             // 代金券类型
             //TODO: 目前代金券限额按照标准价校验
             if (TicketTypeEnum.CONSUMER.getValue().equals(ticket.getTicketType())){
@@ -176,7 +186,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
             }
             // 体验券类型
             else if (TicketTypeEnum.ITEM.getValue().equals(ticket.getTicketType())){
-                if (ticket.getDetailId() == null)
+                if (detail == null)
                     throw new BusinessException("体验券未选择项目");
                 Set<Long> itemIdSet = ticketInfo.getServerItems()
                         .stream()
@@ -194,6 +204,40 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
             }
         }
         log.info("优惠券校验通过");
+    }
+
+    /**
+     * 根据索引或ID获取订单明细
+     * @param ticket 优惠券使用信息
+     * @param orderDetails 订单明细列表
+     * @return 订单明细
+     */
+    private OrderDetailEntity getOrderDetail(OrderTicketUseDTO ticket, List<OrderDetailEntity> orderDetails) {
+        // 优先使用 detailIndex（新方式）
+        if (ticket.getDetailIndex() != null) {
+            // 边界检查
+            if (orderDetails == null || orderDetails.isEmpty()) {
+                throw new BusinessException("订单明细列表为空");
+            }
+            if (ticket.getDetailIndex() < 0 || ticket.getDetailIndex() >= orderDetails.size()) {
+                throw new BusinessException(String.format(
+                    "订单明细索引无效，索引：%d，明细总数：%d",
+                    ticket.getDetailIndex(), orderDetails.size()));
+            }
+            return orderDetails.get(ticket.getDetailIndex());
+        }
+
+        // 兼容旧方式：使用 detailId
+        if (ticket.getDetailId() != null) {
+            OrderDetailEntity detail = orderDetailMapper.selectById(ticket.getDetailId());
+            if (detail == null) {
+                throw new BusinessException("体验券关联的订单明细不存在");
+            }
+            return detail;
+        }
+
+        // 两者都为空
+        return null;
     }
 
 }

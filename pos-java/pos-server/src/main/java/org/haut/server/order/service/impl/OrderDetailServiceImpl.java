@@ -187,6 +187,18 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void settleOrderDetail(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails) {
+        settleOrderDetailAndReturn(order, orderDetails);
+    }
+
+    /**
+     * 结算订单明细（返回保存后的实体列表）
+     * @param order 订单信息
+     * @param orderDetails 待结算订单明细
+     * @return 保存后的订单明细实体列表
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<OrderDetailEntity> settleOrderDetailAndReturn(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails) {
         log.info("orderCode:{} 开始结算订单明细", order.getOrderCode());
         // 处理库存明细
         stockOutOrderService.handelOrder(orderDetails);
@@ -215,6 +227,9 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         // 更新或者保存订单明细
         saveOrUpdateBatch(details);
         log.info("orderCode:{} 订单明细处理成功", order.getOrderCode());
+
+        // 返回保存后的实体列表（包含自动生成的ID）
+        return details;
     }
 
     /**

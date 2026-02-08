@@ -116,7 +116,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         this.save(orderInfo);
 
         // 创建订单明细
-        orderDetailService.createOrderDetails(createOrderDTO.getOrderDetails(), orderInfo.getId());
+        if (createOrderDTO.getOrderDetails() != null && !createOrderDTO.getOrderDetails().isEmpty()){
+            orderDetailService.createOrderDetails(createOrderDTO.getOrderDetails(), orderInfo.getId());
+        }
         log.info("订单创建成功，订单号：{}", orderNo);
 
         // 更新床位状态
@@ -152,14 +154,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .set(RoomBed::getStatus, BedStatusEnum.FREE.getCode())
                 .update();
         log.info("床位{}状态已更新为空闲", order.getBedName());
-        // 结算订单明细
-        orderDetailService.settleOrderDetail(order,settleOrderDTO.getDetails());
+        // 结算订单明细（返回保存后的明细列表）
+        List<OrderDetailEntity> savedDetails = orderDetailService.settleOrderDetailAndReturn(order, settleOrderDTO.getDetails());
         log.info("订单明细结算完成");
         // 结算支付信息
         paymentDetailService.handelOrder(settleOrderDTO, order.getOrderCode());
         log.info("支付信息结算成功");
-        // 结算会员优惠券
-        vipInfoTicketService.handelOrder(settleOrderDTO, order.getOrderCode());
+        // 结算会员优惠券（传入已保存的订单明细列表）
+        vipInfoTicketService.handelOrder(settleOrderDTO, order.getOrderCode(), savedDetails);
         log.info("会员优惠券结算成功");
         // 更新会员余额
         BigDecimal afterBalance = vipInfoService.updateVipBalance(vipInfo.getId());

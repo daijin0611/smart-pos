@@ -60,8 +60,7 @@ public class OrderCreateDTO {
     /**
      * 订单明细列表
      */
-    @NotEmpty(message = "订单明细不能为空")
-    @Schema(description = "订单明细列表（至少一个项目明细）")
+    @Schema(description = "订单明细列表，可以为空")
     private List<OrderDetailCreateDTO> orderDetails;
 
 }

@@ -5,8 +5,11 @@ import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.vip.VipInfoTicketCreateDTO;
 import org.haut.common.domain.query.vip.VipInfoTicketQuery;
 import org.haut.common.domain.vo.vip.TicketCountVO;
+import org.haut.server.order.entity.OrderDetailEntity;
 import org.haut.server.vip.entity.VipInfoTicket;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author daiji
@@ -33,6 +36,7 @@ public interface VipInfoTicketService extends IService<VipInfoTicket> {
      * 订单结算时处理会员优惠券
      * @param settleOrderDTO 订单结算信息
      * @param orderCode 订单编号
+     * @param orderDetails 已保存的订单明细列表（用于索引关联）
      */
-    void handelOrder(OrderSettleDTO settleOrderDTO, String orderCode);
+    void handelOrder(OrderSettleDTO settleOrderDTO, String orderCode, List<OrderDetailEntity> orderDetails);
 }
