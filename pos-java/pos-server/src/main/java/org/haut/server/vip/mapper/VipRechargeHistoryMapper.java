@@ -1,12 +1,12 @@
 package org.haut.server.vip.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.haut.common.domain.query.vip.RechargeHistoryQuery;
 import org.haut.common.domain.vo.vip.RechargeHistoryVO;
 import org.haut.server.vip.entity.VipRechargeHistory;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
-import java.util.List;
 
 /**
 * @author daiji
@@ -16,7 +16,7 @@ import java.util.List;
 */
 public interface VipRechargeHistoryMapper extends BaseMapper<VipRechargeHistory> {
 
-    List<RechargeHistoryVO> getList(@Param("query") RechargeHistoryQuery query, @Param("orgId") Long orgId);
+    IPage<RechargeHistoryVO> getList(Page<RechargeHistoryVO> page, @Param("query") RechargeHistoryQuery query, @Param("orgId") Long orgId);
 }
 
 

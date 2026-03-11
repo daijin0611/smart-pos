@@ -1,10 +1,13 @@
 package org.haut.server.vip.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.vip.ActiveStatQuery;
 import org.haut.common.domain.query.vip.RechargeHistoryQuery;
@@ -41,14 +44,16 @@ public class VipRechargeHistoryServiceImpl extends ServiceImpl<VipRechargeHistor
     implements VipRechargeHistoryService{
     private final VipRechargeHistoryConvert convert;
     /**
-     * 获取会员充值记录列表
+     * 获取会员充值记录列表（分页）
      * @param query 查询参数
-     * @return 充值记录列表
+     * @return 充值记录分页列表
      */
     @Override
-    public List<RechargeHistoryVO> getList(RechargeHistoryQuery query) {
+    public PageDTO<RechargeHistoryVO> getList(RechargeHistoryQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
-        return this.baseMapper.getList(query, auth.getOrgId());
+        Page<RechargeHistoryVO> page = new Page<>(query.getPageNum(), query.getPageSize());
+        IPage<RechargeHistoryVO> result = this.baseMapper.getList(page, query, auth.getOrgId());
+        return PageDTO.create(result);
     }
 
 

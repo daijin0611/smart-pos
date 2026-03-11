@@ -40,4 +40,16 @@ public class RechargeHistoryQuery {
      * 充值状态
      */
     private Integer rechargeStatus;
+
+    /**
+     * 当前页码
+     */
+    @Schema(description = "当前页码", example = "1")
+    private Integer pageNum = 1;
+
+    /**
+     * 每页条数
+     */
+    @Schema(description = "每页条数", example = "10")
+    private Integer pageSize = 10;
 }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.vip.RechargeHistoryListDTO;
 import org.haut.common.domain.query.vip.ActiveStatQuery;
 import org.haut.common.domain.query.vip.RechargeHistoryQuery;
@@ -24,8 +25,8 @@ import java.util.List;
 public class RechargeHistoryController {
     private final VipRechargeHistoryService vipRechargeHistoryService;
     @GetMapping("/query-list")
-    @Operation(description = "获取会员充值记录列表", summary = "获取会员充值记录列表")
-    public JsonVO<List<RechargeHistoryVO>> getList(RechargeHistoryQuery query) {
+    @Operation(description = "获取会员充值记录列表（分页）", summary = "获取会员充值记录列表")
+    public JsonVO<PageDTO<RechargeHistoryVO>> getList(RechargeHistoryQuery query) {
         log.info(query.toString());
         return JsonVO.success(vipRechargeHistoryService.getList(query));
     }
