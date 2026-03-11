@@ -44,7 +44,7 @@ public class RechargeHistoryVO {
     /**
      * 充值类型（0 门店充值，1 手动赠送）
      */
-    private String rechargeType;
+    private Integer rechargeType;
 
     /**
      * 充值时间

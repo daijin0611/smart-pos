@@ -51,9 +51,8 @@ public class RechargeHistoryInfoDTO {
     @Size(max = 50, message = "赠券长度不能超过50")
     private String rechargeCoupon;
 
-    @Schema(description = "充值方式", example = "门店充值")
-    @Pattern(regexp = "门店充值|手动赠送", message = "充值类型只能是这两种")
-    private String rechargeType;
+    @Schema(description = "充值方式(0-门店充值，1-手动赠送)", example = "0")
+    private Integer rechargeType;
 
     @Schema(description = "充值状态(0-充值成功，1-已冲正)", example = "1")
     private Integer  rechargeStatus;

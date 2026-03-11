@@ -1,115 +1,115 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+本文件为 Claude Code (claude.ai/code) 在处理此代码仓库中的代码时提供指导。
 
-## Project Overview
+## 项目概述
 
-This is a Java 17-based Point of Sale (POS) system built with Spring Boot 3.5.0. It's a multi-module Maven project designed for retail/hospitality businesses with support for stores, VIP customers, orders, payments, and inventory management.
+这是一个基于 Java 17 的销售点（POS）系统，使用 Spring Boot 3.5.0 构建。这是一个多模块 Maven 项目，专为零售/餐饮企业设计，支持门店管理、VIP 客户、订单处理、支付和库存管理。
 
-## Build and Development Commands
+## 构建和开发命令
 
-### Maven Commands
+### Maven 命令
 ```bash
-# Build entire project
+# 构建整个项目
 mvn clean package
 
-# Build skipping tests
+# 构建并跳过测试
 mvn clean package -DskipTests
 
-# Run application (dev profile)
+# 运行应用（开发环境）
 mvn spring-boot:run -pl pos-web -Dspring-boot.run.profiles=dev
 
-# Run application with specific profile
+# 运行应用（指定环境）
 mvn spring-boot:run -pl pos-web -Dspring-boot.run.profiles=test
 
-# Docker build
+# Docker 构建
 mvn docker:build
 
-# Docker push
+# Docker 推送
 mvn docker:push
 ```
 
-### Running the Application
-- Default port: 8080
-- Context path: `/api`
-- Swagger UI: `http://localhost:8080/api/swagger-ui.html`
-- API Docs: `http://localhost:8080/api/v3/api-docs`
-- Druid Monitor: `http://localhost:8080/api/druid/*` (username: druid, password: druid)
+### 运行应用
+- 默认端口：8080
+- 上下文路径：`/api`
+- Swagger UI：`http://localhost:8080/api/swagger-ui.html`
+- API 文档：`http://localhost:8080/api/v3/api-docs`
+- Druid 监控：`http://localhost:8080/api/druid/*`（用户名：druid，密码：druid）
 
-## Architecture Overview
+## 架构概览
 
-### Module Structure
-- **pos-common/**: Shared utilities, DTOs, VOs, enums, response wrappers
-- **pos-server/**: Business logic layer (Services, Entities, MyBatis mappers)
-- **pos-web/**: REST API layer (Controllers, Configuration, Application entry point)
-- **sql/**: Database schema and migration scripts
+### 模块结构
+- **pos-common/**：共享工具类、DTO、VO、枚举、响应包装器
+- **pos-server/**：业务逻辑层（Services、Entities、MyBatis mappers）
+- **pos-web/**：REST API 层（Controllers、Configuration、Application 入口）
+- **sql/**：数据库架构和迁移脚本
 
-### Technology Stack
-- **Core**: Java 17, Spring Boot 3.5.0
-- **Database**: MySQL 8.2.0 with MyBatis-Plus 3.5.11
-- **Connection Pool**: Druid 1.2.20
-- **Cache**: Redis
-- **Security**: Spring Security + JWT 4.3.0
-- **API Docs**: Knife4j 4.3.0 (Swagger)
-- **Utilities**: Lombok 1.18.34, MapStruct 1.6.3, Hutool 5.8.18
+### 技术栈
+- **核心框架**：Java 17、Spring Boot 3.5.0
+- **数据库**：MySQL 8.2.0 + MyBatis-Plus 3.5.11
+- **连接池**：Druid 1.2.20
+- **缓存**：Redis
+- **安全**：Spring Security + JWT 4.3.0
+- **API 文档**：Knife4j 4.3.0 (Swagger)
+- **工具类**：Lombok 1.18.34、MapStruct 1.6.3、Hutool 5.8.18
 
-### Layered Architecture
-1. **Controller Layer** (`pos-web`): REST API endpoints with Swagger documentation
-2. **Service Layer** (`pos-server`): Business logic extending `IService<T>`
-3. **Mapper Layer** (`pos-server`): Database access extending `BaseMapper<T>`
-4. **Entity Layer** (`pos-server`): Database models with `@TableName` annotations
+### 分层架构
+1. **Controller 层** (`pos-web`)：带 Swagger 文档的 REST API 端点
+2. **Service 层** (`pos-server`)：继承 `IService<T>` 的业务逻辑
+3. **Mapper 层** (`pos-server`)：继承 `BaseMapper<T>` 的数据库访问
+4. **Entity 层** (`pos-server`)：带 `@TableName` 注解的数据库模型
 
-## Key Business Modules
-- **system**: Users, roles, permissions, organizations
-- **order**: Order management and processing
-- **payment**: Payment processing (supports multiple payment types)
-- **vip**: VIP customer management
-- **stock**: Inventory and stock management
-- **room**: Room/area management (hospitality features)
-- **server**: Service items management
-- **kpi**: Key performance indicators
-- **statistics**: Analytics and reporting
-- **task**: Scheduled tasks
-- **ai**: AI-related functionality
+## 核心业务模块
+- **system**：用户、角色、权限、组织机构
+- **order**：订单管理和处理
+- **payment**：支付处理（支持多种支付方式）
+- **vip**：VIP 客户管理
+- **stock**：库存管理
+- **room**：房间/区域管理（餐饮业功能）
+- **server**：服务项管理
+- **kpi**：关键绩效指标
+- **statistics**：数据分析和报表
+- **task**：定时任务
+- **ai**：AI 相关功能
 
-## Development Conventions
+## 开发规范
 
-### Code Structure Patterns
-- **Controllers**: Use `@RestController`, `@Tag`, `@Operation` for Swagger docs
-- **Services**: Extend `IService<T>` from MyBatis-Plus
-- **Mappers**: Extend `BaseMapper<T>` from MyBatis-Plus
-- **Responses**: Use `JsonVO<T>` wrapper with `ResultStatus` enum
-- **Logging**: Use `@Slf4j` from Lombok
+### 代码结构模式
+- **Controllers**：使用 `@RestController`、`@Tag`、`@Operation` 提供 Swagger 文档
+- **Services**：继承 MyBatis-Plus 的 `IService<T>`
+- **Mappers**：继承 MyBatis-Plus 的 `BaseMapper<T>`
+- **Responses**：使用 `JsonVO<T>` 包装器和 `ResultStatus` 枚举
+- **Logging**：使用 Lombok 的 `@Slf4j`
 
-### Naming Conventions
-- **Classes**: PascalCase (e.g., `SysUserController`)
-- **Methods**: camelCase (e.g., `getUserById`)
-- **Variables**: camelCase (e.g., `userId`)
-- **Database**: snake_case (e.g., `sys_user`)
+### 命名规范
+- **类名**：PascalCase（如 `SysUserController`）
+- **方法名**：camelCase（如 `getUserById`）
+- **变量名**：camelCase（如 `userId`）
+- **数据库**：snake_case（如 `sys_user`）
 
-### Git Commit Convention
-- Format: `模块名[类型] 描述`
-- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `build`
-- Chinese commit messages preferred
-- Max 50 characters for description
-- Do not add informations that are not related to the commit
+### Git 提交规范
+- 格式：`模块名[类型] 描述`
+- 类型：`feat`、`fix`、`docs`、`style`、`refactor`、`perf`、`test`、`chore`、`build`
+- 优先使用中文提交信息
+- 描述最多 50 个字符
+- 不要添加与本次提交无关的信息
 
-## Environment Profiles
-- **dev**: Development environment (default)
-- **test**: Testing environment
-- **prod**: Production environment
+## 环境配置
+- **dev**：开发环境（默认）
+- **test**：测试环境
+- **prod**：生产环境
 
-## Database
-- Schema located in `/sql/` directory
-- Contains `pos_data.sql` with initial data
-- Recent migration: `V1.0.1__add_print_width_to_sys_org.sql` for store print width configuration
+## 数据库
+- 数据库架构位于 `/sql/` 目录
+- 包含初始数据文件 `pos_data.sql`
+- 最近迁移：`V1.0.1__add_print_width_to_sys_org.sql` 用于门店打印宽度配置
 
-## Testing
-- Uses Spring Boot Test starter
-- Run tests: `mvn test`
-- Run specific module tests: `mvn test -pl pos-server`
+## 测试
+- 使用 Spring Boot Test starter
+- 运行测试：`mvn test`
+- 运行特定模块测试：`mvn test -pl pos-server`
 
-## Docker Support
-- Dockerfile available with openjdk:17 base image
-- docker-compose.yml for orchestration
-- Application runs on port 8080 with `/api` context path
+## Docker 支持
+- 提供 Dockerfile，基于 openjdk:17 镜像
+- 使用 docker-compose.yml 进行编排
+- 应用运行在 8080 端口，上下文路径为 `/api`

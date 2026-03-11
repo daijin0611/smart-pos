@@ -210,7 +210,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                 .setActiveName(dto.getActiveName())
                 .setRechargeValue(dto.getRechargeValue())
                 .setRechargeStatus(RechargeStatusEnum.SUCCESS.getValue())
-                .setRechargeType(RechargeTypeEnum.STORE.getType())
+                .setRechargeType(RechargeTypeEnum.STORE.getValue())
                 .setRechargeTime(LocalDateTime.now())
                 .setOrgId(auth.getOrgId())
                 .setUserId(auth.getUserId())
