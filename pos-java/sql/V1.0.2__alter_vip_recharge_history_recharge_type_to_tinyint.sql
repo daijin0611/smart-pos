@@ -11,3 +11,6 @@ WHERE recharge_type IS NOT NULL;
 
 ALTER TABLE vip_recharge_history
     MODIFY COLUMN recharge_type TINYINT NULL COMMENT '充值类型（0 门店充值，1 手动赠送）';
+
+-- test ok
+-- prod ok
