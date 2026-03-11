@@ -1,10 +1,10 @@
 spring:
   data: # 数据配置
     redis: # Redis配置
-      host: 39.107.119.113  # Redis主机地址
-      port: 6379  # Redis端口号
-      username: admin  # Redis用户名
-      password: aA123456@   # 访问Redis所需密码
+      host: 82.156.232.52  # Redis主机地址
+      port: 6479  # Redis端口号
+      username:   # Redis用户名
+      password:    # 访问Redis所需密码
       database: 0  # 使用的数据库编号
       timeout: 10000ms  # 连接超时时间
       connect-timeout: 10000ms  # 连接建立超时时间
@@ -27,9 +27,9 @@ spring:
 
   datasource: # 数据源配置
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://39.107.119.113:3366/pos?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root
-    password: aA123456@
+    url: jdbc:mysql://82.156.232.52:3306/pos-test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: pos-test
+    password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
     druid:
       initial-size: 5  # 连接池初始化大小
@@ -121,6 +121,3 @@ logging:
     org.apache.ibatis: WARN
     com.alibaba.druid: WARN
     org.springframework.jdbc: WARN
-task:
-  scheduled:
-    enabled: false

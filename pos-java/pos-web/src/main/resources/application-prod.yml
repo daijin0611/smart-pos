@@ -1,18 +1,18 @@
 spring:
   data: # 数据配置
     redis: # Redis配置
-      host: 39.107.119.113  # Redis主机地址
+      host: 127.0.0.1  # Redis主机地址
       port: 6379  # Redis端口号
-      username: admin  # Redis用户名
-      password: aA123456@   # 访问Redis所需密码
+      username:   # Redis用户名
+      password:    # 访问Redis所需密码
       database: 0  # 使用的数据库编号
       timeout: 10000ms  # 连接超时时间
       connect-timeout: 10000ms  # 连接建立超时时间
       lettuce: #Lettuce客户端配置
         pool: # 连接池配置
-          max-active: 20  # 最大活跃连接数
+          max-active: 200  # 最大活跃连接数
           max-wait: 10000ms  # 最大等待时间
-          max-idle: 10  # 最大空闲连接数
+          max-idle: 20  # 最大空闲连接数
           min-idle: 5  # 最小空闲连接数
           time-between-eviction-runs: 30000ms  # 空闲连接检测周期
         shutdown-timeout: 100ms  # 关闭超时时间
@@ -27,12 +27,12 @@ spring:
 
   datasource: # 数据源配置
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://39.107.119.113:3366/pos?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root
-    password: aA123456@
+    url: jdbc:mysql://127.0.0.1:3306/pos?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: pos
+    password: jttCCBepNPWyC5Ck
     driver-class-name: com.mysql.cj.jdbc.Driver
     druid:
-      initial-size: 10  # 连接池初始化大小
+      initial-size: 20  # 连接池初始化大小
       max-active: 100  # 连接池最大连接数
       max-wait: 60000  # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException
       min-idle: 10  # 最小空闲连接数
@@ -70,40 +70,6 @@ mybatis-plus:
       logic-delete-value: 1         # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0     # 逻辑未删除值(默认为 0)
 
-# springdoc-openapi项目配置
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
-  api-docs:
-    path: /v3/api-docs
-  group-configs:
-    - group: 'default'
-      paths-to-match: '/**'
-      packages-to-scan: org.haut.controller
-    - group: 'system'
-      paths-to-match: '/system/**'
-      packages-to-scan: org.haut.controller.system
-    - group: 'room'
-      paths-to-match: '/room/**'
-      packages-to-scan: org.haut.controller.room
-    - group: 'server'
-      paths-to-match: '/server/**'
-      packages-to-scan: org.haut.controller.server
-    - group: 'vip'
-      paths-to-match: '/vip/**'
-      packages-to-scan: org.haut.controller.vip
-    - group: 'stock'
-      paths-to-match: '/stock/**'
-      packages-to-scan: org.haut.controller.stock
-  default-flat-param-object: true
-# knife4j的增强配置，不需要增强可以不配
-knife4j:
-  enable: true
-  setting:
-    language: zh_cn
-
 
 logging:
   level:
@@ -113,6 +79,6 @@ logging:
     org.apache.ibatis: WARN
     com.alibaba.druid: WARN
     org.springframework.jdbc: WARN
-task:
-  scheduled:
-    enabled: false
+# 幂等性配置
+idempotent:
+  timeout: 60 # 幂等性超时时间(分钟)
