@@ -17,10 +17,10 @@ mvn clean package
 mvn clean package -DskipTests
 
 # 运行应用（开发环境）
-mvn spring-boot:run -pl pos-web -Dspring-boot.run.profiles=dev
+mvn install -DskipTests && mvn spring-boot:run -pl pos-web -Dspring-boot.run.profiles=dev
 
 # 运行应用（指定环境）
-mvn spring-boot:run -pl pos-web -Dspring-boot.run.profiles=test
+mvn install -DskipTests && mvn spring-boot:run -pl pos-web -Dspring-boot.run.profiles=test
 
 # Docker 构建
 mvn docker:build
