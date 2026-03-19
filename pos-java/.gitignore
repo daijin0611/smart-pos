@@ -8,6 +8,7 @@ stock-demo/
 pos-generator
 .trae/
 logs
+.claude
 ### IntelliJ IDEA ###
 .idea/
 *.iws
