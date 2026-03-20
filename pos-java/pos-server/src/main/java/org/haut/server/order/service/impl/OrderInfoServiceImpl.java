@@ -467,7 +467,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             // 3.2 恢复本订单使用的优惠券为未使用
             vipInfoTicketService.lambdaUpdate()
                     .eq(VipInfoTicket::getUsedOrderCode, orderCode)
-                    .set(VipInfoTicket::getStatus, TicketStatusEnum.UNUSED.getStatus())
+                    .set(VipInfoTicket::getStatus, TicketStatusEnum.UNUSED.getValue())
                     .update();
 
             // 3.3 取消本订单新增的疗程券（购买疗程券场景）

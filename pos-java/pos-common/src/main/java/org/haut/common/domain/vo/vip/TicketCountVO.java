@@ -81,9 +81,9 @@ public class TicketCountVO {
     private String vipCardNumber;
 
     /**
-     * 使用状态
+     * 使用状态（0 未使用，1 已使用，2 已取消）
      */
-    private String status;
+    private Integer status;
 
     /**
      * 领取时间

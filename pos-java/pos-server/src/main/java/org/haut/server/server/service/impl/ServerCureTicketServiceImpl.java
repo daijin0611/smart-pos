@@ -170,7 +170,7 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
                                 .setVipName(order.getVipName())
                                 .setVipPhoneNumber(order.getVipPhoneNumber())
                                 .setVipCardNumber(order.getVipCardNumber())
-                                .setStatus(TicketStatusEnum.UNUSED.getStatus())
+                                .setStatus(TicketStatusEnum.UNUSED.getValue())
                                 .setClaimTime(LocalDate.now())
                                 .setExpiryDate(ticketInfo.getTicketEffectiveTime() == -1 ?
                                         null : LocalDate.now().plusDays(ticketInfo.getTicketEffectiveTime()))

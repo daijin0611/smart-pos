@@ -24,8 +24,8 @@ public class VipInfoTicketQuery{
     @Schema(description = "会员信息关键字", example = "张三")
     private String vipInfoFiled;
     
-    @Schema(description = "优惠券状态", example = "未使用")
-    private String status;
+    @Schema(description = "优惠券状态", example = "0")
+    private Integer status;
     
     @Schema(description = "活动id", example = "1")
     private Long activeId;

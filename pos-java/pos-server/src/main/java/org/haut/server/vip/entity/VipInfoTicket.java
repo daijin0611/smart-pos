@@ -86,7 +86,7 @@ public class VipInfoTicket {
     /**
      * 使用状态
      */
-    private String status;
+    private Integer status;
 
     /**
      * 领取时间

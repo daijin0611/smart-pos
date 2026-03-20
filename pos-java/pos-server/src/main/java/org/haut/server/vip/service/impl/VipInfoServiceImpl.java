@@ -356,7 +356,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         // 2. 批量更新优惠券状态为已取消
         vipInfoTicketService.lambdaUpdate()
                 .in(VipInfoTicket::getId,dto.getTicketIds())
-                .set(VipInfoTicket::getStatus, TicketStatusEnum.CANCELLED.getStatus())
+                .set(VipInfoTicket::getStatus, TicketStatusEnum.CANCELLED.getValue())
                 .update();
         log.info("优惠券取消成功，优惠券id：{}", dto.getTicketIds());
     }
@@ -457,7 +457,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         if (!tickets.isEmpty()) {
             // 检查是否已使用
             for (VipInfoTicket ticket : tickets) {
-                if (TicketStatusEnum.USED.getStatus().equals(ticket.getStatus())) {
+                if (TicketStatusEnum.USED.getValue().equals(ticket.getStatus())) {
                     throw new BusinessException("充值赠送的优惠券已被使用，无法冲正");
                 }
             }

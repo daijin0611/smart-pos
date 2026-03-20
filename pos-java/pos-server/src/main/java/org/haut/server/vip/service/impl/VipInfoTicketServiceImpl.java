@@ -75,7 +75,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
         for (int i = 0; i < dto.getNumber(); i++){
             vipInfoTickets.add(vipInfoTicketConvert.toEntity(dto)
                     .setTicketCode(CodeUtils.generateByTime(PrefixConst.TICKET))
-                    .setStatus(TicketStatusEnum.UNUSED.getStatus())
+                    .setStatus(TicketStatusEnum.UNUSED.getValue())
                     .setClaimTime(LocalDate.now())
                     .setOrgId(auth.getOrgId())
                     .setTicketType(vipTicket.getTicketType())
@@ -105,7 +105,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
                         .or()
                         .like(VipInfoTicket::getVipCardNumber, query.getVipInfoFiled())
                 )
-                .eq(StringUtils.hasText(query.getStatus()),
+                .eq(query.getStatus() != null,
                     VipInfoTicket::getStatus, query.getStatus())
                 .eq(query.getActiveId() != null,
                     VipInfoTicket::getActiveId, query.getActiveId())
@@ -140,7 +140,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
         // 2. 更新优惠券状态
         lambdaUpdate()
             .in(VipInfoTicket::getId, ticketIds)
-            .set(VipInfoTicket::getStatus, TicketStatusEnum.USED.getStatus())
+            .set(VipInfoTicket::getStatus, TicketStatusEnum.USED.getValue())
                 .set(VipInfoTicket::getUsedOrderCode, orderCode)
             .update();
         log.info("更新优惠券状态完成");
@@ -162,7 +162,7 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
         log.info("开始校验优惠券");
         List<VipInfoTicket> usedTickets = vipInfoTickets.stream()
                 // 已使用的优惠券
-                .filter(t -> TicketStatusEnum.USED.getStatus().equals(t.getStatus()))
+                .filter(t -> TicketStatusEnum.USED.getValue().equals(t.getStatus()))
                 .toList();
         if (!usedTickets.isEmpty())
             throw new BusinessException("优惠券已使用");

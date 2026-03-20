@@ -592,7 +592,7 @@ create table vip_info_ticket
     ticket_type      tinyint                      null comment '优惠券类型',
     vip_name         varchar(255)                 null comment '领取人名称',
     vip_phone_number varchar(255)                 null comment '领取人手机号',
-    status           varchar(20)                  null comment '使用状态',
+    status           tinyint                      null comment '使用状态（0 未使用，1 已使用，2 已取消）',
     claim_time       date                         null comment '领取时间',
     expiry_date      date                         null comment '到期时间',
     ticket_code      varchar(255)                 null comment '优惠券码',
