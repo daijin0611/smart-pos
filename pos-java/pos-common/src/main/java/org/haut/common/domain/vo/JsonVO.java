@@ -109,6 +109,7 @@ public class JsonVO<T> implements Serializable {
         return create(data, ResultStatus.FAIL);
     }
 
+
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**

@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
                 .limit(5)
                 .toList();
         log.error("{}:\n{}",ex.getMessage(),stackTrace);
-        return JsonVO.fail(ex.getMessage());
+        return JsonVO.create(null, ResultStatus.FAIL.getCode(), ex.getMessage());
     }
 
     @ExceptionHandler(MissingRequestValueException.class)
