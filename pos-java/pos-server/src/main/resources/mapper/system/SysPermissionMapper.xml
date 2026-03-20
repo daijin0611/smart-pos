@@ -24,7 +24,7 @@
     <select id="queryListByRoleId" resultMap="BaseResultMap" parameterType="long">
         select *
         from sys_permission sp
-        left join pos.sys_role_permission srp on sp.id = srp.permission_id
+        left join sys_role_permission srp on sp.id = srp.permission_id
         where srp.role_id = #{roleId}
         AND sp.is_delete = 0
         AND sp.perm_status = 0
@@ -32,7 +32,7 @@
     <select id="queryListByUserId" resultMap="BaseResultMap" parameterType="long">
         select distinct sp.*
         from sys_permission sp
-        left join pos.sys_role_permission srp on sp.id = srp.permission_id
+        left join sys_role_permission srp on sp.id = srp.permission_id
         where srp.role_id = (
             select role_id from sys_user where sys_user.id = #{userId}
             )

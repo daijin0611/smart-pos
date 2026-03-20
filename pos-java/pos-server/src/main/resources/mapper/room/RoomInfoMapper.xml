@@ -27,7 +27,7 @@
             count(rb.id) as bed_count,
             count(case when rb.status = 0 then 1 end) as free_bed_count
         from room_info ri
-                 left join pos.room_bed rb on ri.id = rb.room_info_id
+                 left join room_bed rb on ri.id = rb.room_info_id
         where ri.is_delete = 0 and ri.org_id = #{orgId}
         group by ri.id
     </select>
