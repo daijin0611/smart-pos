@@ -3,6 +3,7 @@ package org.haut.server.order.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderCreateDTO;
+import org.haut.common.domain.dto.order.OrderPreviewDTO;
 import org.haut.common.domain.dto.order.OrderRollBackDTO;
 import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.order.OrderReconcileDTO;
@@ -10,6 +11,7 @@ import org.haut.common.domain.vo.order.OrderReceiptVO;
 import org.haut.common.domain.query.order.OrderPageQuery;
 import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
+import org.haut.common.domain.vo.order.OrderPreviewVO;
 import org.haut.server.order.entity.OrderInfoEntity;
 
 /**
@@ -36,6 +38,14 @@ public interface OrderInfoService extends IService<OrderInfoEntity> {
      * @return
      */
     Long settleOrder(OrderSettleDTO settleOrderDTO);
+
+    /**
+     * 预览订单价格
+     *
+     * @param previewDTO 预览订单请求DTO
+     * @return 预览价格结果VO
+     */
+    OrderPreviewVO previewOrderPrice(OrderPreviewDTO previewDTO);
 
     /**
      * 对单（结算后24小时内允许修改订单明细与支付信息）

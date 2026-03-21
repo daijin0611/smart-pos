@@ -255,6 +255,11 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         return PageDTO.create(page, OrderDetailVO.class);
     }
 
+    @Override
+    public OrderDetailEntity calculateDetailPriceInfo(OrderDetailCreateDTO dto) {
+        return handelDetail(dto);
+    }
+
     /**
      * 根据不同业务类型处理订单业务信息
      * @param dto 订单明细DTO

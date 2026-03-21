@@ -36,6 +36,13 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
     List<OrderDetailVO> queryByOrderId(Long orderId);
 
     /**
+     * 根据不同业务类型处理订单业务信息，并计算基础价格
+     * @param dto 订单明细DTO
+     * @return 包含基础价格计算结果的订单明细实体
+     */
+    OrderDetailEntity calculateDetailPriceInfo(OrderDetailCreateDTO dto);
+
+    /**
      * 添加订单明细
      * @param dto
      * @param orderId

@@ -9,6 +9,7 @@ import org.haut.common.domain.dto.order.*;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
+import org.haut.common.domain.vo.order.OrderPreviewVO;
 import org.haut.common.domain.vo.order.OrderReceiptVO;
 import org.haut.server.order.service.OrderDetailService;
 import org.haut.server.order.service.OrderInfoService;
@@ -49,6 +50,13 @@ public class OrderController {
         return JsonVO.success(receipt);
     }
 
+
+    @PostMapping("/preview")
+    @Operation(summary = "订单价格预览", description = "实时预览当前订单选项的金额，包含使用代金券或体验券后的最终价格，不保存数据。")
+    public JsonVO<OrderPreviewVO> previewOrderPrice(@Validated @RequestBody OrderPreviewDTO previewDTO) {
+        log.info("预览订单价格请求：{}", previewDTO);
+        return JsonVO.success(orderInfoService.previewOrderPrice(previewDTO));
+    }
 
     @PutMapping("/cancel-order/{orderId}")
     @Operation(summary = "取消订单", description = "取消一个未结算的订单，将订单状态修改为已取消。")

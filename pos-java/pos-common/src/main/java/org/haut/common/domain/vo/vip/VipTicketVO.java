@@ -96,6 +96,8 @@ public class VipTicketVO {
     @Schema(description = "优惠券描述")
     private String ticketDescription;
 
+
+
     @Data
     @Schema(description = "服务项目信息")
     public static class ServerItemVO {

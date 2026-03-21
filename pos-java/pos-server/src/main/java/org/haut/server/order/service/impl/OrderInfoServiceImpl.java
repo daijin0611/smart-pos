@@ -13,6 +13,9 @@ import org.haut.common.domain.dto.order.OrderCreateDTO;
 
 import org.haut.common.domain.dto.order.OrderRollBackDTO;
 import org.haut.common.domain.dto.order.OrderSettleDTO;
+import org.haut.common.domain.dto.order.OrderPreviewDTO;
+import org.haut.common.domain.dto.order.OrderTicketUseDTO;
+import org.haut.common.domain.dto.order.OrderDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderReconcileDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.order.OrderPageQuery;
@@ -21,6 +24,8 @@ import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.common.domain.vo.order.PaymentVO;
 import org.haut.common.domain.vo.order.OrderReceiptVO;
+import org.haut.common.domain.vo.order.OrderPreviewVO;
+import org.haut.common.domain.vo.order.OrderPreviewDetailVO;
 import org.haut.common.domain.vo.order.ReceiptItemVO;
 import org.haut.common.enums.*;
 import org.haut.common.exception.BusinessException;
@@ -45,6 +50,8 @@ import org.haut.server.vip.entity.VipAsset;
 import org.haut.server.vip.entity.VipInfoTicket;
 import org.haut.server.stock.service.StockInOrderService;
 import org.haut.common.domain.dto.stock.StockInOrderCreateDTO;
+import org.haut.server.vip.mapper.VipTicketMapper;
+import org.haut.common.domain.vo.vip.VipTicketVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
@@ -83,6 +90,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private final RoomBedService roomBedService;
     private final VipAssetService vipAssetService;
     private final StockInOrderService stockInOrderService;
+    private final VipTicketMapper vipTicketMapper;
 
 
 
@@ -170,6 +178,156 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .set(OrderInfoEntity::getAfterBalance, afterBalance)
                 .update();
         return order.getId();
+    }
+
+    /**
+     * 预览订单价格
+     *
+     * @param previewDTO 预览订单请求DTO
+     * @return 预览价格结果VO
+     */
+    @Override
+    public OrderPreviewVO previewOrderPrice(OrderPreviewDTO previewDTO) {
+        log.info("开始预览订单价格: {}", previewDTO);
+        List<OrderDetailCreateDTO> details = previewDTO.getOrderDetails();
+        if (details == null || details.isEmpty()) {
+            throw new BusinessException("订单明细不能为空");
+        }
+
+        // 1. 初始化并计算基础金额
+        BigDecimal preTotalAmount = BigDecimal.ZERO;
+        List<OrderPreviewDetailVO> detailVOList = new ArrayList<>();
+        
+        for (OrderDetailCreateDTO sourceDto : details) {
+            OrderDetailEntity detailEntity = orderDetailService.calculateDetailPriceInfo(sourceDto);
+            
+            OrderPreviewDetailVO detailVO = new OrderPreviewDetailVO();
+            detailVO.setDetailType(sourceDto.getDetailType());
+            detailVO.setBid(sourceDto.getBid());
+            detailVO.setQuantity(sourceDto.getQuantity());
+            
+            BigDecimal stdPrice = detailEntity.getStdPrice() != null ? detailEntity.getStdPrice() : BigDecimal.ZERO;
+            detailVO.setStdPrice(stdPrice);
+            detailVO.setTruePrice(stdPrice); // Default truePrice
+            
+            BigDecimal qty = new BigDecimal(sourceDto.getQuantity() != null ? sourceDto.getQuantity() : 0);
+            detailVO.setTotalStdAmount(stdPrice.multiply(qty));
+            detailVO.setDiscountAmount(BigDecimal.ZERO);
+            detailVO.setTotalAmount(stdPrice.multiply(qty));
+            
+            detailVOList.add(detailVO);
+            preTotalAmount = preTotalAmount.add(detailVO.getTotalStdAmount());
+        }
+
+        // 2. 区分不同类型的优惠券
+        List<OrderTicketUseDTO> useTickets = previewDTO.getTicketUseList();
+        BigDecimal currentTotal = preTotalAmount;
+        BigDecimal finalDiscountAmount = BigDecimal.ZERO;
+
+        if (useTickets != null && !useTickets.isEmpty()) {
+            List<Long> ticketIds = useTickets.stream()
+                    .map(OrderTicketUseDTO::getTicketId)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            if (!ticketIds.isEmpty()) {
+                List<VipInfoTicket> vipInfoTickets = vipInfoTicketService.listByIds(ticketIds);
+                Map<Long, VipInfoTicket> ticketMap = vipInfoTickets.stream().collect(Collectors.toMap(VipInfoTicket::getId, t -> t));
+                
+                List<VipInfoTicket> usedOrExpire = vipInfoTickets.stream().filter(t -> 
+                    TicketStatusEnum.USED.getValue().equals(t.getStatus()) || 
+                    (t.getExpiryDate() != null && t.getExpiryDate().isBefore(java.time.LocalDate.now()))
+                ).toList();
+                
+                if (!usedOrExpire.isEmpty()) {
+                    throw new BusinessException("包含已使用或已过期优惠券，无法核算");
+                }
+
+                // 2.1 处理项目券 (体验券/疗程券)
+                for (OrderTicketUseDTO usage : useTickets) {
+                    VipInfoTicket entity = ticketMap.get(usage.getTicketId());
+                    if (entity == null) continue;
+                    VipTicketVO template = vipTicketMapper.getOneById(entity.getVipTicketId());
+                    if (template == null) continue;
+
+                    if (TicketTypeEnum.ITEM.getValue().equals(template.getTicketType())) {
+                        if (usage.getDetailIndex() == null || usage.getDetailIndex() >= detailVOList.size()) {
+                            throw new BusinessException("项目券缺少对应的明细索引或索引超限");
+                        }
+                        OrderPreviewDetailVO targetDetail = detailVOList.get(usage.getDetailIndex());
+                        
+                        boolean isValidItem = false;
+                        if (template.getServerItems() != null) {
+                            for (VipTicketVO.ServerItemVO item : template.getServerItems()) {
+                                if (item.getId().equals(targetDetail.getBid())) {
+                                    isValidItem = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!isValidItem) {
+                            throw new BusinessException("项目体验券(" + template.getTicketName() + ")不适用于选定的服务项目");
+                        }
+                        
+                        // 抵扣一次标准单价
+                        BigDecimal discountDelta = targetDetail.getStdPrice();
+                        if (targetDetail.getDiscountAmount().add(discountDelta).compareTo(targetDetail.getTotalStdAmount()) > 0) {
+                            // 不要抵扣超过应付
+                            discountDelta = targetDetail.getTotalStdAmount().subtract(targetDetail.getDiscountAmount());
+                        }
+
+                        targetDetail.setDiscountAmount(targetDetail.getDiscountAmount().add(discountDelta));
+                        targetDetail.setTotalAmount(targetDetail.getTotalStdAmount().subtract(targetDetail.getDiscountAmount()));
+                        if (targetDetail.getQuantity() > 0) {
+                            targetDetail.setTruePrice(targetDetail.getTotalAmount().divide(new BigDecimal(targetDetail.getQuantity()), 2, java.math.RoundingMode.HALF_UP));
+                        }
+                    }
+                }
+
+                // 更新项目券抵减后的订单剩余应付总额
+                currentTotal = BigDecimal.ZERO;
+                for (OrderPreviewDetailVO vo : detailVOList) {
+                    currentTotal = currentTotal.add(vo.getTotalAmount());
+                }
+
+                // 2.2 处理代金券，代金券做全局折扣满减
+                for (OrderTicketUseDTO usage : useTickets) {
+                    VipInfoTicket entity = ticketMap.get(usage.getTicketId());
+                    if (entity == null) continue;
+                    VipTicketVO template = vipTicketMapper.getOneById(entity.getVipTicketId());
+                    if (template == null) continue;
+
+                    if (TicketTypeEnum.CONSUMER.getValue().equals(template.getTicketType())) {
+                        BigDecimal requiredFull = template.getTicketFullPayment() == null ? BigDecimal.ZERO : template.getTicketFullPayment();
+                        if (currentTotal.compareTo(requiredFull) < 0) {
+                            throw new BusinessException("订单当前实付金额未达到代金券(" + template.getTicketName() + ")的满减门槛");
+                        }
+                        BigDecimal reduceValue = template.getTicketValue() == null ? BigDecimal.ZERO : template.getTicketValue();
+                        
+                        currentTotal = currentTotal.subtract(reduceValue);
+                        finalDiscountAmount = finalDiscountAmount.add(reduceValue);
+                    }
+                }
+            }
+        }
+        
+        // 兜底校验
+        if (currentTotal.compareTo(BigDecimal.ZERO) < 0) {
+            currentTotal = BigDecimal.ZERO;
+        }
+
+        // 累加汇总优惠
+        for (OrderPreviewDetailVO detail : detailVOList) {
+            finalDiscountAmount = finalDiscountAmount.add(detail.getDiscountAmount());
+        }
+
+        OrderPreviewVO response = new OrderPreviewVO();
+        response.setTotalAmount(preTotalAmount);
+        response.setActualAmount(currentTotal);
+        response.setDiscountAmount(finalDiscountAmount);
+        response.setDetails(detailVOList);
+
+        return response;
     }
 
     /**
@@ -672,3 +830,5 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return base + extra + " [已对单]";
     }
 }
+
+
