@@ -243,7 +243,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         Page<OrderDetailEntity> page = new Page<>(query.getPageNum(), query.getPageSize());
         LocalDate[] date = query.getDate();
 
-        lambdaQuery().eq(query.getUserId() != null, OrderDetailEntity::getUserId, query.getUserId())
+        // 复杂的LambdaQuery
+        this.lambdaQuery().eq(query.getUserId() != null, OrderDetailEntity::getUserId, query.getUserId())
                 .eq(StringUtils.isNotBlank(query.getBusinessCode()), OrderDetailEntity::getBusinessCode, query.getBusinessCode())
                 .eq(OrderDetailEntity::getOrderStatus, OrderStatusEnum.SETTLED.getCode())
                 .between(date != null && date.length >= 2 && date[0] != null && date[1] != null, 
@@ -253,6 +254,32 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                 .orderByDesc(OrderDetailEntity::getSettledTime)
                 .page(page);
         return PageDTO.create(page, OrderDetailVO.class);
+    }
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateServerType(Long detailId, Integer serverType) {
+        if (detailId == null || serverType == null) {
+            throw new BusinessException(ResultStatus.PARAMS_INVALID.getMessage());
+        }
+        
+        OrderDetailEntity detail = this.getById(detailId);
+        if (detail == null) {
+            throw new BusinessException("订单明细不存在");
+        }
+        
+        // 只有服务类型才能有上钟类型，如果不是服务类型则报错或忽略，这里不强制限制。
+        // 但我们要检查订单是否是未结算状态(未结算才能修改相关属性)。
+        if (!OrderStatusEnum.UNSETTLED.getCode().equals(detail.getOrderStatus())) {
+             throw new BusinessException("订单已结算，无法修改上钟类型");
+        }
+        
+        detail.setServerType(serverType);
+        boolean updated = this.updateById(detail);
+        if (!updated) {
+            throw new BusinessException("修改上钟类型失败");
+        }
+        log.info("修改订单明细上钟类型成功，明细ID：{}，新的上钟类型：{}", detailId, serverType);
     }
 
     @Override

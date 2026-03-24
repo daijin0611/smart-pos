@@ -70,4 +70,11 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
      * @return
      */
     PageDTO<OrderDetailVO> pageQuery(OrderDetailPageQuery query);
+
+    /**
+     * 更新订单明细的上钟类型
+     * @param detailId 明细ID
+     * @param serverType 上钟类型（0 点钟，1 加钟，2 轮牌）
+     */
+    void updateServerType(Long detailId, Integer serverType);
 }

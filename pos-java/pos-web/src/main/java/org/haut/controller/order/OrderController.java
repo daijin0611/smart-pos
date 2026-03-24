@@ -82,6 +82,15 @@ public class OrderController {
         return JsonVO.success();
     }
 
+    @PutMapping("/update-server-type/{detailId}")
+    @Operation(summary = "修改上钟类型", description = "修改订单明细的上钟类型（0 点钟，1 加钟，2 轮牌）")
+    public JsonVO<String> updateServerType(
+            @PathVariable Long detailId,
+            @RequestParam Integer serverType) {
+        log.info("修改订单明细上钟类型请求：detailId={}, serverType={}", detailId, serverType);
+        orderDetailService.updateServerType(detailId, serverType);
+        return JsonVO.success("上钟类型修改成功");
+    }
 
     @GetMapping("/query-by-id/{orderId}")
     @Operation(summary = "根据订单ID查询订单信息", description = "根据订单ID查询订单详细信息，包含订单明细")
