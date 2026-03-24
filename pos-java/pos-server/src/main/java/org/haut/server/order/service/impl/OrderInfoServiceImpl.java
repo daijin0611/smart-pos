@@ -163,7 +163,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .update();
         log.info("床位{}状态已更新为空闲", order.getBedName());
         // 结算订单明细（返回保存后的明细列表）
-        List<OrderDetailEntity> savedDetails = orderDetailService.settleOrderDetailAndReturn(order, settleOrderDTO.getDetails());
+        List<OrderDetailEntity> savedDetails = orderDetailService.settleOrderDetailAndReturn(order, settleOrderDTO.getOrderDetails());
         log.info("订单明细结算完成");
         // 结算支付信息
         paymentDetailService.handelOrder(settleOrderDTO, order.getOrderCode());
@@ -770,7 +770,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .setTotalAmount(orderInfo.getTotalAmount())
                 .setActualAmount(orderInfo.getActualAmount())
                 .setDiscountAmount(orderInfo.getDiscountAmount())
-                .setItems(items)
+                .setOrderDetails(items)
                 .setPayments(paymentVOS);
     }
 

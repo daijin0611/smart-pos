@@ -77,7 +77,7 @@ public class OrderReceiptVO {
      * 订单明细列表
      */
     @Schema(description = "订单明细列表")
-    private List<ReceiptItemVO> items;
+    private List<ReceiptItemVO> orderDetails;
 
     /**
      * 支付明细列表

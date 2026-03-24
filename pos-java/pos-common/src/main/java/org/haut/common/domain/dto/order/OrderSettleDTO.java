@@ -94,7 +94,7 @@ public class OrderSettleDTO{
      */
     @Schema(description = "订单明细")
     @NotEmpty(message = "订单明细不能为空")
-    private List<OrderDetailSettleDTO> details;
+    private List<OrderDetailSettleDTO> orderDetails;
 
     /**
      * 优惠券ID
