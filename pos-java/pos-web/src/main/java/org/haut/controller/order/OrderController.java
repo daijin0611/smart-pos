@@ -92,6 +92,17 @@ public class OrderController {
         return JsonVO.success("上钟类型修改成功");
     }
 
+    @PutMapping("/update-server-employee/{detailId}")
+    @Operation(summary = "修改服务技师", description = "修改订单明细的服务技师")
+    public JsonVO<String> updateServerEmployee(
+            @PathVariable Long detailId,
+            @RequestParam Long userId,
+            @RequestParam(required = false) String userName) {
+        log.info("修改订单明细服务技师请求：detailId={}, userId={}, userName={}", detailId, userId, userName);
+        orderDetailService.updateServerEmployee(detailId, userId, userName);
+        return JsonVO.success("服务技师修改成功");
+    }
+
     @GetMapping("/query-by-id/{orderId}")
     @Operation(summary = "根据订单ID查询订单信息", description = "根据订单ID查询订单详细信息，包含订单明细")
     public JsonVO<OrderReceiptVO> queryById(@PathVariable Long orderId) {

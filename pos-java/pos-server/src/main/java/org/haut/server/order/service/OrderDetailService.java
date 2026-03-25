@@ -77,4 +77,12 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
      * @param serverType 上钟类型（0 点钟，1 加钟，2 轮牌）
      */
     void updateServerType(Long detailId, Integer serverType);
+
+    /**
+     * 更新订单明细的服务技师
+     * @param detailId 订单明细ID
+     * @param userId 技师ID
+     * @param userName 技师名称
+     */
+    void updateServerEmployee(Long detailId, Long userId, String userName);
 }

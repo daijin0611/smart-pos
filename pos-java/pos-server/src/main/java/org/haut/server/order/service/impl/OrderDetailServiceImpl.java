@@ -95,7 +95,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                         .setOrderStatus(OrderStatusEnum.UNSETTLED.getCode())
                         .setOrgId(auth.getOrgId()))
                 .toList();
-        this.saveBatch(list);
+        this.saveOrUpdateBatch(list);
         return orderDetailConvert.toVo(list);
     }
     
@@ -210,8 +210,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         kpiDetailService.handelOrder(order, orderDetails);
         log.info("orderCode:{} 处理疗业绩提成成功", order.getOrderCode());
         // 删除开单时的明细，具体订单明细由结算时决定
-        lambdaUpdate().eq(OrderDetailEntity::getOrderCode, order.getOrderCode()).remove();
-        log.info("orderCode:{} 删除暂存订单明细成功", order.getOrderCode());
+//        lambdaUpdate().eq(OrderDetailEntity::getOrderCode, order.getOrderCode()).remove();
+//        log.info("orderCode:{} 删除暂存订单明细成功", order.getOrderCode());
         // 保存订单明细
         List<OrderDetailEntity> details = orderDetails.stream()
                 .map(e -> orderDetailConvert.toEntity(e)
@@ -283,6 +283,25 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateServerEmployee(Long detailId, Long userId, String userName) {
+        if (detailId == null || userId == null) {
+            throw new BusinessException(ResultStatus.PARAMS_INVALID.getMessage());
+        }
+        
+        OrderDetailEntity detail = this.getById(detailId);
+        if (detail == null) {
+            throw new BusinessException("订单明细不存在");
+        }
+        
+        detail.setUserId(userId);
+        if (userName != null) {
+            detail.setUserName(userName);
+        }
+        this.updateById(detail);
+    }
+
+    @Override
     public OrderDetailEntity calculateDetailPriceInfo(OrderDetailCreateDTO dto) {
         return handelDetail(dto);
     }
@@ -320,3 +339,4 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         return detail;
     }
 }
+
