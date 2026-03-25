@@ -312,8 +312,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
             case CURE_TICKET -> {
                 ServerCureTicket ticket = serverCureTicketService.getById(dto.getBid());
                 detail.setBusinessName(ticket.getName()) // 业务名称
-                        .setStdPrice(ticket.getPrice())
-                        .setTruePrice(ticket.getPrice()); // 标准价格
+                        .setStdPrice(ticket.getPrice())// 标准价格
+                        .setTruePrice(ticket.getPrice()); // 实际单价
             }
             default -> throw new BusinessException("未知的业务类型");
         };

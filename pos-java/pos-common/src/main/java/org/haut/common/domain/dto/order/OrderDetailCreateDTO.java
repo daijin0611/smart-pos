@@ -18,7 +18,6 @@ public class OrderDetailCreateDTO {
     /**
      * 员工ID
      */
-    @NotNull(message = "员工ID不能为空")
     @Schema(description = "技师ID")
     private Long userId;
 
