@@ -302,6 +302,30 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String deleteDetail(Long detailId) {
+        if (detailId == null) {
+            throw new BusinessException(ResultStatus.PARAMS_INVALID.getMessage());
+        }
+
+        OrderDetailEntity detail = this.getById(detailId);
+        if (detail == null) {
+            throw new BusinessException("订单明细不存在");
+        }
+
+        if (!OrderStatusEnum.UNSETTLED.getCode().equals(detail.getOrderStatus())) {
+            throw new BusinessException("订单已结算，无法删除明细");
+        }
+
+        boolean removed = this.removeById(detailId);
+        if (!removed) {
+            throw new BusinessException("删除订单明细失败");
+        }
+        log.info("删除订单明细成功，明细ID：{}", detailId);
+        return "订单明细删除成功";
+    }
+
+    @Override
     public OrderDetailEntity calculateDetailPriceInfo(OrderDetailCreateDTO dto) {
         return handelDetail(dto);
     }

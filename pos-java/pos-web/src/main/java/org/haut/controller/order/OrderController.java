@@ -78,8 +78,7 @@ public class OrderController {
     @Operation(summary = "删除订单明细", description = "删除订单明细的方法")
     public JsonVO<String> deleteDetail(@PathVariable Long detailId) {
         log.info("删除订单明细请求：{}", detailId);
-        orderDetailService.removeById(detailId);
-        return JsonVO.success();
+        return JsonVO.success(orderDetailService.deleteDetail(detailId));
     }
 
     @PutMapping("/update-server-type/{detailId}")

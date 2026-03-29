@@ -85,4 +85,11 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
      * @param userName 技师名称
      */
     void updateServerEmployee(Long detailId, Long userId, String userName);
+
+    /**
+     * 删除订单明细
+     * @param detailId 明细ID
+     * @return 操作结果信息
+     */
+    String deleteDetail(Long detailId);
 }
