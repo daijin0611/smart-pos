@@ -126,7 +126,10 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
                 .or()
                 .eq(VipAsset::getVipCardNumber, vipInfo.getCardNumber())
                 .list();
-        List<VipInfoTicket> tickets = vipInfoTicketService.lambdaQuery().eq(VipInfoTicket::getVipInfoId, vipId).list();
+        List<VipInfoTicket> tickets = vipInfoTicketService.lambdaQuery()
+                .eq(VipInfoTicket::getVipInfoId, vipId)
+                .orderByAsc(VipInfoTicket::getExpiryDate)
+                .list();
         List<TicketCountVO> ticketCountVOS = vipInfoTicketConvert.toVOS(tickets);
         if (ticketCountVOS != null && !ticketCountVOS.isEmpty()){
             List<Long> ticketIds = tickets.stream().map(VipInfoTicket::getVipTicketId).toList();
