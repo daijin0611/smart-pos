@@ -169,26 +169,26 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
         if (c > 1)
             throw new BusinessException("会员资产折扣率不同，请重新选择");
         // 2. 更新余额
-        // 筛选会员卡支付的总金额
-        BigDecimal totalAmount = dto.getPaymentInfoList().stream()
+        // 建立 assetCode → paymentAmount 的映射
+        Map<String, BigDecimal> assetPayMap = dto.getPaymentInfoList().stream()
                 .filter(p -> p.getPaymentType().toString().equals(PaymentTypeEnum.ASSET.getCode()))
-                .map(PaymentInfoDTO::getPaymentAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        vipAssets.sort(Comparator.comparing(VipAsset::getAssetNum));
+                .collect(Collectors.toMap(PaymentInfoDTO::getAssetCode, PaymentInfoDTO::getPaymentAmount));
+        // 校验 assetIds 对应的资产与支付信息一一匹配
         for (VipAsset vipAsset : vipAssets) {
-            // 当前金额大于等于卡中余额，直接清空余额
-            if (totalAmount.compareTo(vipAsset.getAssetBalance()) >= 0){
-                totalAmount = totalAmount.subtract(vipAsset.getAssetBalance());
-                vipAssets.set(vipAssets.indexOf(vipAsset), vipAsset.setAssetBalance(BigDecimal.ZERO));
-            }else {
-                // 会员卡余额足够直接扣减
-                vipAssets.set(vipAssets.indexOf(vipAsset),
-                        vipAsset.setAssetBalance(vipAsset.getAssetBalance().subtract(totalAmount)));
-                totalAmount = BigDecimal.ZERO;
-            }
+            if (!assetPayMap.containsKey(vipAsset.getAssetNum()))
+                throw new BusinessException("会员资产" + vipAsset.getAssetNum() + "未指定支付金额");
         }
-        if (totalAmount.compareTo(BigDecimal.ZERO) > 0)
-            throw new BusinessException("会员资产余额不足");
+        // 逐张卡校验余额并扣减指定金额
+        BigDecimal totalDeducted = BigDecimal.ZERO;
+        for (int i = 0; i < vipAssets.size(); i++) {
+            VipAsset vipAsset = vipAssets.get(i);
+            BigDecimal payAmount = assetPayMap.get(vipAsset.getAssetNum());
+            if (vipAsset.getAssetBalance().compareTo(payAmount) < 0)
+                throw new BusinessException("会员资产" + vipAsset.getAssetNum() + "余额不足");
+            vipAsset.setAssetBalance(vipAsset.getAssetBalance().subtract(payAmount));
+            vipAssets.set(i, vipAsset);
+            totalDeducted = totalDeducted.add(payAmount);
+        }
         int count = 0;
         // 乐观锁
         while (!saveOrUpdateBatch(vipAssets)){

@@ -63,6 +63,8 @@ public class PaymentDetailServiceImpl extends ServiceImpl<PaymentDetailMapper, P
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         if (sumPay.compareTo(dto.getActualAmount()) < 0)
             throw new BusinessException("支付金额不足");
+        if (sumPay.compareTo(dto.getActualAmount()) > 0)
+            throw new BusinessException("支付金额不能超过实付金额");
         // 2. 处理会员资产（校验+更新）
         // 使用会员资产则处理会员资产
         if (!CollectionUtil.isEmpty(dto.getAssetIds()))
