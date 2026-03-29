@@ -136,8 +136,9 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
         if (ticketIds.isEmpty())
             return;
         List<VipInfoTicket> vipInfoTickets = listByIds(ticketIds);
+        // 2. 校验优惠券
         validateTickets(vipInfoTickets, useTickets, settleOrderDTO.getTotalAmount(), orderDetails);
-        // 2. 更新优惠券状态
+        // 3. 更新优惠券状态
         lambdaUpdate()
             .in(VipInfoTicket::getId, ticketIds)
             .set(VipInfoTicket::getStatus, TicketStatusEnum.USED.getValue())
@@ -170,8 +171,13 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
                 // 过期优惠券
                 .filter(t -> t.getExpiryDate() != null && t.getExpiryDate().isBefore(LocalDate.now()))
                 .toList();
-        if (!expireTickets.isEmpty())
-            throw new BusinessException("优惠券已过期");
+        if (!expireTickets.isEmpty()){
+            String ticketCodes = expireTickets.stream()
+                    .map(t -> t.getTicketCode() + "(过期于" + t.getExpiryDate() + ")")
+                    .collect(Collectors.joining("、"));
+            throw new BusinessException("优惠券已过期：" + ticketCodes);
+        }
+
         for (OrderTicketUseDTO ticket : useTickets){
             VipInfoTicket ticketEntity = getById(ticket.getTicketId());
             VipTicketVO ticketInfo = vipTicketMapper.getOneById(ticketEntity.getVipTicketId());
