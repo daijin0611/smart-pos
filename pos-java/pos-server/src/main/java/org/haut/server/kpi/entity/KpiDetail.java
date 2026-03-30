@@ -94,6 +94,16 @@ public class KpiDetail {
     private BigDecimal commission;
 
     /**
+     * 订单明细ID
+     */
+    private Long detailId;
+
+    /**
+     * 订单明细编号
+     */
+    private String detailCode;
+
+    /**
      * 门店id
      */
     private Long orgId;

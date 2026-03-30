@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 小票-订单明细项VO
@@ -24,10 +25,10 @@ public class ReceiptItemVO {
     private String itemName;
 
     /**
-     * 技师名称
+     * 技师名称列表
      */
-    @Schema(description = "技师名称")
-    private String technicianName;
+    @Schema(description = "技师名称列表")
+    private List<String> technicianNames;
 
     /**
      * 数量

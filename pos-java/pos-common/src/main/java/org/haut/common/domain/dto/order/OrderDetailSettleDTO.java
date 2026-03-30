@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Schema(description = "结算订单明细请求DTO")
@@ -45,12 +46,9 @@ public class OrderDetailSettleDTO {
     @Schema(description = "上钟类型（0 点钟，1 加钟，2 轮牌）")
     private Integer serverType;
 
-    @NotNull(message = "员工ID不能为空")
-    private Long userId;
-
-    @Schema(description = "技师名称")
-    private String userName;
-
     @Schema(description = "备注信息")
     private String remark;
+
+    @Schema(description = "技师列表")
+    private List<OrderDetailTechnicianDTO> technicians;
 }

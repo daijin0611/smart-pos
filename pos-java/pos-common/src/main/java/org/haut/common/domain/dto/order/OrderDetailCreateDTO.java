@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 订单明细DTO
@@ -15,18 +16,7 @@ import java.math.BigDecimal;
 @Schema(description = "订单明细DTO")
 public class OrderDetailCreateDTO {
 
-    /**
-     * 员工ID
-     */
-    @Schema(description = "技师ID")
-    private Long userId;
-
-    /**
-     * 员工名称
-     */
-    @Schema(description = "技师名称")
-    private String userName;
-
+    
     /**
      * 业务类型（0 产品，1 服务，2 疗程券）
      */
@@ -71,4 +61,10 @@ public class OrderDetailCreateDTO {
      */
     @Schema(description = "备注信息")
     private String remark;
+
+    /**
+     * 技师列表
+     */
+    @Schema(description = "技师列表")
+    private List<OrderDetailTechnicianDTO> technicians;
 }

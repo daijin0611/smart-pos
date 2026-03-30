@@ -3,9 +3,11 @@ package org.haut.common.domain.vo.order;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.haut.common.domain.dto.order.OrderDetailTechnicianDTO;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 订单明细响应VO
@@ -132,5 +134,8 @@ public class OrderDetailVO {
      */
     @Schema(description = "订单状态")
     private Integer orderStatus;
+
+    @Schema(description = "技师列表")
+    private List<OrderDetailTechnicianDTO> technicians;
 
 }
