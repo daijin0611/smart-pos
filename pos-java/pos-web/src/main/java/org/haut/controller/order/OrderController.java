@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.order.*;
+import org.haut.common.domain.dto.order.OrderDetailTechnicianDTO;
+import java.util.List;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.order.OrderCreateVO;
 import org.haut.common.domain.vo.order.OrderInfoVO;
@@ -92,13 +94,13 @@ public class OrderController {
     }
 
     @PutMapping("/update-server-employee/{detailId}")
-    @Operation(summary = "修改服务技师", description = "修改订单明细的服务技师")
+    @Operation(summary = "修改服务技师", description = "修改订单明细的服务技师（支持多人）")
     public JsonVO<String> updateServerEmployee(
             @PathVariable Long detailId,
-            @RequestParam Long userId,
-            @RequestParam(required = false) String userName) {
-        log.info("修改订单明细服务技师请求：detailId={}, userId={}, userName={}", detailId, userId, userName);
-        orderDetailService.updateServerEmployee(detailId, userId, userName);
+            @RequestBody List<OrderDetailTechnicianDTO> technicians) {
+        log.info("修改订单明细服务技师请求：detailId={}, 技师数量={}", detailId,
+                technicians != null ? technicians.size() : 0);
+        orderDetailService.updateServerEmployee(detailId, technicians);
         return JsonVO.success("服务技师修改成功");
     }
 
