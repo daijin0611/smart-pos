@@ -17,6 +17,7 @@ import org.haut.common.domain.vo.vip.VipCountVO;
 import org.haut.common.domain.vo.vip.VipTicketVO;
 import org.haut.common.enums.PaymentStatusEnum;
 import org.haut.common.enums.PaymentTypeEnum;
+import org.haut.common.enums.TicketStatusEnum;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
@@ -128,6 +129,7 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
                 .list();
         List<VipInfoTicket> tickets = vipInfoTicketService.lambdaQuery()
                 .eq(VipInfoTicket::getVipInfoId, vipId)
+                .eq(VipInfoTicket::getStatus, TicketStatusEnum.UNUSED.getStatus())
                 .orderByAsc(VipInfoTicket::getExpiryDate)
                 .list();
         List<TicketCountVO> ticketCountVOS = vipInfoTicketConvert.toVOS(tickets);
