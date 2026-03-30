@@ -5,6 +5,7 @@ import cn.hutool.core.collection.ListUtil;
 import cn.hutool.http.HttpBase;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.vip.PaymentInfoDTO;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.haut.common.domain.vo.order.PaymentVO;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -41,6 +43,7 @@ interface PaymentDetailConvert {
 */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentDetailServiceImpl extends ServiceImpl<PaymentDetailMapper, PaymentDetail>
     implements PaymentDetailService{
 
@@ -58,6 +61,15 @@ public class PaymentDetailServiceImpl extends ServiceImpl<PaymentDetailMapper, P
         // 1. 支付金额是否足够
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         List<PaymentInfoDTO> paymentInfoList = dto.getPaymentInfoList();
+        if(CollectionUtil.isEmpty(paymentInfoList)){
+            if(dto.getActualAmount().equals(BigDecimal.ZERO)){
+                log.warn("订单：{} 实收金额等于0，跳过支付信息处理", orderCode);
+                return;
+            }else{
+                log.warn("订单：{} 实收金额大于0，但是未选择支付方式！", orderCode);
+                throw new BusinessException("实收金额大于0，请选择支付方式！");
+            }
+        }
         BigDecimal sumPay = paymentInfoList.stream()
                 .map(PaymentInfoDTO::getPaymentAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

@@ -112,7 +112,6 @@ public class OrderSettleDTO{
      * 支付信息
      */
     @Schema(description = "支付信息")
-    @NotEmpty(message = "支付信息不能为空")
     private List<PaymentInfoDTO> paymentInfoList;
 
 

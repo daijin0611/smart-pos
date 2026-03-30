@@ -15,11 +15,10 @@ public class OrderTicketUseDTO {
     // 50 55
 
     /**
-     * 订单详情ID（已废弃，请使用detailIndex）
-     * @deprecated 使用 detailIndex 代替，保留用于向后兼容
+     * 订单详情ID
+     * @deprecated
      */
-    @Schema(description = "订单详情ID（已废弃）")
-    @Deprecated
+    @Schema(description = "订单详情ID")
     private Long detailId;
 
     /**
