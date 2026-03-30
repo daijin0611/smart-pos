@@ -130,6 +130,9 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
     public void handelOrder(OrderSettleDTO settleOrderDTO, String orderCode, List<OrderDetailEntity> orderDetails) {
         // 1. 校验优惠券是否已经使用
         List<OrderTicketUseDTO> useTickets = settleOrderDTO.getTicketUseList();
+        if (useTickets == null || useTickets.isEmpty()) {
+            return;
+        }
         List<Long> ticketIds = useTickets.stream()
                 .map(OrderTicketUseDTO::getTicketId)
                 .toList();
