@@ -166,9 +166,6 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                 .setOrderStatus(OrderStatusEnum.UNSETTLED.getCode())
                 .setOrgId(auth.getOrgId());
         
-        // 设置实际单价为0（结算前为0，结算时统一计算折扣）
-        detailEntity.setTruePrice(BigDecimal.ZERO);
-        
         // 保存订单明细
         boolean saved = this.save(detailEntity);
         if (!saved) {
@@ -343,20 +340,20 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
             case SERVER -> {
                 ServerItem item = serverItemService.getById(dto.getBid());
                 detail.setBusinessName(item.getItemName()) // 业务名称
-                        .setStdPrice(item.getItemPrice()) // 标准价格
-                        .setTruePrice(item.getItemPrice()); // 实际单价，这里先使用标准价格，后续会根据折扣规则计算
+                        .setStdPrice(dto.getStdPrice()) // 标准价格
+                        .setTruePrice(dto.getTruePrice()); // 实际单价，这里先使用标准价格，后续会根据折扣规则计算
             }
             case PRODUCT -> {
                 ServerProduct product = serverProductService.getById(dto.getBid());
                 detail.setBusinessName(product.getProductName()) // 业务名称
-                        .setStdPrice(product.getProductPrice()) // 标准价格
-                        .setTruePrice(product.getProductPrice()); // 实际单价
+                        .setStdPrice(dto.getStdPrice()) // 标准价格
+                        .setTruePrice(dto.getTruePrice()); // 实际单价
             }
             case CURE_TICKET -> {
                 ServerCureTicket ticket = serverCureTicketService.getById(dto.getBid());
                 detail.setBusinessName(ticket.getName()) // 业务名称
-                        .setStdPrice(ticket.getPrice())// 标准价格
-                        .setTruePrice(ticket.getPrice()); // 实际单价
+                        .setStdPrice(dto.getStdPrice())// 标准价格
+                        .setTruePrice(dto.getTruePrice()); // 实际单价
             }
             default -> throw new BusinessException("未知的业务类型");
         };
