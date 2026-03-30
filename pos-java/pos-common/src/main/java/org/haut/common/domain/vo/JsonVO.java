@@ -101,12 +101,15 @@ public class JsonVO<T> implements Serializable {
 
     /**
      * 静态构建处理失败数据对象
-     * @param data 数据对象
+     * @param message 失败提示信息
      * @param <T>  JsonVO嵌套元素类型
      * @return 返回创建的JSON VO对象
      */
-    public static <T> JsonVO<T> fail(T data) {
-        return create(data, ResultStatus.FAIL);
+    public static <T> JsonVO<T> fail(String message) {
+        String finalMessage = (message == null || message.isBlank())
+                ? ResultStatus.FAIL.getMessage()
+                : message;
+        return create(null, ResultStatus.FAIL.getCode(), finalMessage);
     }
 
 
