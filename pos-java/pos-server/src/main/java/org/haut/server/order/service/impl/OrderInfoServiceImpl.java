@@ -16,6 +16,7 @@ import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.order.OrderPreviewDTO;
 import org.haut.common.domain.dto.order.OrderTicketUseDTO;
 import org.haut.common.domain.dto.order.OrderDetailCreateDTO;
+import org.haut.common.domain.dto.order.OrderDetailTechnicianDTO;
 import org.haut.common.domain.dto.order.OrderReconcileDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.order.OrderPageQuery;
@@ -742,9 +743,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             java.math.BigDecimal qty = new java.math.BigDecimal(d.getQuantity() == null ? 0 : d.getQuantity());
             java.math.BigDecimal price = d.getTruePrice() == null ? java.math.BigDecimal.ZERO : d.getTruePrice();
             java.math.BigDecimal amount = price.multiply(qty);
+            List<String> techNames = d.getTechnicians() != null
+                    ? d.getTechnicians().stream().map(OrderDetailTechnicianDTO::getUserName).toList()
+                    : List.of();
             return new ReceiptItemVO()
                     .setItemName(d.getBusinessName())
-                    .setTechnicianName(d.getUserName())
+                    .setTechnicianNames(techNames)
                     .setQuantity(d.getQuantity())
                     .setStdPrice(d.getStdPrice())
                     .setTruePrice(d.getTruePrice())
