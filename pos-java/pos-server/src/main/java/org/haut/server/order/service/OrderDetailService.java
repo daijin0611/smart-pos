@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
+import org.haut.common.domain.dto.order.OrderDetailTechnicianDTO;
 import org.haut.common.domain.query.order.OrderDetailPageQuery;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.server.order.entity.OrderDetailEntity;
@@ -79,12 +80,11 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
     void updateServerType(Long detailId, Integer serverType);
 
     /**
-     * 更新订单明细的服务技师
+     * 更新订单明细的服务技师（多人模式）
      * @param detailId 订单明细ID
-     * @param userId 技师ID
-     * @param userName 技师名称
+     * @param technicians 技师列表
      */
-    void updateServerEmployee(Long detailId, Long userId, String userName);
+    void updateServerEmployee(Long detailId, List<OrderDetailTechnicianDTO> technicians);
 
     /**
      * 删除订单明细

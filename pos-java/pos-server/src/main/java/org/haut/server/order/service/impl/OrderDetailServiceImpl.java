@@ -9,6 +9,7 @@ import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
+import org.haut.common.domain.dto.order.OrderDetailTechnicianDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.order.OrderDetailPageQuery;
 import org.haut.common.domain.query.server.ServerItemQuery;
@@ -25,10 +26,12 @@ import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
 import org.haut.server.kpi.service.KpiDetailService;
 import org.haut.server.order.entity.OrderDetailEntity;
+import org.haut.server.order.entity.OrderDetailTechnicianEntity;
 import org.haut.server.order.entity.OrderInfoEntity;
 import org.haut.server.order.mapper.OrderDetailMapper;
 import org.haut.server.order.mapper.OrderInfoMapper;
 import org.haut.server.order.service.OrderDetailService;
+import org.haut.server.order.service.OrderDetailTechnicianService;
 import org.haut.server.server.entity.ServerCureTicket;
 import org.haut.server.server.entity.ServerItem;
 import org.haut.server.server.entity.ServerProduct;
@@ -42,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -70,6 +74,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     private final ServerCureTicketService serverCureTicketService;
     private final StockOutOrderService stockOutOrderService;
     private final KpiDetailService kpiDetailService;
+    private final OrderDetailTechnicianService orderDetailTechnicianService;
 
     /**
      * 创建订单明细
@@ -96,6 +101,14 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                         .setOrgId(auth.getOrgId()))
                 .toList();
         this.saveOrUpdateBatch(list);
+
+        // 保存技师关联
+        for (int i = 0; i < list.size(); i++) {
+            OrderDetailEntity entity = list.get(i);
+            List<OrderDetailTechnicianDTO> technicians = orderDetails.get(i).getTechnicians();
+            orderDetailTechnicianService.saveTechnicians(entity.getId(), technicians);
+        }
+
         return orderDetailConvert.toVo(list);
     }
     
@@ -108,19 +121,20 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     @Override
     public List<OrderDetailVO> queryByOrderId(Long orderId) {
         log.info("查询订单明细列表，订单ID：{}", orderId);
-        
+
         if (orderId == null) {
             throw new BusinessException("订单ID不能为空");
         }
-        
-        // 使用MyBatis Plus的LambdaQueryWrapper进行查询
+
         List<OrderDetailEntity> detailEntities = this.lambdaQuery()
                 .eq(OrderDetailEntity::getOrderId, orderId)
                 .list();
-        
-        // 转换为VO对象
+
         List<OrderDetailVO> detailVOs = orderDetailConvert.toVo(detailEntities);
-        
+
+        // 填充技师列表
+        fillTechnicians(detailEntities, detailVOs);
+
         log.info("查询到订单明细数量：{}", detailVOs.size());
         return detailVOs;
     }
@@ -171,7 +185,10 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         if (!saved) {
             throw new BusinessException("添加订单明细失败");
         }
-        
+
+        // 保存技师关联
+        orderDetailTechnicianService.saveTechnicians(detailEntity.getId(), dto.getTechnicians());
+
         log.info("订单明细添加成功，明细编号：{}", detailEntity.getDetailCode());
         return "订单明细添加成功";
     }
@@ -224,6 +241,15 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         // 更新或者保存订单明细
         saveOrUpdateBatch(details);
         log.info("orderCode:{} 订单明细处理成功", order.getOrderCode());
+
+        // 保存/更新技师关联
+        for (int i = 0; i < details.size(); i++) {
+            OrderDetailEntity entity = details.get(i);
+            List<OrderDetailTechnicianDTO> technicians = orderDetails.get(i).getTechnicians();
+            if (technicians != null && !technicians.isEmpty()) {
+                orderDetailTechnicianService.updateTechnicians(entity.getId(), technicians);
+            }
+        }
 
         // 返回保存后的实体列表（包含自动生成的ID）
         return details;
@@ -281,21 +307,22 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateServerEmployee(Long detailId, Long userId, String userName) {
-        if (detailId == null || userId == null) {
+    public void updateServerEmployee(Long detailId, List<OrderDetailTechnicianDTO> technicians) {
+        if (detailId == null || technicians == null || technicians.isEmpty()) {
             throw new BusinessException(ResultStatus.PARAMS_INVALID.getMessage());
         }
-        
+
         OrderDetailEntity detail = this.getById(detailId);
         if (detail == null) {
             throw new BusinessException("订单明细不存在");
         }
-        
-        detail.setUserId(userId);
-        if (userName != null) {
-            detail.setUserName(userName);
+
+        if (!OrderStatusEnum.UNSETTLED.getCode().equals(detail.getOrderStatus())) {
+            throw new BusinessException("订单已结算，无法修改服务技师");
         }
-        this.updateById(detail);
+
+        orderDetailTechnicianService.updateTechnicians(detailId, technicians);
+        log.info("修改订单明细服务技师成功，明细ID：{}，技师数量：{}", detailId, technicians.size());
     }
 
     @Override
@@ -325,6 +352,34 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     @Override
     public OrderDetailEntity calculateDetailPriceInfo(OrderDetailCreateDTO dto) {
         return handelDetail(dto);
+    }
+
+    /**
+     * 填充订单明细VO的技师列表
+     */
+    private void fillTechnicians(List<OrderDetailEntity> entities, List<OrderDetailVO> vos) {
+        if (entities == null || entities.isEmpty()) {
+            return;
+        }
+        List<Long> detailIds = entities.stream()
+                .map(OrderDetailEntity::getId)
+                .toList();
+        List<OrderDetailTechnicianEntity> allTechnicians =
+                orderDetailTechnicianService.listByDetailIds(detailIds);
+        Map<Long, List<OrderDetailTechnicianDTO>> techMap = allTechnicians.stream()
+                .collect(Collectors.groupingBy(
+                        OrderDetailTechnicianEntity::getDetailId,
+                        Collectors.mapping(
+                                e -> new OrderDetailTechnicianDTO()
+                                        .setUserId(e.getUserId())
+                                        .setUserName(e.getUserName()),
+                                Collectors.toList()
+                        )
+                ));
+        for (int i = 0; i < vos.size(); i++) {
+            Long detailId = entities.get(i).getId();
+            vos.get(i).setTechnicians(techMap.getOrDefault(detailId, List.of()));
+        }
     }
 
     /**
