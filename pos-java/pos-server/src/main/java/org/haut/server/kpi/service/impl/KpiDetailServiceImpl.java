@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
+import org.haut.common.domain.dto.order.OrderDetailTechnicianDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.kpi.KpiListQuery;
 import org.haut.common.domain.query.kpi.KpiSummaryQuery;
@@ -34,7 +35,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Mapper(componentModel = "spring")
 interface KpiDetailConvert {
@@ -92,7 +95,7 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
     }
 
     /**
-     * 处理订单业绩
+     * 处理订单业绩（支持多人平分模式）
      * @param order 订单信息
      * @param orderDetails 订单明细
      */
@@ -100,18 +103,32 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
     @Transactional(rollbackFor = Exception.class)
     public void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails) {
         List<KpiDetail> kpis = orderDetails.stream()
-                .map(e ->
-                        new KpiDetail()
-                                .setOrderCode(order.getOrderCode())
-                                .setServiceCode(e.getBusinessCode())
-                                .setServiceName(e.getBusinessName())
-                                .setServiceType(e.getDetailType())
-                                .setItemType(e.getServerType())
-                                .setUserId(e.getUserId())
-                                .setUserName(e.getUserName())
-                                .setPerformance(e.getTruePrice())
-                                .setCommission(handelCommission(e))
-                                .setOrgId(order.getOrgId()))
+                .flatMap(detail -> {
+                    List<OrderDetailTechnicianDTO> technicians = detail.getTechnicians();
+                    if (technicians == null || technicians.isEmpty()) {
+                        return Stream.empty();
+                    }
+                    int count = technicians.size();
+                    BigDecimal totalCommission = handelCommission(detail);
+                    BigDecimal perCommission = totalCommission.divide(
+                            BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
+                    BigDecimal performance = detail.getTruePrice().divide(
+                            BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
+                    return technicians.stream()
+                            .map(t -> new KpiDetail()
+                                    .setOrderCode(order.getOrderCode())
+                                    .setServiceCode(detail.getBusinessCode())
+                                    .setServiceName(detail.getBusinessName())
+                                    .setServiceType(detail.getDetailType())
+                                    .setItemType(detail.getServerType())
+                                    .setUserId(t.getUserId())
+                                    .setUserName(t.getUserName())
+                                    .setPerformance(performance)
+                                    .setCommission(perCommission)
+                                    .setDetailId(detail.getId())
+                                    .setDetailCode(detail.getDetailCode())
+                                    .setOrgId(order.getOrgId()));
+                })
                 .toList();
         saveBatch(kpis);
     }
