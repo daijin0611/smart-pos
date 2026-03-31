@@ -131,7 +131,7 @@ public class SecurityConfiguration {
                                         HttpServletResponse response,
                                         AuthenticationException exception) throws IOException{
         response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(JsonVO.create(null, ResultStatus.USERNAME_OR_PASSWORD_ERROR).asJsonString());
+        response.getWriter().write(JsonVO.fail("用户名或者密码错误").asJsonString());
     }
 
     /**
