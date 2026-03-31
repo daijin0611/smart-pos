@@ -110,7 +110,19 @@ public class VipRechargeActiveAddDTO {
      */
     @Schema(description = "赠送是否跨店使用(0 不允许，1 允许)")
     private Integer presentIsCrossStore;
-    
+
+    /**
+     * 提成类型（0固定金额，1比例）
+     */
+    @Schema(description = "提成类型（0固定金额，1比例）")
+    private Integer commissionType;
+
+    /**
+     * 提成值
+     */
+    @Schema(description = "提成值")
+    private BigDecimal commissionValue;
+
     /**
      * 关联优惠券ID列表
      */

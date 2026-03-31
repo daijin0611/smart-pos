@@ -30,6 +30,8 @@ import org.haut.server.payment.entity.PaymentDetail;
 import org.haut.server.payment.mapper.PaymentDetailMapper;
 import org.haut.server.server.entity.ServerRechargeRole;
 import org.haut.server.server.mapper.ServerRechargeRoleMapper;
+import org.haut.server.system.entity.SysOrg;
+import org.haut.server.system.service.SysOrgService;
 import org.haut.server.vip.entity.*;
 import org.haut.server.vip.mapper.VipAssetMapper;
 import org.haut.server.vip.mapper.VipRechargeActiveMapper;
@@ -78,6 +80,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     private final PaymentDetailMapper paymentDetailMapper;
     private final VipInfoTicketService vipInfoTicketService;
     private final VipTicketService vipTicketService;
+    private final SysOrgService sysOrgService;
 
     /**
      * 获取会员列表,条件查询
@@ -230,8 +233,9 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         history.setAssetCode(assetNum);
 
         // 处理充值活动
+        VipRechargeActiveVO active = null;
         if (dto.getActiveId() != null){
-            handelActive(dto, history);
+            active = handelActive(dto, history);
         }
 
         // 创建充值记录
@@ -239,10 +243,6 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         log.info("充值记录：{}", history);
 
         // 创建业绩明细，支持多人业绩，为每个销售员都计算业绩
-        if (dto.getRechargeRoleId() == null){
-            throw  new BusinessException("未设置充值提成规则");
-        }
-        ServerRechargeRole role = serverRechargeRoleMapper.selectById(dto.getRechargeRoleId());
         List<RechargeDTO.UserKpiDTO> userKpiList = dto.getUserKpiList();
         BigDecimal reduceKpi = userKpiList.stream()
                 .map(RechargeDTO.UserKpiDTO::getKpi)
@@ -250,6 +250,28 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         if (reduceKpi.compareTo(dto.getRechargeValue()) != 0){
             throw new BusinessException("业绩金额与充值金额不一致");
         }
+
+        // 获取提成参数：活动充值用活动配置，自定义充值用门店默认规则
+        Integer commissionType;
+        BigDecimal commissionValue;
+        if (active != null) {
+            commissionType = active.getCommissionType();
+            commissionValue = active.getCommissionValue();
+            if (commissionType == null || commissionValue == null) {
+                throw new BusinessException("充值活动未配置提成规则");
+            }
+        } else {
+            SysOrg org = sysOrgService.getById(auth.getOrgId());
+            ServerRechargeRole defaultRole = serverRechargeRoleMapper.selectById(org.getDefaultRechargeRoleId());
+            if (defaultRole == null) {
+                throw new BusinessException("门店未设置默认充值提成规则");
+            }
+            commissionType = defaultRole.getCommissionType();
+            commissionValue = defaultRole.getRechargeCommissionValue();
+        }
+
+        final Integer finalCommissionType = commissionType;
+        final BigDecimal finalCommissionValue = commissionValue;
         List<KpiDetail> kpi = userKpiList.stream().map(kpiUser ->
                 new KpiDetail()
                         .setOrderCode(history.getHistoryCode())
@@ -260,7 +282,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                         .setUserId(kpiUser.getUserId())
                         .setUserName(kpiUser.getUserName())
                         .setPerformance(kpiUser.getKpi())
-                        .setCommission(handelCommission(kpiUser.getKpi(), role))
+                        .setCommission(handelCommission(kpiUser.getKpi(), finalCommissionType, finalCommissionValue))
                         .setOrgId(auth.getOrgId())
         ).toList();
         kpiDetailMapper.insert(kpi);
@@ -484,8 +506,9 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
      * 处理充值活动
      * @param dto 充值参数
      * @param history 充值记录
+     * @return 充值活动信息，供后续提成计算复用
      */
-    private void handelActive(RechargeDTO dto, VipRechargeHistory history) {
+    private VipRechargeActiveVO handelActive(RechargeDTO dto, VipRechargeHistory history) {
         VipRechargeActiveVO active = vipRechargeActiveMapper.queryOneById(dto.getActiveId());
         if (active == null){
             throw new BusinessException("活动不存在");
@@ -499,11 +522,11 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         }
         if (active.getActiveType().equals(RechargeActiveTypeEnum.ANOTHER.getValue())){
             log.warn("活动类型为{}，暂不处理", active.getActiveType());
-            return;
+            return active;
         }
         // 创建赠送金资产
         if (!active.getActiveType().equals(RechargeActiveTypeEnum.TICKET.getValue())){
-            if (active.getPresentValue().compareTo(BigDecimal.ZERO) > 0){
+            if (active.getPresentValue() != null && active.getPresentValue().compareTo(BigDecimal.ZERO) > 0){
                 String code = vipAssetService.createAsset(new AssetCreateDTO()
                         .setVipId(dto.getVipId())
                         .setAssetBalance(active.getPresentValue())
@@ -540,6 +563,25 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
             }).mapToInt(i -> i).sum();
             history.setTicketInfo(ticketInfo.toString());
             history.setTicketNum(sum);
+        }
+        return active;
+    }
+
+    /**
+     * 处理提成金额（通过提成类型和提成值）
+     * @param performance 业绩金额
+     * @param commissionType 提成类型（0固定金额，1比例）
+     * @param commissionValue 提成值
+     * @return 提成金额
+     */
+    private BigDecimal handelCommission(BigDecimal performance, Integer commissionType, BigDecimal commissionValue) {
+        if (CommissionTypeEnum.FIXED.getValue().equals(commissionType)) {
+            return commissionValue;
+        } else if (CommissionTypeEnum.RATIO.getValue().equals(commissionType)) {
+            return performance.multiply(commissionValue)
+                    .divide(new BigDecimal("100"), 2, RoundingMode.UP);
+        } else {
+            throw new BusinessException("提成类型错误");
         }
     }
 

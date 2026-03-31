@@ -36,9 +36,6 @@ public class RechargeDTO {
     private Integer assetDiscountBase;
     @Schema(description = "资产是否允许跨店（0 不允许，1 允许）")
     private Integer assetIsCrossStore;
-    @Schema(description = "充值提成规则id")
-    @NotNull(message = "充值提成规则不能为空")
-    private Long rechargeRoleId;
 
     @Schema(description = "业绩技师信息(支持多人业绩)")
     private List<UserKpiDTO> userKpiList;
