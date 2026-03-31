@@ -110,7 +110,13 @@ public class OrderDetailVO {
      */
     @Schema(description = "实际单价")
     private BigDecimal truePrice;
-    
+
+    /**
+     * VIP价格
+     */
+    @Schema(description = "VIP价格")
+    private BigDecimal vipPrice;
+
     /**
      * 销售数量
      */

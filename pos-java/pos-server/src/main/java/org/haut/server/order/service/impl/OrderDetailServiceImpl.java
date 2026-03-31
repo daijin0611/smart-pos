@@ -396,19 +396,22 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                 ServerItem item = serverItemService.getById(dto.getBid());
                 detail.setBusinessName(item.getItemName()) // 业务名称
                         .setStdPrice(dto.getStdPrice()) // 标准价格
-                        .setTruePrice(dto.getTruePrice()); // 实际单价，这里先使用标准价格，后续会根据折扣规则计算
+                        .setTruePrice(dto.getTruePrice()) // 实际单价，这里先使用标准价格，后续会根据折扣规则计算
+                        .setVipPrice(item.getVipItemPrice()); // VIP价格
             }
             case PRODUCT -> {
                 ServerProduct product = serverProductService.getById(dto.getBid());
                 detail.setBusinessName(product.getProductName()) // 业务名称
                         .setStdPrice(dto.getStdPrice()) // 标准价格
-                        .setTruePrice(dto.getTruePrice()); // 实际单价
+                        .setTruePrice(dto.getTruePrice()) // 实际单价
+                        .setVipPrice(product.getVipProductPrice()); // VIP价格
             }
             case CURE_TICKET -> {
                 ServerCureTicket ticket = serverCureTicketService.getById(dto.getBid());
                 detail.setBusinessName(ticket.getName()) // 业务名称
                         .setStdPrice(dto.getStdPrice())// 标准价格
-                        .setTruePrice(dto.getTruePrice()); // 实际单价
+                        .setTruePrice(dto.getTruePrice()) // 实际单价
+                        .setVipPrice(dto.getStdPrice()); // 疗程券VIP价格与标准价一致
             }
             default -> throw new BusinessException("未知的业务类型");
         };

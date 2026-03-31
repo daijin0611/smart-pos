@@ -122,6 +122,12 @@ public class OrderDetailEntity {
     private BigDecimal truePrice;
 
     /**
+     * VIP价格
+     */
+    @Schema(description = "VIP价格")
+    private BigDecimal vipPrice;
+
+    /**
      * 销售数量
      */
     @Schema(description = "销售数量")

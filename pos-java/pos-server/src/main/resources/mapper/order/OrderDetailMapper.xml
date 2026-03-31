@@ -20,6 +20,7 @@
         <result column="business_code" property="businessCode" />
         <result column="std_price" property="stdPrice" />
         <result column="true_price" property="truePrice" />
+        <result column="vip_price" property="vipPrice" />
         <result column="quantity" property="quantity" />
         <result column="server_type" property="serverType" />
         <result column="settled_time" property="settledTime" />
@@ -30,7 +31,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, create_time, update_time, is_delete, remark, detail_code, order_id, order_code,
-        user_id, user_name, detail_type, bid, business_name, business_code, std_price, true_price, quantity, server_type, settled_time, order_status, org_id
+        user_id, user_name, detail_type, bid, business_name, business_code, std_price, true_price, vip_price, quantity, server_type, settled_time, order_status, org_id
     </sql>
 
 </mapper>
