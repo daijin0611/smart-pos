@@ -146,10 +146,10 @@ public class VipRechargeActiveVO {
     private String remark;
     
     /**
-     * 机构ID
+     * 关联门店ID列表
      */
-    @Schema(description = "机构ID")
-    private Long orgId;
+    @Schema(description = "关联门店ID列表")
+    private List<Long> orgIds;
 
     /**
      * 优惠券列表

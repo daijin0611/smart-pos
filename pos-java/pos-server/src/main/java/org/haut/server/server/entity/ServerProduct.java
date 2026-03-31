@@ -110,12 +110,6 @@ public class ServerProduct {
     private Integer status;
 
     /**
-     * 组织id
-     */
-    @Schema(description = "所属组织ID")
-    private Long orgId;
-
-    /**
      * 单位
      */
     @Schema(description = "产品单位")

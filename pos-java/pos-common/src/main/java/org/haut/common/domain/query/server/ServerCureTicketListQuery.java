@@ -16,6 +16,12 @@ public class ServerCureTicketListQuery {
     /**
      * 状态
      */
-    @Schema(description = "状态")  
+    @Schema(description = "状态")
     private Integer status;
+
+    /**
+     * 组织ID（可选，用于筛选门店关联的疗程券）
+     */
+    @Schema(description = "组织ID")
+    private Long orgId;
 }

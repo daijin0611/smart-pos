@@ -14,4 +14,7 @@ public class ServerItemQuery {
 
     @Schema(description = "服务项目状态(0 正常，1 停用，null 全部状态)")
     private Integer itemStatus;
+
+    @Schema(description = "门店ID（可选，不传则查全部）")
+    private Long orgId;
 }

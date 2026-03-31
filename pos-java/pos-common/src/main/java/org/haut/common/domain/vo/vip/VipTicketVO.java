@@ -85,10 +85,10 @@ public class VipTicketVO {
     private List<ServerItemVO> serverItems;
 
     /**
-     * 门店id
+     * 关联门店ID列表
      */
-    @Schema(description = "门店id")
-    private Long orgId;
+    @Schema(description = "关联门店ID列表")
+    private List<Long> orgIds;
 
     /**
      * 优惠券描述

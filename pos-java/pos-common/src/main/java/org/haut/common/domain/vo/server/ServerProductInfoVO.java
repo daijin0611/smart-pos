@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Schema(description = "服务产品详细信息展示对象")
@@ -51,8 +52,8 @@ public class ServerProductInfoVO {
     @Schema(description = "产品状态(0-启用，1-禁用)", example = "0")
     private Integer productStatus;
     
-    @Schema(description = "组织ID", example = "1")
-    private Long orgId;
+    @Schema(description = "关联门店ID列表")
+    private List<Long> orgIds;
 
     @Schema(description = "单位", example = "个")
     private String unit;

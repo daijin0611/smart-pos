@@ -151,9 +151,4 @@ public class VipRechargeActive {
     @Schema(description = "提成值")
     private BigDecimal commissionValue;
 
-    /**
-     * 机构ID
-     */
-    @Schema(description = "机构ID")
-    private Long orgId;
 }

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -103,8 +104,8 @@ public class ServerItemVO {
     private Integer itemStatus;
 
     /**
-     * 机构id
+     * 关联门店ID列表
      */
-    @Schema(description = "机构id")
-    private Long orgId;
+    @Schema(description = "关联门店ID列表")
+    private List<Long> orgIds;
 }

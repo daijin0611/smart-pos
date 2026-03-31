@@ -73,8 +73,4 @@ public class VipTicket {
      */
     private BigDecimal ticketValue;
 
-    /**
-     * 门店id
-     */
-    private Long orgId;
 }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  *
@@ -66,5 +67,8 @@ public class ServerProductUpdateDTO {
 
     @Schema(description = "单位", example = "个")
     private String unit;
+
+    @Schema(description = "关联门店ID列表")
+    private List<Long> orgIds;
 }
 

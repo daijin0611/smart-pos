@@ -32,6 +32,8 @@ import org.haut.server.stock.mapper.StockInItemMapper;
 import org.haut.server.stock.mapper.StockLogMapper;
 import org.haut.server.stock.service.StockInOrderService;
 import org.haut.server.stock.mapper.StockInOrderMapper;
+import org.haut.server.system.service.OrgRelationService;
+import org.haut.common.enums.OrgRelationTypeEnum;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +59,7 @@ import java.util.stream.Collectors;
 public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, StockInOrder>
     implements StockInOrderService {
     private final ServerProductMapper serverProductMapper;
+    private final OrgRelationService orgRelationService;
     private final StockInItemMapper stockInItemMapper;
     private final OrderDetailService orderDetailService;
     private final StockLogMapper stockLogMapper;
@@ -181,8 +184,12 @@ public class StockInOrderServiceImpl extends ServiceImpl<StockInOrderMapper, Sto
     private List<ServerProduct> getProductToUpdate(List<StockInItem> stockInItems, AuthInfoDTO auth) {
         List<Long> productIds = stockInItems.stream().map(StockInItem::getProductId).toList();
         LambdaQueryWrapper<ServerProduct> productWrapper = Wrappers.lambdaQuery(ServerProduct.class)
-                .in(ServerProduct::getId, productIds)
-                .eq(ServerProduct::getOrgId, auth.getOrgId());
+                .in(ServerProduct::getId, productIds);
+        List<Long> orgProductIds = orgRelationService.getItemIdsByOrg(
+                OrgRelationTypeEnum.SERVER_PRODUCT.getValue(), auth.getOrgId());
+        if (!orgProductIds.isEmpty()) {
+            productWrapper.in(ServerProduct::getId, orgProductIds);
+        }
         List<ServerProduct> serverProducts = serverProductMapper.selectList(productWrapper);
         // 现有产品转换为Map，方便后续查找
         Map<Long, ServerProduct> productMap = serverProducts.stream()

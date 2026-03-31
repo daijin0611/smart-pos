@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.haut.common.constant.Const;
@@ -14,7 +15,9 @@ import org.haut.common.domain.dto.vip.VipRechargeActiveAddDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveStatusDTO;
 import org.haut.common.domain.query.vip.ActiveStatQuery;
 import org.haut.common.domain.vo.vip.RechargeHistoryVO;
+import org.haut.common.enums.OrgRelationTypeEnum;
 import org.haut.common.enums.RechargeActiveTypeEnum;
+import org.haut.server.system.service.OrgRelationService;
 import org.haut.server.vip.entity.VipRechargeActive;
 import org.haut.server.vip.entity.VipRechargeActiveTicket;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
@@ -47,6 +50,7 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
 
     private final VipRechargeActiveConvert vipRechargeActiveConvert;
     private final VipRechargeActiveTicketMapper vipRechargeActiveTicketMapper;
+    private final OrgRelationService orgRelationService;
     /**
      * 查询充值活动列表
      * 
@@ -56,9 +60,15 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
     @Override
     public List<VipRechargeActiveVO> queryList(VipRechargeActiveQuery query) {
         log.info("查询充值活动列表，查询条件：{}", query);
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
-        // 转换为VO并返回
-        return this.baseMapper.queryList(query, auth.getOrgId());
+        if (query.getOrgId() != null) {
+            List<Long> itemIds = orgRelationService.getItemIdsByOrg(
+                    OrgRelationTypeEnum.RECHARGE_ACTIVE.getValue(), query.getOrgId());
+            if (itemIds.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return this.baseMapper.queryList(query, itemIds);
+        }
+        return this.baseMapper.queryList(query, null);
     }
     
     /**
@@ -71,11 +81,9 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
     @Transactional(rollbackFor = Exception.class)
     public Boolean addRechargeActive(VipRechargeActiveAddDTO addDTO) {
         log.info("新增充值活动，数据：{}", addDTO);
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
-        VipRechargeActive entity = vipRechargeActiveConvert.toEntity(addDTO).setOrgId(auth.getOrgId());
+        VipRechargeActive entity = vipRechargeActiveConvert.toEntity(addDTO);
         long count = this.count(Wrappers.lambdaQuery(VipRechargeActive.class)
-                .eq(VipRechargeActive::getActiveName, entity.getActiveName())
-                .eq(VipRechargeActive::getOrgId, entity.getOrgId()));
+                .eq(VipRechargeActive::getActiveName, entity.getActiveName()));
         if (count > 0)
             throw new BusinessException("活动名称已存在");
 
@@ -87,6 +95,13 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
                     .setPresentIsCrossStore(entity.getIsCrossStore());
         }
         this.save(entity);
+
+        // 绑定门店
+        if (addDTO.getOrgIds() != null && !addDTO.getOrgIds().isEmpty()) {
+            log.info("绑定充值活动门店关联，activeId：{}，orgIds：{}", entity.getId(), addDTO.getOrgIds());
+            orgRelationService.bindOrgs(OrgRelationTypeEnum.RECHARGE_ACTIVE.getValue(),
+                    entity.getId(), addDTO.getOrgIds());
+        }
 
         // 插入关联表
         List<RelatedTicketDTO> ticketIds = addDTO.getTicketIds();

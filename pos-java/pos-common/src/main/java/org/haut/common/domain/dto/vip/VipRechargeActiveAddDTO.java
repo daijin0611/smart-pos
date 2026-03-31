@@ -135,4 +135,10 @@ public class VipRechargeActiveAddDTO {
     @Schema(description = "备注")
     private String remark;
 
+    /**
+     * 关联门店ID列表
+     */
+    @Schema(description = "关联门店ID列表")
+    private List<Long> orgIds;
+
 }

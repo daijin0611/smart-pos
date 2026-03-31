@@ -75,4 +75,10 @@ public class CureTicketUpdateDTO {
      */
     @Schema(description = "疗程关联优惠券")
     private List<RelatedTicketDTO> vipTicketList;
+
+    /**
+     * 关联门店ID列表
+     */
+    @Schema(description = "关联门店ID列表")
+    private List<Long> orgIds;
 }

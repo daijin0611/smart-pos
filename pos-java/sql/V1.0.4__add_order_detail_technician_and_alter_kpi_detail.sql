@@ -16,4 +16,4 @@ ALTER TABLE kpi_detail ADD COLUMN detail_id BIGINT NULL COMMENT '订单明细ID'
 ALTER TABLE kpi_detail ADD COLUMN detail_code VARCHAR(50) NULL COMMENT '订单明细编号';
 ALTER TABLE kpi_detail ADD INDEX idx_detail_id (detail_id);
 
--- test
+-- test ok

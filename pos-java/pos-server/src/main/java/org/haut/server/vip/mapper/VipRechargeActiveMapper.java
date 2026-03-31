@@ -27,7 +27,7 @@ public interface VipRechargeActiveMapper extends BaseMapper<VipRechargeActive> {
      * @param query 查询条件
      * @return 充值活动列表
      */
-    List<VipRechargeActiveVO> queryList(@Param("query") VipRechargeActiveQuery query, @Param("orgId") Long orgId);
+    List<VipRechargeActiveVO> queryList(@Param("query") VipRechargeActiveQuery query, @Param("itemIds") List<Long> itemIds);
 
     /**
      * 查询充值活动详情

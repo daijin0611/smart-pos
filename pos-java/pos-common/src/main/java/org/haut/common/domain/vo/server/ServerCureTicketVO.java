@@ -80,9 +80,9 @@ public class ServerCureTicketVO {
     private Integer status;
 
     /**
-     * 组织ID
+     * 关联门店ID列表
      */
-    private Long orgId;
+    private List<Long> orgIds;
 
     /**
      * 疗程关联优惠券列表

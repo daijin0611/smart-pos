@@ -26,14 +26,13 @@
             <result property="presentIsCrossStore" column="present_is_cross_store" />
             <result property="commissionType" column="commission_type" />
             <result property="commissionValue" column="commission_value" />
-            <result property="orgId" column="org_id" />
     </resultMap>
 
     <sql id="Base_Column_List">
         id,create_time,update_time,is_delete,remark,active_status,
         active_name,active_begin_time,active_final_time,active_type,active_capital,active_discount,
         active_base,is_cross_store,present_value,present_discount_is_same,present_discount,
-        present_base,present_is_cross_store,commission_type,commission_value,org_id
+        present_base,present_is_cross_store,commission_type,commission_value
     </sql>
 
     <resultMap id="VipRechargeActiveVO" type="org.haut.common.domain.vo.vip.VipRechargeActiveVO">
@@ -58,7 +57,6 @@
         <result property="presentIsCrossStore" column="present_is_cross_store" />
         <result property="commissionType" column="commission_type" />
         <result property="commissionValue" column="commission_value" />
-        <result property="orgId" column="org_id" />
         <collection property="ticketList" ofType="org.haut.common.domain.vo.vip.VipRechargeActiveVO$TicketVO">
             <result property="ticketId" column="ticket_id"/>
             <result property="number" column="number"/>
@@ -84,8 +82,11 @@
             <if test="query.activeName != null and query.activeName != ''">
                 and vra.active_name like concat('%',#{query.activeName},'%')
             </if>
-            <if test="orgId != null">
-                and vra.org_id = #{orgId}
+            <if test="itemIds != null and itemIds.size() > 0">
+                and vra.id in
+                <foreach collection="itemIds" item="itemId" open="(" separator="," close=")">
+                    #{itemId}
+                </foreach>
             </if>
         </where>
     </select>

@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 丁铭瀚
@@ -65,4 +66,7 @@ public class ServerProductCreateDTO {
     @Schema(description = "单位", example = "个")
     @NotBlank
     private String unit;
+
+    @Schema(description = "关联门店ID列表")
+    private List<Long> orgIds;
 }

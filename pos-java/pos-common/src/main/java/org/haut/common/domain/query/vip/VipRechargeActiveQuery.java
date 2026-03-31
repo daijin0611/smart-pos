@@ -26,4 +26,10 @@ public class VipRechargeActiveQuery {
     @Schema(description = "活动名称")
     private String activeName;
 
+    /**
+     * 机构ID（可选，用于按门店筛选）
+     */
+    @Schema(description = "机构ID")
+    private Long orgId;
+
 }

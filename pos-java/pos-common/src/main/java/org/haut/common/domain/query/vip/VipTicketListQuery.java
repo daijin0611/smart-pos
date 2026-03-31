@@ -13,4 +13,6 @@ public class VipTicketListQuery {
     private Integer ticketStatus;
     @Schema(description = "优惠券名称")
     private String ticketName;
+    @Schema(description = "门店id（可选，用于筛选指定门店的优惠券）")
+    private Long orgId;
 }

@@ -18,7 +18,7 @@ public interface ServerCureTicketMapper extends BaseMapper<ServerCureTicket> {
 
     List<ServerCureTicketVO> getList(
             @Param("query") ServerCureTicketListQuery query,
-            @Param("orgId") Long orgId);
+            @Param("itemIds") List<Long> itemIds);
 
     ServerCureTicketVO getOneById(@Param("id") Long id);
 

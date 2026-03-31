@@ -16,7 +16,7 @@ import java.util.List;
 */
 public interface VipTicketMapper extends BaseMapper<VipTicket> {
 
-    List<VipTicketVO> getList(@Param("query") VipTicketListQuery query, @Param("orgId") Long orgId);
+    List<VipTicketVO> getList(@Param("query") VipTicketListQuery query, @Param("itemIds") List<Long> itemIds);
 
     VipTicketVO getOneById(@Param("ticketId") Long ticketId);
 

@@ -76,8 +76,4 @@ public class ServerCureTicket {
      */
     private Integer status;
 
-    /**
-     * 组织ID
-     */
-    private Long orgId;
 }

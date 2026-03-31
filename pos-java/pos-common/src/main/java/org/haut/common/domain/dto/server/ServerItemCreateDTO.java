@@ -5,6 +5,7 @@ import lombok.Data;
 
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 服务项目创建DTO
@@ -129,5 +130,11 @@ public class ServerItemCreateDTO {
     @Max(value = 1, message = "项目状态值必须为0或1")
     @Schema(description = "项目状态（0 启用， 1 禁用）", example = "0", required = true)
     private Integer itemStatus;
+
+    /**
+     * 关联门店ID列表
+     */
+    @Schema(description = "关联门店ID列表")
+    private List<Long> orgIds;
 
 }

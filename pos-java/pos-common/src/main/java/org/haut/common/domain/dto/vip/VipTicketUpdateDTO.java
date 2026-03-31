@@ -70,4 +70,10 @@ public class VipTicketUpdateDTO {
      */
     @Schema(description = "优惠券适用服务项目")
     private List<Long> serverItemIds;
+
+    /**
+     * 关联门店ID列表
+     */
+    @Schema(description = "关联门店ID列表")
+    private List<Long> orgIds;
 }

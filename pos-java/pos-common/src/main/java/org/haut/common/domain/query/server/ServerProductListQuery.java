@@ -22,4 +22,10 @@ public class ServerProductListQuery {
     @Schema(description = "产品状态（0 正常，1 停用，null 全部状态）")
     private Integer productStatus;
 
+    /**
+     * 组织ID（可选，用于按门店筛选）
+     */
+    @Schema(description = "组织ID（可选，用于按门店筛选）")
+    private Long orgId;
+
 }

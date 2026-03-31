@@ -3,15 +3,16 @@ package org.haut.server.server.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.haut.common.constant.PrefixConst;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.dto.server.RelatedTicketDTO;
 import org.haut.common.domain.dto.server.CureTicketCreateDTO;
 import org.haut.common.domain.dto.server.CureTicketStatusDTO;
 import org.haut.common.domain.dto.server.CureTicketUpdateDTO;
-import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.server.ServerCureTicketListQuery;
 import org.haut.common.domain.vo.vip.VipTicketVO;
+import org.haut.common.enums.OrgRelationTypeEnum;
 import org.haut.common.enums.ServiceTypeEnum;
 import org.haut.common.enums.TicketSourceType;
 import org.haut.common.enums.TicketStatusEnum;
@@ -21,15 +22,13 @@ import org.haut.server.server.entity.ServerCureTicket;
 import org.haut.server.server.entity.ServerCureTicketDetail;
 import org.haut.common.domain.vo.server.ServerCureTicketVO;
 import org.haut.common.exception.BusinessException;
-import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.server.mapper.ServerCureTicketDetailMapper;
 import org.haut.server.server.mapper.ServerCureTicketMapper;
 import org.haut.server.server.service.ServerCureTicketService;
-import org.haut.server.vip.entity.VipInfo;
+import org.haut.server.system.service.OrgRelationService;
 import org.haut.server.vip.entity.VipInfoTicket;
 import org.haut.server.vip.mapper.VipTicketMapper;
 import org.haut.server.vip.service.VipInfoTicketService;
-import org.haut.server.vip.service.impl.VipInfoServiceImpl;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMapper, ServerCureTicket>
@@ -46,6 +46,7 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
     private final CureTicketDetailConvert cureTicketDetailConvert;
     private final VipTicketMapper vipTicketMapper;
     private final VipInfoTicketService vipInfoTicketService;
+    private final OrgRelationService orgRelationService;
 
 
     /**
@@ -55,17 +56,22 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
     @Override
     @Transactional
     public void saveCureTicket(CureTicketCreateDTO cureTicket) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        log.info("新增疗程券，数据：{}", cureTicket);
         Long count = this.baseMapper.selectCount(Wrappers.lambdaQuery(ServerCureTicket.class)
-                .eq(ServerCureTicket::getName, cureTicket.getName())
-                .eq(auth.getOrgId() != null, ServerCureTicket::getOrgId, auth.getOrgId()));
+                .eq(ServerCureTicket::getName, cureTicket.getName()));
         if (count > 0){
             throw new BusinessException("疗程券名称已存在");
         }
         // 插入疗程券
         ServerCureTicket entity = cureTicketConvert.toEntity(cureTicket);
-        entity.setOrgId(auth.getOrgId());
         this.baseMapper.insert(entity);
+
+        // 绑定门店关联
+        if (cureTicket.getOrgIds() != null && !cureTicket.getOrgIds().isEmpty()) {
+            log.info("绑定疗程券门店关联，ticketId：{}，orgIds：{}", entity.getId(), cureTicket.getOrgIds());
+            orgRelationService.bindOrgs(OrgRelationTypeEnum.CURE_TICKET.getValue(),
+                    entity.getId(), cureTicket.getOrgIds());
+        }
 
         // 插入关联表
         Long ticketId = entity.getId();
@@ -84,11 +90,11 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
      * @param cureTicket
      */
     @Override
+    @Transactional
     public void updateCureTicket(CureTicketUpdateDTO cureTicket) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
+        log.info("更新疗程券，数据：{}", cureTicket);
         Long count = this.baseMapper.selectCount(Wrappers.lambdaQuery(ServerCureTicket.class)
                 .eq(ServerCureTicket::getName, cureTicket.getName())
-                .eq(auth.getOrgId() != null, ServerCureTicket::getOrgId, auth.getOrgId())
                 .ne(ServerCureTicket::getId, cureTicket.getId()));
         if (count > 0){
             throw new BusinessException("疗程券名称已存在");
@@ -96,6 +102,15 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
         // 更新优惠券主表
         ServerCureTicket entity = cureTicketConvert.toEntity(cureTicket);
         this.updateById(entity);
+
+        // 替换门店关联
+        if (cureTicket.getOrgIds() != null) {
+            log.info("更新疗程券门店关联，ticketId：{}，orgIds：{}", cureTicket.getId(), cureTicket.getOrgIds());
+            orgRelationService.unbindOrgs(OrgRelationTypeEnum.CURE_TICKET.getValue(), cureTicket.getId());
+            orgRelationService.bindOrgs(OrgRelationTypeEnum.CURE_TICKET.getValue(),
+                    cureTicket.getId(), cureTicket.getOrgIds());
+        }
+
         // 删除关联表
         serverCureTicketDetailMapper.delete(Wrappers.lambdaQuery(ServerCureTicketDetail.class)
                 .eq(ServerCureTicketDetail::getCureTicketId, cureTicket.getId()));
@@ -118,8 +133,16 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
      */
     @Override
     public List<ServerCureTicketVO> getList(ServerCureTicketListQuery query) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
-        return this.baseMapper.getList(query, auth.getOrgId());
+        log.info("查询疗程券列表，查询条件：{}", query);
+        if (query.getOrgId() != null) {
+            List<Long> itemIds = orgRelationService.getItemIdsByOrg(
+                    OrgRelationTypeEnum.CURE_TICKET.getValue(), query.getOrgId());
+            if (itemIds.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return this.baseMapper.getList(query, itemIds);
+        }
+        return this.baseMapper.getList(query, null);
     }
 
     /**
@@ -128,15 +151,12 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
      */
     @Override
     public void updateCureTicketStatus(CureTicketStatusDTO cureTicketStatus) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
         // 检查疗程券是否存在
-        ServerCureTicket existingTicket = this.baseMapper.selectOne(Wrappers.lambdaQuery(ServerCureTicket.class)
-                .eq(ServerCureTicket::getId, cureTicketStatus.getId())
-                .eq(auth.getOrgId() != null, ServerCureTicket::getOrgId, auth.getOrgId()));
+        ServerCureTicket existingTicket = this.getById(cureTicketStatus.getId());
         if (existingTicket == null) {
             throw new BusinessException("疗程券不存在");
         }
-        
+
         // 更新状态
         ServerCureTicket updateEntity = new ServerCureTicket();
         updateEntity.setId(cureTicketStatus.getId());
