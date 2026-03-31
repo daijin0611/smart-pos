@@ -52,7 +52,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg>
         LambdaQueryWrapper<SysOrg> queryWrapper = Wrappers.lambdaQuery(SysOrg.class)
                 .eq(StringUtils.isNotBlank(query.getOrgName()), SysOrg::getOrgName, query.getOrgName())
                 .eq(query.getOrgStatus() != null, SysOrg::getOrgState, query.getOrgStatus())
-                .eq(StringUtils.isNotBlank(query.getOrgCode()), SysOrg::getOrgCode, query.getOrgCode());
+                .eq(StringUtils.isNotBlank(query.getOrgCode()), SysOrg::getOrgCode, query.getOrgCode())
+                .orderByAsc(SysOrg::getOrgCode);
         List<SysOrg> list = this.list(queryWrapper);
         return BeanUtil.copyToList(list, OrgInfoVO.class);
     }
