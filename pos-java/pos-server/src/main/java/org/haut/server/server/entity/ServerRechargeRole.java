@@ -47,11 +47,6 @@ public class ServerRechargeRole {
     private String rechargeRoleName;
 
     /**
-     * 充值金额
-     */
-    private BigDecimal rechargePrice;
-
-    /**
      * 提成类型
      */
     private Integer commissionType;

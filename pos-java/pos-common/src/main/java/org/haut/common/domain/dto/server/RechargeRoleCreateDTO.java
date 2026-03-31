@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 丁铭瀚
@@ -39,12 +40,6 @@ public class RechargeRoleCreateDTO {
     private String rechargeRoleName;
 
     /**
-     * 充值金额
-     */
-    @Schema(description = "充值金额")
-    private BigDecimal rechargePrice;
-
-    /**
      * 提成类型
      */
     @Schema(description = "提成类型")
@@ -63,8 +58,8 @@ public class RechargeRoleCreateDTO {
     private Integer status;
 
     /**
-     * 是否为默认规则
+     * 关联的门店ID列表
      */
-    @Schema(description = "是否为默认规则 0-否 1-是")
-    private Integer isDefault;
+    @Schema(description = "关联的门店ID列表")
+    private List<Long> orgIds;
 }
