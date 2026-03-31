@@ -23,6 +23,7 @@ import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.kpi.entity.KpiDetail;
 import org.haut.server.kpi.service.KpiDetailService;
 import org.haut.server.kpi.mapper.KpiDetailMapper;
+import org.haut.server.order.entity.OrderDetailEntity;
 import org.haut.server.order.entity.OrderInfoEntity;
 import org.haut.server.server.entity.ServerCureTicket;
 import org.haut.server.server.entity.ServerItem;
@@ -130,6 +131,45 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                                     .setOrgId(order.getOrgId()));
                 })
                 .toList();
+        saveBatch(kpis);
+    }
+
+    /**
+     * 处理订单业绩（使用已保存的明细实体，包含正确的ID和detailCode）
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails, List<OrderDetailEntity> savedDetails) {
+        List<KpiDetail> kpis = new java.util.ArrayList<>();
+        for (int i = 0; i < orderDetails.size(); i++) {
+            OrderDetailSettleDTO dto = orderDetails.get(i);
+            OrderDetailEntity savedDetail = savedDetails.get(i);
+            List<OrderDetailTechnicianDTO> technicians = dto.getTechnicians();
+            if (technicians == null || technicians.isEmpty()) {
+                continue;
+            }
+            int count = technicians.size();
+            BigDecimal totalCommission = handelCommission(dto);
+            BigDecimal perCommission = totalCommission.divide(
+                    BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
+            BigDecimal performance = dto.getTruePrice().divide(
+                    BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
+            for (OrderDetailTechnicianDTO t : technicians) {
+                kpis.add(new KpiDetail()
+                        .setOrderCode(order.getOrderCode())
+                        .setServiceCode(dto.getBusinessCode())
+                        .setServiceName(dto.getBusinessName())
+                        .setServiceType(dto.getDetailType())
+                        .setItemType(dto.getServerType())
+                        .setUserId(t.getUserId())
+                        .setUserName(t.getUserName())
+                        .setPerformance(performance)
+                        .setCommission(perCommission)
+                        .setDetailId(savedDetail.getId())
+                        .setDetailCode(savedDetail.getDetailCode())
+                        .setOrgId(order.getOrgId()));
+            }
+        }
         saveBatch(kpis);
     }
 

@@ -220,13 +220,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         // 处理疗程券
         serverCureTicketService.handelOrder(orderDetails, order);
         log.info("orderCode:{} 处理疗程券成功", order.getOrderCode());
-        // 处理业绩提成
-        kpiDetailService.handelOrder(order, orderDetails);
-        log.info("orderCode:{} 处理疗业绩提成成功", order.getOrderCode());
-        // 删除开单时的明细，具体订单明细由结算时决定
-//        lambdaUpdate().eq(OrderDetailEntity::getOrderCode, order.getOrderCode()).remove();
-//        log.info("orderCode:{} 删除暂存订单明细成功", order.getOrderCode());
-        // 保存订单明细
+        // 保存订单明细（先保存，以便KPI能获取正确的detailId）
         List<OrderDetailEntity> details = orderDetails.stream()
                 .map(e -> orderDetailConvert.toEntity(e)
                         .setOrderCode(order.getOrderCode())
@@ -240,7 +234,11 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
 
         // 更新或者保存订单明细
         saveOrUpdateBatch(details);
-        log.info("orderCode:{} 订单明细处理成功", order.getOrderCode());
+        log.info("orderCode:{} 订单明细保存成功", order.getOrderCode());
+
+        // 处理业绩提成（使用已保存的明细实体，包含正确的ID）
+        kpiDetailService.handelOrder(order, orderDetails, details);
+        log.info("orderCode:{} 处理业绩提成成功", order.getOrderCode());
 
         // 保存/更新技师关联
         for (int i = 0; i < details.size(); i++) {
@@ -317,7 +315,9 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
             throw new BusinessException("订单明细不存在");
         }
 
-        if (!OrderStatusEnum.UNSETTLED.getCode().equals(detail.getOrderStatus())) {
+        // 通过订单主表判断是否可修改
+        OrderInfoEntity orderInfo = orderInfoMapper.selectById(detail.getOrderId());
+        if (orderInfo == null || !OrderStatusEnum.UNSETTLED.getCode().equals(orderInfo.getOrderStatus())) {
             throw new BusinessException("订单已结算，无法修改服务技师");
         }
 

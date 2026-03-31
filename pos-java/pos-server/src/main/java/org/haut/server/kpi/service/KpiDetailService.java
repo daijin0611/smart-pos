@@ -9,6 +9,7 @@ import org.haut.common.domain.vo.kpi.KpiListVO;
 import org.haut.common.domain.vo.kpi.KpiSummaryVO;
 import org.haut.server.kpi.entity.KpiDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.haut.server.order.entity.OrderDetailEntity;
 import org.haut.server.order.entity.OrderInfoEntity;
 
 import java.util.List;
@@ -34,9 +35,18 @@ public interface KpiDetailService extends IService<KpiDetail> {
      * 处理订单结算
      *
      * @param order 订单信息
-     * @param orderDetails 订单明细
+     * @param orderDetails 订单明细DTO
      */
     void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails);
+
+    /**
+     * 处理订单结算（使用已保存的订单明细实体，包含正确的ID）
+     *
+     * @param order 订单信息
+     * @param orderDetails 订单明细DTO
+     * @param savedDetails 已保存的订单明细实体列表（与orderDetails一一对应）
+     */
+    void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails, List<OrderDetailEntity> savedDetails);
 
     /**
      * 获取KPI总结
