@@ -306,13 +306,16 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateServerEmployee(Long detailId, List<OrderDetailTechnicianDTO> technicians) {
-        if (detailId == null || technicians == null || technicians.isEmpty()) {
-            throw new BusinessException(ResultStatus.PARAMS_INVALID.getMessage());
+        if (detailId == null) {
+            throw new BusinessException("订单明细id不能为空!");
         }
-
+        if(technicians == null || technicians.isEmpty()){
+            log.info("服务技师列表修改为空！");
+            return;
+        }
         OrderDetailEntity detail = this.getById(detailId);
         if (detail == null) {
-            throw new BusinessException("订单明细不存在");
+            throw new BusinessException("订单明细不存在!");
         }
 
         // 通过订单主表判断是否可修改
