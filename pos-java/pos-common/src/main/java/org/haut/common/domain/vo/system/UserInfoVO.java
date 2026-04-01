@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 丁铭瀚
@@ -70,5 +71,8 @@ public class UserInfoVO {
 
     @Schema(description = "角色信息")
     private RoleInfoVo role;
+
+    @Schema(description = "用户关联的所有门店ID列表")
+    private List<Long> orgIds;
 
 }

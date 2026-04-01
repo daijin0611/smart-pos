@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 丁铭瀚
@@ -86,4 +87,7 @@ public class UserUpdateDTO {
     @Schema(description = "角色id")
     @NotNull(message = "角色不能为空")
     private Long roleId;
+
+    @Schema(description = "额外关联门店ID列表（不含主门店）")
+    private List<Long> orgIds;
 }

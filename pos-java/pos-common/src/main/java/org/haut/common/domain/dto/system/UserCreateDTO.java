@@ -83,4 +83,7 @@ public class UserCreateDTO {
     @NotNull(message = "角色不能为空")
     private Long roleId;
 
+    @Schema(description = "额外关联门店ID列表（不含主门店）")
+    private List<Long> orgIds;
+
 }
