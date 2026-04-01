@@ -4,6 +4,7 @@ package org.haut.server.system.service;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.system.UserAllocateRoleDTO;
 import org.haut.common.domain.dto.system.UserCreateDTO;
+import org.haut.common.domain.dto.system.UserUpdateDTO;
 import org.haut.common.domain.query.system.UserListQuery;
 import org.haut.server.system.entity.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -29,4 +30,6 @@ public interface SysUserService extends IService<SysUser> , UserDetailsService {
     List<RoleInfoVo> queryRoleList(Long userId);
 
     UserInfoVO queryOne(Long id, String userNumber);
+
+    void updateUser(UserUpdateDTO user);
 }
