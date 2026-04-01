@@ -52,6 +52,7 @@ mvn docker:push
 - **安全**：Spring Security + JWT 4.3.0
 - **API 文档**：Knife4j 4.3.0 (Swagger)
 - **工具类**：Lombok 1.18.34、MapStruct 1.6.3、Hutool 5.8.18
+- **AOP**：AspectJ（操作日志等切面功能）
 
 ### 分层架构
 1. **Controller 层** (`pos-web`)：带 Swagger 文档的 REST API 端点
@@ -71,6 +72,7 @@ mvn docker:push
 - **statistics**：数据分析和报表
 - **task**：定时任务
 - **ai**：AI 相关功能
+- **操作日志**：基于 `@OperLog` 注解 + AOP 切面的关键业务操作记录，查询接口 `GET /system/oper-log/page`
 
 ## 开发规范
 
@@ -102,7 +104,8 @@ mvn docker:push
 ## 数据库
 - 数据库架构位于 `/sql/` 目录
 - 包含初始数据文件 `pos_data.sql`
-- 最近迁移：`V1.0.1__add_print_width_to_sys_org.sql` 用于门店打印宽度配置
+- 最近迁移：`V1.0.8__create_sys_oper_log.sql` 用于操作日志表
+- 新建迁移脚本需递增版本号（当前最高 V1.0.8）
 
 ## 测试
 - 使用 Spring Boot Test starter
@@ -113,3 +116,7 @@ mvn docker:push
 - 提供 Dockerfile，基于 openjdk:17 镜像
 - 使用 docker-compose.yml 进行编排
 - 应用运行在 8080 端口，上下文路径为 `/api`
+
+## 注意事项
+- 连接测试环境 MySQL 需加 `--default-character-set=utf8mb4` 参数，避免中文注释乱码
+- 测试环境登录账号为手机号格式（如 `N15287842664`），密码 `123456`
