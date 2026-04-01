@@ -50,11 +50,25 @@ spring:
         exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
       keep-alive: true
       validation-query: SELECT 1
-      time-between-eviction-runs-millis: 60000
-      keep-alive-between-time-millis: 1800000
+      validation-query-timeout: 3
+      connection-init-sqls: SELECT 1
+      time-between-eviction-runs-millis: 30000
+      keep-alive-between-time-millis: 120000
       min-evictable-idle-time-millis: 300000
-      test-on-borrow: true
+      test-on-borrow: false
       test-on-return: false
+      # 连接泄漏检测
+      remove-abandoned: true
+      remove-abandoned-timeout: 180
+      log-abandoned: true
+      # 性能监控
+      filter:
+        stat:
+          enabled: true
+          slow-sql-millis: 2000
+          log-slow-sql: true
+        wall:
+          enabled: true
 
 
   security: # 安全配置
