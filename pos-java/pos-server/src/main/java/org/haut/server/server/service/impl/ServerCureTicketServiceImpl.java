@@ -134,15 +134,23 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
     @Override
     public List<ServerCureTicketVO> getList(ServerCureTicketListQuery query) {
         log.info("查询疗程券列表，查询条件：{}", query);
+        List<Long> filteredItemIds = null;
         if (query.getOrgId() != null) {
-            List<Long> itemIds = orgRelationService.getItemIdsByOrg(
+            filteredItemIds = orgRelationService.getItemIdsByOrg(
                     OrgRelationTypeEnum.CURE_TICKET.getValue(), query.getOrgId());
-            if (itemIds.isEmpty()) {
+            if (filteredItemIds.isEmpty()) {
                 return Collections.emptyList();
             }
-            return this.baseMapper.getList(query, itemIds);
         }
-        return this.baseMapper.getList(query, null);
+        List<ServerCureTicketVO> voList = this.baseMapper.getList(query, filteredItemIds);
+        if (!voList.isEmpty()) {
+            List<Long> itemIds = voList.stream().map(ServerCureTicketVO::getId).toList();
+            Map<Long, List<Long>> orgMap = orgRelationService.getOrgIdsByItems(
+                    OrgRelationTypeEnum.CURE_TICKET.getValue(), itemIds);
+            voList.forEach(vo -> vo.setOrgIds(
+                    orgMap.getOrDefault(vo.getId(), Collections.emptyList())));
+        }
+        return voList;
     }
 
     /**

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.haut.common.constant.Const;
 import org.haut.common.domain.dto.server.RelatedTicketDTO;
@@ -60,15 +61,23 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
     @Override
     public List<VipRechargeActiveVO> queryList(VipRechargeActiveQuery query) {
         log.info("查询充值活动列表，查询条件：{}", query);
+        List<Long> filteredItemIds = null;
         if (query.getOrgId() != null) {
-            List<Long> itemIds = orgRelationService.getItemIdsByOrg(
+            filteredItemIds = orgRelationService.getItemIdsByOrg(
                     OrgRelationTypeEnum.RECHARGE_ACTIVE.getValue(), query.getOrgId());
-            if (itemIds.isEmpty()) {
+            if (filteredItemIds.isEmpty()) {
                 return Collections.emptyList();
             }
-            return this.baseMapper.queryList(query, itemIds);
         }
-        return this.baseMapper.queryList(query, null);
+        List<VipRechargeActiveVO> voList = this.baseMapper.queryList(query, filteredItemIds);
+        if (!voList.isEmpty()) {
+            List<Long> itemIds = voList.stream().map(VipRechargeActiveVO::getId).toList();
+            Map<Long, List<Long>> orgMap = orgRelationService.getOrgIdsByItems(
+                    OrgRelationTypeEnum.RECHARGE_ACTIVE.getValue(), itemIds);
+            voList.forEach(vo -> vo.setOrgIds(
+                    orgMap.getOrDefault(vo.getId(), Collections.emptyList())));
+        }
+        return voList;
     }
     
     /**

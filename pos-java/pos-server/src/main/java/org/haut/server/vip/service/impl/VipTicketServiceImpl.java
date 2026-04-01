@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Mapper(componentModel = "spring")
 interface VipTicketConvert {
@@ -77,15 +78,23 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
     @Override
     public List<VipTicketVO> getList(VipTicketListQuery query) {
         log.info("查询优惠券列表，查询条件：{}", query);
+        List<Long> filteredItemIds = null;
         if (query.getOrgId() != null) {
-            List<Long> itemIds = orgRelationService.getItemIdsByOrg(
+            filteredItemIds = orgRelationService.getItemIdsByOrg(
                     OrgRelationTypeEnum.VIP_TICKET.getValue(), query.getOrgId());
-            if (itemIds.isEmpty()) {
+            if (filteredItemIds.isEmpty()) {
                 return Collections.emptyList();
             }
-            return this.baseMapper.getList(query, itemIds);
         }
-        return this.baseMapper.getList(query, null);
+        List<VipTicketVO> voList = this.baseMapper.getList(query, filteredItemIds);
+        if (!voList.isEmpty()) {
+            List<Long> itemIds = voList.stream().map(VipTicketVO::getId).toList();
+            Map<Long, List<Long>> orgMap = orgRelationService.getOrgIdsByItems(
+                    OrgRelationTypeEnum.VIP_TICKET.getValue(), itemIds);
+            voList.forEach(vo -> vo.setOrgIds(
+                    orgMap.getOrDefault(vo.getId(), Collections.emptyList())));
+        }
+        return voList;
     }
 
     @Transactional
@@ -146,12 +155,24 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
      */
     @Override
     public VipTicketVO queryById(Long ticketId) {
-        return baseMapper.getOneById(ticketId);
+        VipTicketVO vo = baseMapper.getOneById(ticketId);
+        if (vo != null) {
+            vo.setOrgIds(orgRelationService.getOrgIdsByItem(
+                    OrgRelationTypeEnum.VIP_TICKET.getValue(), ticketId));
+        }
+        return vo;
     }
 
     @Override
     public List<VipTicketVO> queryByIds(List<Long> ticketIds) {
-        return baseMapper.getListByIds(ticketIds);
+        List<VipTicketVO> voList = baseMapper.getListByIds(ticketIds);
+        if (!voList.isEmpty()) {
+            Map<Long, List<Long>> orgMap = orgRelationService.getOrgIdsByItems(
+                    OrgRelationTypeEnum.VIP_TICKET.getValue(), ticketIds);
+            voList.forEach(vo -> vo.setOrgIds(
+                    orgMap.getOrDefault(vo.getId(), Collections.emptyList())));
+        }
+        return voList;
     }
 
     private void checkDto(VipTicketUpdateDTO ticket) {
