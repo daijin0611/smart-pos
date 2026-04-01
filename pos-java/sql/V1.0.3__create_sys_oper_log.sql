@@ -1,0 +1,22 @@
+CREATE TABLE sys_oper_log (
+    id              BIGINT UNSIGNED AUTO_INCREMENT COMMENT '主键',
+    module          VARCHAR(50)     NOT NULL COMMENT '操作模块（order/vip/payment等）',
+    description     VARCHAR(255)    NOT NULL COMMENT '操作描述',
+    operator_id     BIGINT          NULL COMMENT '操作人ID',
+    operator_name   VARCHAR(50)     NULL COMMENT '操作人姓名',
+    request_method  VARCHAR(10)     NULL COMMENT 'HTTP方法',
+    request_url     VARCHAR(255)    NULL COMMENT '请求路径',
+    request_params  TEXT            NULL COMMENT '请求参数（JSON）',
+    response_result TEXT            NULL COMMENT '响应结果（JSON，截取前2000字符）',
+    ip              VARCHAR(50)     NULL COMMENT '操作IP',
+    status          TINYINT         NOT NULL DEFAULT 0 COMMENT '操作状态（0成功 1失败）',
+    error_msg       TEXT            NULL COMMENT '错误信息',
+    cost_time       BIGINT          NULL COMMENT '耗时（毫秒）',
+    org_id          BIGINT          NOT NULL DEFAULT 1 COMMENT '机构ID',
+    create_time     DATETIME        NULL COMMENT '创建时间',
+    PRIMARY KEY (id),
+    INDEX idx_module (module),
+    INDEX idx_operator_id (operator_id),
+    INDEX idx_create_time (create_time),
+    INDEX idx_org_id (org_id)
+) COMMENT '系统操作日志表';
