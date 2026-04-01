@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.stock.StockInOrderCreateDTO;
 import org.haut.common.domain.query.stock.StockOrderQuery;
@@ -65,6 +66,7 @@ public class StockInOrderController {
      */
     @PostMapping("/add-order")
     @Operation(summary = "创建入库单", description = "创建新的入库单")
+    @OperLog(module = "stock", description = "创建入库单")
     public JsonVO<Void> addOrder(@Validated @RequestBody StockInOrderCreateDTO dto) {
         log.info("创建入库单，参数：{}", dto);
         stockInOrderService.addOrder(dto);

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.vip.*;
 import org.haut.common.domain.query.vip.VipListQuery;
@@ -53,6 +54,7 @@ public class VipController {
 
     @PostMapping("/add-vip")
     @Operation(description = "添加会员并返回会员信息", summary = "添加会员")
+    @OperLog(module = "vip", description = "添加会员")
     public JsonVO<VipInfoVO> addVip(@Validated @RequestBody VipCreateDTO dto) {
         VipInfoVO vipInfo = vipInfoService.addVip(dto);
         return JsonVO.success(vipInfo);
@@ -67,6 +69,7 @@ public class VipController {
 
     @PostMapping("/recharge")
     @Operation(description = "会员充值", summary = "会员充值")
+    @OperLog(module = "vip", description = "会员充值")
     public JsonVO<String> recharge(
             @RequestBody @Validated RechargeDTO dto,
             @Schema(description = "幂等校验令牌") String token){
@@ -136,6 +139,7 @@ public class VipController {
 
     @PostMapping("/reverse-recharge")
     @Operation(description = "充值冲正", summary = "充值冲正")
+    @OperLog(module = "vip", description = "充值冲正")
     public JsonVO<String> reverseRecharge(@RequestBody @Validated RechargeReverseDTO dto) {
         vipInfoService.reverseRecharge(dto);
         return JsonVO.success("冲正成功");

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.system.UserAllocateRoleDTO;
 import org.haut.common.domain.dto.system.UserCreateDTO;
@@ -73,6 +74,7 @@ public class SysUserController {
      */
     @PostMapping("/add-user")
     @Operation(description = "添加用户", summary = "添加用户")
+    @OperLog(module = "system", description = "添加用户")
     public JsonVO<String> addUser(@Validated @RequestBody UserCreateDTO user){
         if (judgeUserCodeExist(user.getUserCode(), null)) {
             return JsonVO.fail("用户编号" + user.getUserCode() + "已存在");
@@ -92,6 +94,7 @@ public class SysUserController {
      */
     @PostMapping("/allocate-role")
     @Operation(description = "为用户分配角色", summary = "分配角色")
+    @OperLog(module = "system", description = "分配角色")
     public JsonVO<String> allocateRole(@RequestBody @Validated UserAllocateRoleDTO dto){
         if (!judgeRoleExist(dto.getRoleId())) {
             throw new BusinessException("角色不存在");
