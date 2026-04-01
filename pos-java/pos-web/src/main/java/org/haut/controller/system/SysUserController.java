@@ -113,7 +113,7 @@ public class SysUserController {
         if (!judgeRoleExist(user.getRoleId())) {
             throw new BusinessException("角色不存在");
         }
-        sysUserService.updateById(BeanUtil.toBean(user,SysUser.class));
+        sysUserService.updateUser(user);
         return JsonVO.success("更新成功");
     }
 
