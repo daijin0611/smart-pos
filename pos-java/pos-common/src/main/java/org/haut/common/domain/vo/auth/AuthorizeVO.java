@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.security.core.userdetails.UserDetails;
+
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 
 import java.util.Date;
 import java.util.List;
@@ -27,8 +28,8 @@ public class AuthorizeVO {
     String token;
     @Schema(description = "机构id")
     Long orgId;
-    @Schema(description = "用户关联的所有门店ID列表")
-    List<Long> orgIds;
+    @Schema(description = "用户关联的所有门店列表")
+    List<OrgSimpleVO> orgs;
     @Schema(description = "令牌过期时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     Date expire;

@@ -11,6 +11,7 @@ import org.haut.common.domain.vo.auth.AuthorizeVO;
 import org.haut.common.utils.UserContextHolder;
 import org.haut.filter.JwtAuthorizeFilter;
 import org.haut.common.component.JwtUtils;
+import org.haut.server.system.service.SysOrgService;
 import org.haut.server.system.service.SysOrgUserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +26,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +44,8 @@ public class SecurityConfiguration {
     JwtAuthorizeFilter jwtAuthorizeFilter;
     @Resource
     SysOrgUserService sysOrgUserService;
+    @Resource
+    SysOrgService sysOrgService;
 
     /**
      * 配置安全过滤链
@@ -152,12 +154,9 @@ public class SecurityConfiguration {
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException{
-        // TODO:登录逻辑待完善
-        // 处理登录成功逻辑
         response.setContentType("application/json;charset=utf-8");
         User user = (User) authentication.getPrincipal();
         UserDTO sysUser = UserContextHolder.getUser();
-        // 这里的1和"jojo"是示例值，实际应用中应从UserDetails中获取用户ID和用户名
         String token = jwtUtils.createJwt(user, sysUser.getId(), sysUser.getUserCode(), sysUser.getOrgId());
 
         // 查询用户关联门店，合并主门店（去重）
@@ -172,7 +171,7 @@ public class SecurityConfiguration {
                 .userCode(sysUser.getUserCode())
                 .userId(sysUser.getId())
                 .orgId(sysUser.getOrgId())
-                .orgIds(new ArrayList<>(merged))
+                .orgs(sysOrgService.getOrgSimpleListByIds(merged))
                 .token(token)
                 .expire(jwtUtils.expireTime())
                 .build();
