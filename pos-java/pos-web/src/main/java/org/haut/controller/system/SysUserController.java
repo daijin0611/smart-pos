@@ -106,6 +106,7 @@ public class SysUserController {
 
     @PutMapping("/update-user")
     @Operation(description = "更新用户", summary = "更新用户")
+    @OperLog(module = "system", description = "更新用户")
     public JsonVO<String> updateUser(@Validated @RequestBody UserUpdateDTO user){
         if (judgeUserCodeExist(user.getUserCode(), user.getId())) {
             throw new BusinessException("用户编号"+ user.getUserCode() + "已存在");

@@ -1,14 +1,18 @@
 package org.haut.common.domain.dto.system;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @Schema(description = "登录信息")
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthInfoDTO {
     @Schema(description = "用户ID")
     private Long userId;

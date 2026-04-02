@@ -71,9 +71,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         sysUser.setOrgId(auth.getOrgId());
         this.save(sysUser);
 
-        // 绑定额外关联门店
+        // 绑定额外关联门店（过滤主门店，避免重复）
         if (user.getOrgIds() != null && !user.getOrgIds().isEmpty()) {
-            sysOrgUserService.bindOrgs(sysUser.getId(), user.getOrgIds());
+            List<Long> filtered = user.getOrgIds().stream()
+                    .filter(id -> !id.equals(auth.getOrgId()))
+                    .toList();
+            if (!filtered.isEmpty()) {
+                sysOrgUserService.bindOrgs(sysUser.getId(), filtered);
+            }
         }
     }
 
@@ -84,10 +89,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         SysUser sysUser = BeanUtil.toBean(user, SysUser.class);
         this.updateById(sysUser);
 
-        // 同步更新门店关联（先删后插）
+        // 同步更新门店关联（先删后插，过滤主门店）
         sysOrgUserService.unbindOrgs(user.getId());
         if (user.getOrgIds() != null && !user.getOrgIds().isEmpty()) {
-            sysOrgUserService.bindOrgs(user.getId(), user.getOrgIds());
+            SysUser existing = this.getById(user.getId());
+            List<Long> filtered = user.getOrgIds().stream()
+                    .filter(id -> !id.equals(existing.getOrgId()))
+                    .toList();
+            if (!filtered.isEmpty()) {
+                sysOrgUserService.bindOrgs(user.getId(), filtered);
+            }
         }
     }
 
@@ -117,12 +128,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         UserInfoVO userInfoVO = BeanUtil.toBean(user, UserInfoVO.class);
         userInfoVO.setRole(roleInfoVo);
 
-        // 查询关联门店，合并主门店
+        // 查询关联门店，合并主门店（去重）
         List<Long> extraOrgIds = sysOrgUserService.getOrgIdsByUserId(user.getId());
-        List<Long> allOrgIds = new ArrayList<>();
-        allOrgIds.add(user.getOrgId());
-        allOrgIds.addAll(extraOrgIds);
-        userInfoVO.setOrgIds(allOrgIds);
+        Set<Long> merged = new LinkedHashSet<>();
+        merged.add(user.getOrgId());
+        merged.addAll(extraOrgIds);
+        userInfoVO.setOrgIds(new ArrayList<>(merged));
 
         return userInfoVO;
     }

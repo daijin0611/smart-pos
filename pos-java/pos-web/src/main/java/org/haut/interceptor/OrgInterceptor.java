@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -32,12 +34,12 @@ public class OrgInterceptor implements HandlerInterceptor {
             SysUser sysUser = sysUserMapper.selectById(authInfo.getUserId());
             authInfo.setUserName(sysUser.getUserName());
 
-            // 查询用户关联门店，合并主门店
+            // 查询用户关联门店，合并主门店（去重）
             List<Long> extraOrgIds = sysOrgUserService.getOrgIdsByUserId(authInfo.getUserId());
-            List<Long> allOrgIds = new ArrayList<>();
-            allOrgIds.add(authInfo.getOrgId());
-            allOrgIds.addAll(extraOrgIds);
-            authInfo.setOrgIds(allOrgIds);
+            Set<Long> merged = new LinkedHashSet<>();
+            merged.add(authInfo.getOrgId());
+            merged.addAll(extraOrgIds);
+            authInfo.setOrgIds(new ArrayList<>(merged));
 
             AuthContextHolder.setAuth(authInfo);
             return true;
