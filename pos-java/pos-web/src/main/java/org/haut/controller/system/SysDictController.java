@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.haut.common.annotation.OperLog;
+import org.haut.common.enums.OperLogModule;
 import org.haut.server.system.service.SysDictTypeService;
 import org.haut.server.system.service.SysDictItemService;
 import org.haut.common.domain.vo.JsonVO;
@@ -34,6 +36,7 @@ public class SysDictController {
 
     @PostMapping("/add-type")
     @Operation(summary = "新增字典类型", description = "创建新的字典类型")
+    @OperLog(module = OperLogModule.SYSTEM, description = "新增字典类型")
     public JsonVO<Void> addDictType(@Valid @RequestBody DictTypeCreateDTO dto) {
         sysDictTypeService.addDictType(dto);
         return JsonVO.success();
@@ -41,6 +44,7 @@ public class SysDictController {
 
     @PutMapping("/update-type")
     @Operation(summary = "修改字典类型", description = "修改字典类型信息")
+    @OperLog(module = OperLogModule.SYSTEM, description = "修改字典类型")
     public JsonVO<Void> updateDictType(@Valid @RequestBody DictTypeUpdateDTO dto) {
         sysDictTypeService.updateDictType(dto);
         return JsonVO.success();
@@ -54,6 +58,7 @@ public class SysDictController {
 
     @PostMapping("/add-item")
     @Operation(summary = "新增字典项", description = "在指定字典类型下创建新的字典项")
+    @OperLog(module = OperLogModule.SYSTEM, description = "新增字典项")
     public JsonVO<Void> addDictItem(@Valid @RequestBody DictItemCreateDTO dto) {
         sysDictItemService.addDictItem(dto);
         return JsonVO.success();
@@ -61,6 +66,7 @@ public class SysDictController {
 
     @PutMapping("/update-item")
     @Operation(summary = "修改字典项", description = "修改字典项信息")
+    @OperLog(module = OperLogModule.SYSTEM, description = "修改字典项")
     public JsonVO<Void> updateDictItem(@Valid @RequestBody DictItemUpdateDTO dto) {
         sysDictItemService.updateDictItem(dto);
         return JsonVO.success();
@@ -68,6 +74,7 @@ public class SysDictController {
 
     @PutMapping("/delete-item")
     @Operation(summary = "删除字典项", description = "根据字典项ID删除字典项")
+    @OperLog(module = OperLogModule.SYSTEM, description = "删除字典项")
     public JsonVO<Void> deleteDictItem(@RequestParam Long itemId) {
         sysDictItemService.removeById(itemId);
         return JsonVO.success();
@@ -75,6 +82,7 @@ public class SysDictController {
 
     @PutMapping("/delete-type")
     @Operation(summary = "删除字典类型", description = "根据字典类型ID删除字典类型")
+    @OperLog(module = OperLogModule.SYSTEM, description = "删除字典类型")
     public JsonVO<Void> deleteDictType(@RequestParam Long dictTypeId) {
         sysDictTypeService.removeById(dictTypeId);
         return JsonVO.success();

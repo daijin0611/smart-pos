@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.haut.common.domain.vo.system.OrgSimpleVO;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -104,8 +106,8 @@ public class ServerItemVO {
     private Integer itemStatus;
 
     /**
-     * 关联门店ID列表
+     * 关联门店列表
      */
-    @Schema(description = "关联门店ID列表")
-    private List<Long> orgIds;
+    @Schema(description = "关联门店列表")
+    private List<OrgSimpleVO> orgs;
 }

@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import org.haut.common.domain.vo.system.OrgSimpleVO;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -80,9 +82,9 @@ public class ServerCureTicketVO {
     private Integer status;
 
     /**
-     * 关联门店ID列表
+     * 关联门店列表
      */
-    private List<Long> orgIds;
+    private List<OrgSimpleVO> orgs;
 
     /**
      * 疗程关联优惠券列表

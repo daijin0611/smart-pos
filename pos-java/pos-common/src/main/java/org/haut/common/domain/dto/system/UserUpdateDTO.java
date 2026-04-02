@@ -54,7 +54,7 @@ public class UserUpdateDTO {
 
     @Schema(description = "出生日期", example = "1990-01-01")
     @PastOrPresent(message = "生日不能是未来日期")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date userBirthday;
 
     @Schema(description = "所属部门", example = "管理部")
@@ -62,7 +62,7 @@ public class UserUpdateDTO {
 
     @Schema(description = "入职日期", example = "2020-01-01")
     @PastOrPresent(message = "生日不能是未来日期")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date userEntryDate;
 
     @Schema(description = "在职状态", example = "在职")

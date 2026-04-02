@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.enums.OperLogModule;
 import org.haut.common.domain.dto.stock.StockOutOrderCreateDTO;
 import org.haut.common.domain.query.stock.StockOrderQuery;
 import org.haut.common.domain.vo.stock.StockOutOrderVO;
@@ -69,7 +70,7 @@ public class StockOutOrderController {
      */
     @PostMapping("/add-order")
     @Operation(summary = "创建出库单", description = "创建新的出库单")
-    @OperLog(module = "stock", description = "创建出库单")
+    @OperLog(module = OperLogModule.STOCK, description = "创建出库单")
     public JsonVO<Void> addOrder(@Valid @RequestBody StockOutOrderCreateDTO dto) {
         log.info("创建出库单，参数：{}", dto);
         stockOutOrderService.addOrder(dto);

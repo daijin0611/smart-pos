@@ -7,9 +7,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.system.PermissionCreateDTO;
 import org.haut.common.domain.dto.system.PermissionUpdateDTO;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.enums.OperLogModule;
 import org.haut.common.domain.query.system.PermissionListQuery;
 import org.haut.common.domain.vo.system.PermissionInfoVO;
 import org.haut.server.system.entity.SysPermission;
@@ -56,6 +58,7 @@ public class SysPermissionController {
 
     @PostMapping("/add-permission")
     @Operation(description = "添加权限", summary = "添加权限")
+    @OperLog(module = OperLogModule.SYSTEM, description = "添加权限")
     public JsonVO<String> addPermission(@RequestBody @Validated PermissionCreateDTO dto){
         sysPermissionService.save(BeanUtil.copyProperties(dto, SysPermission.class));
         return JsonVO.success();
@@ -63,6 +66,7 @@ public class SysPermissionController {
 
     @PutMapping("/update-permission")
     @Operation(description = "更新权限", summary = "更新权限")
+    @OperLog(module = OperLogModule.SYSTEM, description = "更新权限")
     public JsonVO<String> updatePermission(@RequestBody @Validated PermissionUpdateDTO dto){
         sysPermissionService.updateById(BeanUtil.copyProperties(dto, SysPermission.class));
         return JsonVO.success();
@@ -70,6 +74,7 @@ public class SysPermissionController {
 
     @PutMapping("/update-permission-status")
     @Operation(description = "更新权限状态(0 正常， 1 停用)", summary = "更新权限状态")
+    @OperLog(module = OperLogModule.SYSTEM, description = "更新权限状态")
     public JsonVO<String> updatePermissionStatus(@RequestParam("id") Long id, @RequestParam("status") Integer status){
         LambdaUpdateWrapper<SysPermission> updateWrapper = Wrappers.lambdaUpdate(SysPermission.class)
                 .eq(SysPermission::getId, id)
@@ -80,6 +85,7 @@ public class SysPermissionController {
 
     @PutMapping("/delete-permission")
     @Operation(description = "删除权限", summary = "删除权限")
+    @OperLog(module = OperLogModule.SYSTEM, description = "删除权限")
     public JsonVO<String> deletePermission(@RequestParam("id") Long id){
         sysPermissionService.removeById(id);
         return JsonVO.success();

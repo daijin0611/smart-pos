@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.order.*;
+import org.haut.common.enums.OperLogModule;
 import org.haut.common.domain.dto.order.OrderDetailTechnicianDTO;
 import java.util.List;
 import org.haut.common.domain.vo.JsonVO;
@@ -39,7 +40,7 @@ public class OrderController {
     // ==========收银相关接口==========
     @PostMapping("/add-order")
     @Operation(summary = "开单", description = "选择床位进行开单的方法")
-    @OperLog(module = "order", description = "开单")
+    @OperLog(module = OperLogModule.ORDER, description = "开单")
     public JsonVO<OrderCreateVO> addOrder(@Validated @RequestBody OrderCreateDTO createOrderDTO) {
         log.info("创建订单请求：\n{}", JSONUtil.parse(createOrderDTO).toStringPretty());
         return JsonVO.success(orderInfoService.addOrderWithBed(createOrderDTO));
@@ -47,7 +48,7 @@ public class OrderController {
 
     @PostMapping("/settle-order")
     @Operation(summary = "结算", description = "对订单进行结算操作")
-    @OperLog(module = "order", description = "订单结算")
+    @OperLog(module = OperLogModule.ORDER, description = "订单结算")
     public JsonVO<OrderReceiptVO> settleOrder(@Validated @RequestBody OrderSettleDTO settleOrderDTO) {
         log.info("结算订单请求：{}", settleOrderDTO);
         Long orderId = orderInfoService.settleOrder(settleOrderDTO);
@@ -65,7 +66,7 @@ public class OrderController {
 
     @PutMapping("/cancel-order/{orderId}")
     @Operation(summary = "取消订单", description = "取消一个未结算的订单，将订单状态修改为已取消。")
-    @OperLog(module = "order", description = "取消订单")
+    @OperLog(module = OperLogModule.ORDER, description = "取消订单")
     public JsonVO<String> cancelOrder(@PathVariable Long orderId) {
         log.info("删除订单请求：{}", orderId);
         return JsonVO.success(orderInfoService.cancelOrder(orderId));
@@ -73,6 +74,7 @@ public class OrderController {
 
     @PostMapping("/add-detail/{orderId}")
     @Operation(summary = "添加订单明细", description = "为指定订单添加订单明细的方法")
+    @OperLog(module = OperLogModule.ORDER, description = "添加订单明细")
     public JsonVO<String> addDetail(
             @Validated @RequestBody OrderDetailCreateDTO dto,
             @PathVariable Long orderId){
@@ -82,6 +84,7 @@ public class OrderController {
 
     @DeleteMapping("/delete-detail/{detailId}")
     @Operation(summary = "删除订单明细", description = "删除订单明细的方法")
+    @OperLog(module = OperLogModule.ORDER, description = "删除订单明细")
     public JsonVO<String> deleteDetail(@PathVariable Long detailId) {
         log.info("删除订单明细请求：{}", detailId);
         return JsonVO.success(orderDetailService.deleteDetail(detailId));
@@ -89,6 +92,7 @@ public class OrderController {
 
     @PutMapping("/update-server-type/{detailId}")
     @Operation(summary = "修改上钟类型", description = "修改订单明细的上钟类型（0 点钟，1 加钟，2 轮牌）")
+    @OperLog(module = OperLogModule.ORDER, description = "修改上钟类型")
     public JsonVO<String> updateServerType(
             @PathVariable Long detailId,
             @RequestParam Integer serverType) {
@@ -99,6 +103,7 @@ public class OrderController {
 
     @PutMapping("/update-server-employee/{detailId}")
     @Operation(summary = "修改服务技师", description = "修改订单明细的服务技师（支持多人）")
+    @OperLog(module = OperLogModule.ORDER, description = "修改服务技师")
     public JsonVO<String> updateServerEmployee(
             @PathVariable Long detailId,
             @RequestBody List<OrderDetailTechnicianDTO> technicians) {
@@ -140,7 +145,7 @@ public class OrderController {
      */
     @PostMapping("/roll-back")
     @Operation(summary = "订单冲正", description = "对已结算订单进行冲正操作，将订单状态修改为已冲正")
-    @OperLog(module = "order", description = "订单冲正")
+    @OperLog(module = OperLogModule.ORDER, description = "订单冲正")
     public JsonVO<String> rollBackOrder(@Validated @RequestBody OrderRollBackDTO dto) {
         log.info("订单冲正请求：{}", dto);
         orderInfoService.rollBackOrder(dto);
@@ -155,7 +160,7 @@ public class OrderController {
      */
     @PostMapping("/reconcile-order")
     @Operation(summary = "订单对单", description = "确认对单")
-    @OperLog(module = "order", description = "订单对单")
+    @OperLog(module = OperLogModule.ORDER, description = "订单对单")
     public JsonVO<String> reconcileOrder(@Validated @RequestBody OrderReconcileDTO dto) {
         log.info("订单对单请求：{}", dto);
         orderInfoService.reconcileOrder(dto);

@@ -4,12 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.vip.VipTicketCreateDTO;
 import org.haut.common.domain.dto.vip.VipTicketUpdateDTO;
 import org.haut.common.domain.query.vip.VipInfoTicketQuery;
 import org.haut.common.domain.query.vip.VipTicketListQuery;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.enums.OperLogModule;
 import org.haut.common.domain.vo.vip.TicketCountVO;
 import org.haut.common.domain.vo.vip.VipTicketVO;
 import org.haut.server.vip.service.VipInfoTicketService;
@@ -43,6 +45,7 @@ public class VipTicketController {
 
     @PostMapping("/add-ticket")
     @Operation(description = "添加优惠券", summary = "添加优惠券")
+    @OperLog(module = OperLogModule.VIP, description = "添加优惠券")
     public JsonVO<String> addTicket(@Validated @RequestBody VipTicketCreateDTO ticket){
         log.info(ticket.toString());
         vipTicketService.addTicket(ticket);
@@ -51,6 +54,7 @@ public class VipTicketController {
 
     @PutMapping("/update-ticket")
     @Operation(description = "修改优惠券", summary = "修改优惠券")
+    @OperLog(module = OperLogModule.VIP, description = "修改优惠券")
     public JsonVO<String> updateTicket(@Validated @RequestBody VipTicketUpdateDTO ticket){
         log.info(ticket.toString());
         vipTicketService.updateTicket(ticket);
@@ -59,6 +63,7 @@ public class VipTicketController {
 
     @PutMapping("/update-status")
     @Operation(description = "修改优惠券状态", summary = "修改优惠券状态")
+    @OperLog(module = OperLogModule.VIP, description = "修改优惠券状态")
     public JsonVO<String> updateStatus(@RequestParam Long id, @RequestParam Integer status){
         vipTicketService.updateStatus(id, status);
         return JsonVO.success();

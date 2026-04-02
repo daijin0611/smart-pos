@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.system.RoleCreateDTO;
 import org.haut.common.domain.dto.system.RolePermissionAddDTO;
 import org.haut.common.domain.dto.system.RoleUpdateDTO;
@@ -17,6 +18,7 @@ import org.haut.common.domain.query.system.UnAllocatedListQuery;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.system.RoleInfoVo;
 import org.haut.common.domain.vo.system.UserInfoVO;
+import org.haut.common.enums.OperLogModule;
 import org.haut.server.system.entity.SysRole;
 import org.haut.server.system.service.SysPermissionService;
 import org.haut.server.system.service.SysRolePermissionService;
@@ -49,6 +51,7 @@ public class SysRoleController {
 
     @PostMapping("/add-role")
     @Operation(description = "添加角色", summary = "添加角色")
+    @OperLog(module = OperLogModule.SYSTEM, description = "添加角色")
     public JsonVO<String> addRole(@RequestBody @Validated RoleCreateDTO dto) {
         sysRoleService.save(BeanUtil.toBean(dto, SysRole.class));
         return JsonVO.success();
@@ -56,6 +59,7 @@ public class SysRoleController {
 
     @PutMapping("/update-role")
     @Operation(description = "更新角色", summary = "更新角色")
+    @OperLog(module = OperLogModule.SYSTEM, description = "更新角色")
     public JsonVO<String> updateRole(@RequestBody @Validated RoleUpdateDTO dto) {
         sysRoleService.updateById(BeanUtil.toBean(dto, SysRole.class));
         return JsonVO.success();
@@ -63,6 +67,7 @@ public class SysRoleController {
 
     @PutMapping("/update-status")
     @Operation(description = "更新角色状态(0 正常， 1 停用)", summary = "更新角色状态")
+    @OperLog(module = OperLogModule.SYSTEM, description = "更新角色状态")
     public JsonVO<String> updateStatus(@RequestParam Long roleId, @RequestParam Integer status) {
         sysRoleService.update(Wrappers.lambdaUpdate(SysRole.class)
                 .eq(SysRole::getId, roleId)
@@ -87,6 +92,7 @@ public class SysRoleController {
 
     @PostMapping("/add-user")
     @Operation(description = "批量为角色分配用户", summary = "批量分配用户")
+    @OperLog(module = OperLogModule.SYSTEM, description = "分配角色用户")
     public JsonVO<String> addUser(@RequestBody @Validated RoleUserAddDTO dto) {
         sysRoleService.addUserToRole(dto);
         return JsonVO.success();
@@ -94,6 +100,7 @@ public class SysRoleController {
 
     @PostMapping("/add-permission")
     @Operation(description = "批量为角色分配权限", summary = "批量分配权限")
+    @OperLog(module = OperLogModule.SYSTEM, description = "分配角色权限")
     public JsonVO<String> addPermission(@RequestBody @Validated RolePermissionAddDTO dto) {
         sysRoleService.addPermToRole(dto);
         return JsonVO.success();

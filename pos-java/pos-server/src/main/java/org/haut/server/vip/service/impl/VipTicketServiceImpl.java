@@ -14,6 +14,8 @@ import org.haut.common.enums.OrgRelationTypeEnum;
 import org.haut.common.enums.TicketTypeEnum;
 import org.haut.common.exception.BusinessException;
 import org.haut.server.system.service.OrgRelationService;
+import org.haut.server.system.service.SysOrgService;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.server.vip.mapper.VipTicketDetailMapper;
 import org.haut.server.vip.service.VipTicketService;
 import org.haut.server.vip.mapper.VipTicketMapper;
@@ -21,9 +23,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 interface VipTicketConvert {
@@ -47,6 +48,7 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
     private final VipTicketConvert convert;
     private final VipTicketDetailMapper vipTicketDetailMapper;
     private final OrgRelationService orgRelationService;
+    private final SysOrgService sysOrgService;
 
     @Override
     @Transactional
@@ -89,10 +91,16 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
         List<VipTicketVO> voList = this.baseMapper.getList(query, filteredItemIds);
         if (!voList.isEmpty()) {
             List<Long> itemIds = voList.stream().map(VipTicketVO::getId).toList();
-            Map<Long, List<Long>> orgMap = orgRelationService.getOrgIdsByItems(
+            Map<Long, List<Long>> orgIdMap = orgRelationService.getOrgIdsByItems(
                     OrgRelationTypeEnum.VIP_TICKET.getValue(), itemIds);
-            voList.forEach(vo -> vo.setOrgIds(
-                    orgMap.getOrDefault(vo.getId(), Collections.emptyList())));
+            Set<Long> allOrgIds = orgIdMap.values().stream()
+                    .flatMap(List::stream).collect(Collectors.toSet());
+            Map<Long, OrgSimpleVO> orgVoMap = sysOrgService.getOrgSimpleMapByIds(allOrgIds);
+            voList.forEach(vo -> {
+                List<Long> idList = orgIdMap.getOrDefault(vo.getId(), Collections.emptyList());
+                vo.setOrgs(idList.stream().map(orgVoMap::get)
+                        .filter(Objects::nonNull).toList());
+            });
         }
         return voList;
     }
@@ -157,8 +165,8 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
     public VipTicketVO queryById(Long ticketId) {
         VipTicketVO vo = baseMapper.getOneById(ticketId);
         if (vo != null) {
-            vo.setOrgIds(orgRelationService.getOrgIdsByItem(
-                    OrgRelationTypeEnum.VIP_TICKET.getValue(), ticketId));
+            vo.setOrgs(sysOrgService.getOrgSimpleListByIds(orgRelationService.getOrgIdsByItem(
+                    OrgRelationTypeEnum.VIP_TICKET.getValue(), ticketId)));
         }
         return vo;
     }
@@ -167,10 +175,16 @@ public class VipTicketServiceImpl extends ServiceImpl<VipTicketMapper, VipTicket
     public List<VipTicketVO> queryByIds(List<Long> ticketIds) {
         List<VipTicketVO> voList = baseMapper.getListByIds(ticketIds);
         if (!voList.isEmpty()) {
-            Map<Long, List<Long>> orgMap = orgRelationService.getOrgIdsByItems(
+            Map<Long, List<Long>> orgIdMap = orgRelationService.getOrgIdsByItems(
                     OrgRelationTypeEnum.VIP_TICKET.getValue(), ticketIds);
-            voList.forEach(vo -> vo.setOrgIds(
-                    orgMap.getOrDefault(vo.getId(), Collections.emptyList())));
+            Set<Long> allOrgIds = orgIdMap.values().stream()
+                    .flatMap(List::stream).collect(Collectors.toSet());
+            Map<Long, OrgSimpleVO> orgVoMap = sysOrgService.getOrgSimpleMapByIds(allOrgIds);
+            voList.forEach(vo -> {
+                List<Long> idList = orgIdMap.getOrDefault(vo.getId(), Collections.emptyList());
+                vo.setOrgs(idList.stream().map(orgVoMap::get)
+                        .filter(Objects::nonNull).toList());
+            });
         }
         return voList;
     }

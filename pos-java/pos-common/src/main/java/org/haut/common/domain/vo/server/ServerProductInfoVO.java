@@ -2,6 +2,7 @@ package org.haut.common.domain.vo.server;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -52,8 +53,8 @@ public class ServerProductInfoVO {
     @Schema(description = "产品状态(0-启用，1-禁用)", example = "0")
     private Integer productStatus;
     
-    @Schema(description = "关联门店ID列表")
-    private List<Long> orgIds;
+    @Schema(description = "关联门店列表")
+    private List<OrgSimpleVO> orgs;
 
     @Schema(description = "单位", example = "个")
     private String unit;

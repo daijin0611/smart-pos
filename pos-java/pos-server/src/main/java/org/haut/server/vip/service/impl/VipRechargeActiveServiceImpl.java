@@ -5,9 +5,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.haut.common.constant.Const;
 import org.haut.common.domain.dto.server.RelatedTicketDTO;
@@ -19,6 +18,8 @@ import org.haut.common.domain.vo.vip.RechargeHistoryVO;
 import org.haut.common.enums.OrgRelationTypeEnum;
 import org.haut.common.enums.RechargeActiveTypeEnum;
 import org.haut.server.system.service.OrgRelationService;
+import org.haut.server.system.service.SysOrgService;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.server.vip.entity.VipRechargeActive;
 import org.haut.server.vip.entity.VipRechargeActiveTicket;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
@@ -52,6 +53,7 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
     private final VipRechargeActiveConvert vipRechargeActiveConvert;
     private final VipRechargeActiveTicketMapper vipRechargeActiveTicketMapper;
     private final OrgRelationService orgRelationService;
+    private final SysOrgService sysOrgService;
     /**
      * 查询充值活动列表
      * 
@@ -72,10 +74,16 @@ public class VipRechargeActiveServiceImpl extends ServiceImpl<VipRechargeActiveM
         List<VipRechargeActiveVO> voList = this.baseMapper.queryList(query, filteredItemIds);
         if (!voList.isEmpty()) {
             List<Long> itemIds = voList.stream().map(VipRechargeActiveVO::getId).toList();
-            Map<Long, List<Long>> orgMap = orgRelationService.getOrgIdsByItems(
+            Map<Long, List<Long>> orgIdMap = orgRelationService.getOrgIdsByItems(
                     OrgRelationTypeEnum.RECHARGE_ACTIVE.getValue(), itemIds);
-            voList.forEach(vo -> vo.setOrgIds(
-                    orgMap.getOrDefault(vo.getId(), Collections.emptyList())));
+            Set<Long> allOrgIds = orgIdMap.values().stream()
+                    .flatMap(List::stream).collect(Collectors.toSet());
+            Map<Long, OrgSimpleVO> orgVoMap = sysOrgService.getOrgSimpleMapByIds(allOrgIds);
+            voList.forEach(vo -> {
+                List<Long> idList = orgIdMap.getOrDefault(vo.getId(), Collections.emptyList());
+                vo.setOrgs(idList.stream().map(orgVoMap::get)
+                        .filter(Objects::nonNull).toList());
+            });
         }
         return voList;
     }

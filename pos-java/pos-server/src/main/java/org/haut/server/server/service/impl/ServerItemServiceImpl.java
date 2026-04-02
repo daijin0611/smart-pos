@@ -16,13 +16,14 @@ import org.haut.common.exception.BusinessException;
 import org.haut.server.server.mapper.ServerItemMapper;
 import org.haut.server.server.service.ServerItemService;
 import org.haut.server.system.service.OrgRelationService;
+import org.haut.server.system.service.SysOrgService;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 interface ServerItemConvert{
@@ -46,6 +47,7 @@ public class ServerItemServiceImpl extends ServiceImpl<ServerItemMapper, ServerI
         implements ServerItemService {
     private final ServerItemConvert serverItemConvert;
     private final OrgRelationService orgRelationService;
+    private final SysOrgService sysOrgService;
 
     /**
      * 查询服务项目列表
@@ -71,10 +73,16 @@ public class ServerItemServiceImpl extends ServiceImpl<ServerItemMapper, ServerI
         List<ServerItemVO> voList = serverItemConvert.toVOList(serverItems);
         if (!voList.isEmpty()) {
             List<Long> itemIds = serverItems.stream().map(ServerItem::getId).toList();
-            Map<Long, List<Long>> orgMap = orgRelationService.getOrgIdsByItems(
+            Map<Long, List<Long>> orgIdMap = orgRelationService.getOrgIdsByItems(
                     OrgRelationTypeEnum.SERVER_ITEM.getValue(), itemIds);
-            voList.forEach(vo -> vo.setOrgIds(
-                    orgMap.getOrDefault(vo.getId(), Collections.emptyList())));
+            Set<Long> allOrgIds = orgIdMap.values().stream()
+                    .flatMap(List::stream).collect(Collectors.toSet());
+            Map<Long, OrgSimpleVO> orgVoMap = sysOrgService.getOrgSimpleMapByIds(allOrgIds);
+            voList.forEach(vo -> {
+                List<Long> idList = orgIdMap.getOrDefault(vo.getId(), Collections.emptyList());
+                vo.setOrgs(idList.stream().map(orgVoMap::get)
+                        .filter(Objects::nonNull).toList());
+            });
         }
         log.info("查询服务项目列表完成，共{}条", voList.size());
         return voList;
@@ -88,8 +96,8 @@ public class ServerItemServiceImpl extends ServiceImpl<ServerItemMapper, ServerI
         log.info("查询服务项目详情，id：{}", id);
         ServerItemVO vo = serverItemConvert.toVO(this.getById(id));
         if (vo != null) {
-            vo.setOrgIds(orgRelationService.getOrgIdsByItem(
-                    OrgRelationTypeEnum.SERVER_ITEM.getValue(), id));
+            vo.setOrgs(sysOrgService.getOrgSimpleListByIds(orgRelationService.getOrgIdsByItem(
+                    OrgRelationTypeEnum.SERVER_ITEM.getValue(), id)));
         }
         return vo;
     }

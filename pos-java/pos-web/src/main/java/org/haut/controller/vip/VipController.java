@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.PageDTO;
+import org.haut.common.enums.OperLogModule;
 import org.haut.common.domain.dto.vip.*;
 import org.haut.common.domain.query.vip.VipListQuery;
 import org.haut.common.domain.vo.JsonVO;
@@ -54,7 +55,7 @@ public class VipController {
 
     @PostMapping("/add-vip")
     @Operation(description = "添加会员并返回会员信息", summary = "添加会员")
-    @OperLog(module = "vip", description = "添加会员")
+    @OperLog(module = OperLogModule.VIP, description = "添加会员")
     public JsonVO<VipInfoVO> addVip(@Validated @RequestBody VipCreateDTO dto) {
         VipInfoVO vipInfo = vipInfoService.addVip(dto);
         return JsonVO.success(vipInfo);
@@ -62,6 +63,7 @@ public class VipController {
 
     @PutMapping("/update-vip")
     @Operation(description = "更新会员", summary = "更新会员")
+    @OperLog(module = OperLogModule.VIP, description = "更新会员")
     public JsonVO<String> updateVip(@Validated @RequestBody VipUpdateDTO vip){
         vipInfoService.updateVip(vip);
         return JsonVO.success("更新成功");
@@ -69,7 +71,7 @@ public class VipController {
 
     @PostMapping("/recharge")
     @Operation(description = "会员充值", summary = "会员充值")
-    @OperLog(module = "vip", description = "会员充值")
+    @OperLog(module = OperLogModule.VIP, description = "会员充值")
     public JsonVO<String> recharge(
             @RequestBody @Validated RechargeDTO dto,
             @Schema(description = "幂等校验令牌") String token){
@@ -85,6 +87,7 @@ public class VipController {
 
     @Operation(description = "为会员赠送优惠券", summary = "赠送优惠券")
     @PostMapping("/present-ticket/{vipId}")
+    @OperLog(module = OperLogModule.VIP, description = "赠送优惠券")
     public JsonVO<String> presentTicket (
             @PathVariable Long vipId,
             @RequestBody @Validated PresentTicketDTO dto){
@@ -94,6 +97,7 @@ public class VipController {
 
     @Operation(description = "批量取消会员优惠券", summary = "取消会员优惠券")
     @PostMapping("/cancel-ticket/{vipId}")
+    @OperLog(module = OperLogModule.VIP, description = "取消会员优惠券")
     public JsonVO<String> cancelTicket (
             @PathVariable Long vipId,
             @RequestBody @Validated CancelTicketDTO dto){
@@ -103,6 +107,7 @@ public class VipController {
 
     @Operation(description = "为会员赠送资产", summary = "赠送资产")
     @PostMapping("/present-asset/{vipId}")
+    @OperLog(module = OperLogModule.VIP, description = "赠送资产")
     public JsonVO<String> presentAsset (
             @PathVariable Long vipId,
             @RequestBody @Validated PresentAssetDTO dto){
@@ -112,6 +117,7 @@ public class VipController {
 
     @Operation(description = "修改会员备注", summary = "修改会员备注")
     @PostMapping("/update-remark/{vipId}")
+    @OperLog(module = OperLogModule.VIP, description = "修改会员备注")
     public JsonVO<String> updateRemark (
             @PathVariable Long vipId,
             @RequestBody @Validated VipRemarkUpdateDTO dto){
@@ -130,6 +136,7 @@ public class VipController {
      */
     @Operation(description = "修改会员资产备注", summary = "修改会员资产备注")
     @PostMapping("/update-asset-remark/{assetId}")
+    @OperLog(module = OperLogModule.VIP, description = "修改会员资产备注")
     public JsonVO<String> updateAssetRemark (
             @PathVariable Long assetId,
             @RequestBody @Validated VipRemarkUpdateDTO dto){
@@ -139,7 +146,7 @@ public class VipController {
 
     @PostMapping("/reverse-recharge")
     @Operation(description = "充值冲正", summary = "充值冲正")
-    @OperLog(module = "vip", description = "充值冲正")
+    @OperLog(module = OperLogModule.VIP, description = "充值冲正")
     public JsonVO<String> reverseRecharge(@RequestBody @Validated RechargeReverseDTO dto) {
         vipInfoService.reverseRecharge(dto);
         return JsonVO.success("冲正成功");

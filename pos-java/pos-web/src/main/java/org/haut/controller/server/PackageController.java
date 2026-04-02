@@ -3,10 +3,12 @@ package org.haut.controller.server;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.server.PackageInfoDTO;
 import org.haut.common.domain.dto.server.PackageListDTO;
 import org.haut.common.domain.query.server.ServerPackageListQuery;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.enums.OperLogModule;
 import org.haut.server.server.service.ServerPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -42,6 +44,7 @@ public class PackageController {
     // 3. 新增套餐
     @Operation(description = "新增套餐" ,summary = "新增套餐")
     @PostMapping("/add-package")
+    @OperLog(module = OperLogModule.SERVER, description = "新增套餐")
     public JsonVO<String> savePackage(@Validated @RequestBody PackageInfoDTO packageInfo) {
         packageService.savePackage(packageInfo);
         return JsonVO.success("新增成功");
@@ -50,6 +53,7 @@ public class PackageController {
     // 4. 修改套餐
     @Operation(description = "修改套餐" ,summary = "修改套餐")
     @PutMapping("/update-package" )
+    @OperLog(module = OperLogModule.SERVER, description = "修改套餐")
     public JsonVO<String> updatePackage(@Validated @RequestBody PackageInfoDTO packageInfo) {
         packageService.updatePackage(packageInfo);
         return JsonVO.success("修改成功");

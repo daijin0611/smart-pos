@@ -4,10 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.server.RechargeRoleCreateDTO;
 import org.haut.common.domain.dto.server.RechargeRoleUpdateDTO;
 import org.haut.common.domain.query.server.ServerRechargeRoleListQuery;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.enums.OperLogModule;
 import org.haut.server.server.entity.ServerRechargeRole;
 import org.haut.common.domain.vo.server.RechargeRoleVO;
 import org.haut.server.server.service.ServerRechargeRoleService;
@@ -32,6 +34,7 @@ public class RechargeRoleController {
 
     @PostMapping("/add-role")
     @Operation(description = "添加充值提成规则", summary = "添加充值提成规则")
+    @OperLog(module = OperLogModule.SERVER, description = "添加充值提成规则")
     public JsonVO<String> addRole(@Validated @RequestBody RechargeRoleCreateDTO role) {
         log.info(role.toString());
         serverRechargeRoleService.addRole(role);
@@ -40,6 +43,7 @@ public class RechargeRoleController {
 
     @PutMapping("/update-role")
     @Operation(description = "更新充值提成规则", summary = "更新充值提成规则")
+    @OperLog(module = OperLogModule.SERVER, description = "更新充值提成规则")
     public JsonVO<String> updateRole(@Validated @RequestBody RechargeRoleUpdateDTO role) {
         log.info(role.toString());
         serverRechargeRoleService.updateRole(role);
@@ -48,6 +52,7 @@ public class RechargeRoleController {
 
     @PutMapping("/set-default/{roleId}")
     @Operation(description = "设置默认充值提成规则", summary = "设置默认充值提成规则")
+    @OperLog(module = OperLogModule.SERVER, description = "设置默认充值提成规则")
     public JsonVO<String> setDefaultRole(@PathVariable Long roleId) {
         log.info("设置默认充值提成规则，roleId: {}", roleId);
         serverRechargeRoleService.setDefaultRole(roleId);
@@ -56,6 +61,7 @@ public class RechargeRoleController {
 
     @PutMapping("/update-status")
     @Operation(description = "更新充值提成规则状态", summary = "更新充值提成规则状态")
+    @OperLog(module = OperLogModule.SERVER, description = "更新充值提成规则状态")
     public JsonVO<String> updateStatus(@RequestParam Long id, @RequestParam Integer status) {
         log.info("更新充值提成规则状态，id: {}, status: {}", id, status);
         serverRechargeRoleService.lambdaUpdate().set(ServerRechargeRole::getStatus, status)

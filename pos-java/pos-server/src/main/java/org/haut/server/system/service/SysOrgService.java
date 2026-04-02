@@ -5,10 +5,13 @@ import org.haut.common.domain.dto.system.OrgDefaultRuleUpdateDTO;
 import org.haut.common.domain.dto.system.OrgCreateDTO;
 import org.haut.common.domain.dto.system.OrgPrintWidthUpdateDTO;
 import org.haut.common.domain.vo.system.OrgInfoVO;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.server.system.entity.SysOrg;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author daiji
@@ -28,4 +31,14 @@ public interface SysOrgService extends IService<SysOrg> {
      * @param dto 打印宽度更新对象
      */
     void updatePrintWidth(OrgPrintWidthUpdateDTO dto);
+
+    /**
+     * 批量查询门店简要信息，返回 Map<orgId, OrgSimpleVO>
+     */
+    Map<Long, OrgSimpleVO> getOrgSimpleMapByIds(Collection<Long> orgIds);
+
+    /**
+     * 批量查询门店简要信息，返回列表
+     */
+    List<OrgSimpleVO> getOrgSimpleListByIds(Collection<Long> orgIds);
 }

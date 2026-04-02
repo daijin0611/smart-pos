@@ -3,11 +3,13 @@ package org.haut.controller.room;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.room.BedCreateDTO;
 import org.haut.common.domain.dto.room.RoomCreateDTO;
 import org.haut.common.domain.dto.room.RoomUpdateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.enums.OperLogModule;
 import org.haut.common.domain.vo.room.RoomInfoVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
@@ -42,6 +44,7 @@ public class RoomController {
 
     @Operation(summary = "添加房间")
     @PostMapping("/add")
+    @OperLog(module = OperLogModule.ROOM, description = "添加房间")
     public JsonVO<String> addRoom(@Validated @RequestBody RoomCreateDTO dto) {
         roomInfoService.addRoom(dto);
         return JsonVO.success("添加成功");
@@ -49,6 +52,7 @@ public class RoomController {
 
     @Operation(summary = "更新房间信息")
     @PutMapping("/update")
+    @OperLog(module = OperLogModule.ROOM, description = "更新房间信息")
     public JsonVO<String> updateRoom(@Validated @RequestBody RoomUpdateDTO dto) {
         roomInfoService.updateRoom(dto);
         return JsonVO.success("更新成功");
@@ -71,6 +75,7 @@ public class RoomController {
 
     @Operation(summary = "添加床位")
     @PostMapping("/bed/add")
+    @OperLog(module = OperLogModule.ROOM, description = "添加床位")
     public JsonVO<String> addBed(@Validated @RequestBody BedCreateDTO dto) {
         RoomInfo room = roomInfoService.getById(dto.getRoomId());
         if (room == null){
@@ -88,6 +93,7 @@ public class RoomController {
 
     @Operation(summary = "更新床位状态")
     @PutMapping("/bed/update-status")
+    @OperLog(module = OperLogModule.ROOM, description = "更新床位状态")
     public JsonVO<String> updateBedStatus(@RequestParam Long bedId,
                                           @RequestParam Integer status) {
         RoomBed bed = new RoomBed();
@@ -99,6 +105,7 @@ public class RoomController {
 
     @Operation(summary = "更新床位名称")
     @PutMapping("/bed/update-name")
+    @OperLog(module = OperLogModule.ROOM, description = "更新床位名称")
     public JsonVO<String> updateBedName(@RequestParam String bedName,
                                         @RequestParam Long roomId) {
         roomBedService.lambdaUpdate()

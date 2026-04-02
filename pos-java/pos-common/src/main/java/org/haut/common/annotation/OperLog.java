@@ -1,5 +1,7 @@
 package org.haut.common.annotation;
 
+import org.haut.common.enums.OperLogModule;
+
 import java.lang.annotation.*;
 
 /**
@@ -13,7 +15,7 @@ public @interface OperLog {
     /**
      * 操作模块
      */
-    String module();
+    OperLogModule module();
 
     /**
      * 操作描述

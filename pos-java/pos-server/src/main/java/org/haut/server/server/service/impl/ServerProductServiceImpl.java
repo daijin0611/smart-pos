@@ -16,14 +16,15 @@ import org.haut.server.server.entity.ServerProduct;
 import org.haut.server.server.service.ServerProductService;
 import org.haut.server.server.mapper.ServerProductMapper;
 import org.haut.server.system.service.OrgRelationService;
+import org.haut.server.system.service.SysOrgService;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 interface ProductConvert {
@@ -54,6 +55,7 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
     private final ServerProductMapper serverProductMapper;
     private final ProductConvert productConvert;
     private final OrgRelationService orgRelationService;
+    private final SysOrgService sysOrgService;
 
     @Override
     public List<ServerProductInfoVO> getList(ServerProductListQuery query) {
@@ -75,10 +77,16 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
         List<ServerProductInfoVO> voList = productConvert.toVoList(this.list(wrapper));
         if (!voList.isEmpty()) {
             List<Long> itemIds = voList.stream().map(ServerProductInfoVO::getId).toList();
-            Map<Long, List<Long>> orgMap = orgRelationService.getOrgIdsByItems(
+            Map<Long, List<Long>> orgIdMap = orgRelationService.getOrgIdsByItems(
                     OrgRelationTypeEnum.SERVER_PRODUCT.getValue(), itemIds);
-            voList.forEach(vo -> vo.setOrgIds(
-                    orgMap.getOrDefault(vo.getId(), Collections.emptyList())));
+            Set<Long> allOrgIds = orgIdMap.values().stream()
+                    .flatMap(List::stream).collect(Collectors.toSet());
+            Map<Long, OrgSimpleVO> orgVoMap = sysOrgService.getOrgSimpleMapByIds(allOrgIds);
+            voList.forEach(vo -> {
+                List<Long> idList = orgIdMap.getOrDefault(vo.getId(), Collections.emptyList());
+                vo.setOrgs(idList.stream().map(orgVoMap::get)
+                        .filter(Objects::nonNull).toList());
+            });
         }
         log.info("查询服务产品列表完成，共{}条", voList.size());
         return voList;
@@ -92,8 +100,8 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
             throw new BusinessException("产品不存在");
         }
         ServerProductInfoVO vo = productConvert.toVo(product);
-        vo.setOrgIds(orgRelationService.getOrgIdsByItem(
-                OrgRelationTypeEnum.SERVER_PRODUCT.getValue(), id));
+        vo.setOrgs(sysOrgService.getOrgSimpleListByIds(orgRelationService.getOrgIdsByItem(
+                OrgRelationTypeEnum.SERVER_PRODUCT.getValue(), id)));
         return vo;
     }
 

@@ -7,12 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.vip.VipRechargeActiveAddDTO;
 import org.haut.common.domain.dto.vip.VipRechargeActiveStatusDTO;
 import org.haut.common.domain.query.vip.ActiveStatQuery;
 import org.haut.common.domain.query.vip.VipRechargeActiveQuery;
 import org.haut.common.domain.vo.JsonVO;
-import org.haut.common.domain.vo.vip.RechargeHistoryVO;
+import org.haut.common.enums.OperLogModule;
 import org.haut.common.domain.vo.vip.VipRechargeActiveVO;
 import org.haut.server.vip.service.VipRechargeActiveService;
 import org.springframework.validation.annotation.Validated;
@@ -49,6 +50,7 @@ public class RechargeActiveController {
      */
     @PostMapping("/add")
     @Operation(description = "新增充值活动", summary = "新增充值活动")
+    @OperLog(module = OperLogModule.VIP, description = "新增充值活动")
     public JsonVO<String> addRechargeActive(@Validated @RequestBody VipRechargeActiveAddDTO addDTO) {
         log.info("新增充值活动，数据：{}", addDTO);
         vipRechargeActiveService.addRechargeActive(addDTO);
@@ -63,6 +65,7 @@ public class RechargeActiveController {
      */
     @PutMapping("/update-status")
     @Operation(description = "修改充值活动状态", summary = "修改充值活动状态")
+    @OperLog(module = OperLogModule.VIP, description = "修改充值活动状态")
     public JsonVO<String> updateStatus(@Validated @RequestBody VipRechargeActiveStatusDTO statusDTO) {
         log.info("修改充值活动状态，数据：{}", statusDTO);
         vipRechargeActiveService.updateStatus(statusDTO);

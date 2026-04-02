@@ -18,11 +18,13 @@ import org.haut.server.server.service.ServerRechargeRoleService;
 import org.haut.server.server.mapper.ServerRechargeRoleMapper;
 import org.haut.server.system.entity.SysOrg;
 import org.haut.server.system.mapper.SysOrgMapper;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
+import org.haut.server.system.service.SysOrgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +40,8 @@ public class ServerRechargeRoleServiceImpl extends ServiceImpl<ServerRechargeRol
     private ServerRechargeRoleMapper serverRechargeRoleMapper;
     @Autowired
     private SysOrgMapper sysOrgMapper;
+    @Autowired
+    private SysOrgService sysOrgService;
 
     /**
      * 查询充值提成规则列表（全局查询，不再按门店过滤）
@@ -51,13 +55,20 @@ public class ServerRechargeRoleServiceImpl extends ServiceImpl<ServerRechargeRol
         List<ServerRechargeRole> serverRechargeRoles = serverRechargeRoleMapper.selectList(queryWrapper);
         log.info("查询到充值提成规则数量：{}", serverRechargeRoles.size());
         List<RechargeRoleVO> voList = BeanUtil.copyToList(serverRechargeRoles, RechargeRoleVO.class);
-        // 填充每个规则关联的门店ID列表
-        for (RechargeRoleVO vo : voList) {
-            List<Long> orgIds = sysOrgMapper.selectList(Wrappers.lambdaQuery(SysOrg.class)
-                            .select(SysOrg::getId)
-                            .eq(SysOrg::getDefaultRechargeRoleId, vo.getId()))
-                    .stream().map(SysOrg::getId).collect(Collectors.toList());
-            vo.setOrgIds(orgIds);
+        // 批量填充每个规则关联的门店信息
+        if (!voList.isEmpty()) {
+            List<Long> roleIds = voList.stream().map(RechargeRoleVO::getId).toList();
+            List<SysOrg> allOrgs = sysOrgMapper.selectList(Wrappers.lambdaQuery(SysOrg.class)
+                    .in(SysOrg::getDefaultRechargeRoleId, roleIds));
+            Map<Long, List<SysOrg>> orgsByRole = allOrgs.stream()
+                    .collect(Collectors.groupingBy(o -> o.getDefaultRechargeRoleId().longValue()));
+            Map<Long, OrgSimpleVO> orgVoMap = sysOrgService.getOrgSimpleMapByIds(
+                    allOrgs.stream().map(SysOrg::getId).toList());
+            voList.forEach(vo -> {
+                List<SysOrg> orgList = orgsByRole.getOrDefault(vo.getId(), Collections.emptyList());
+                vo.setOrgs(orgList.stream().map(o -> orgVoMap.get(o.getId()))
+                        .filter(Objects::nonNull).toList());
+            });
         }
         return voList;
     }
@@ -116,11 +127,10 @@ public class ServerRechargeRoleServiceImpl extends ServiceImpl<ServerRechargeRol
                 role != null ? role.getRechargeRoleName() : "null");
         RechargeRoleVO vo = BeanUtil.toBean(role, RechargeRoleVO.class);
         if (vo != null) {
-            List<Long> orgIds = sysOrgMapper.selectList(Wrappers.lambdaQuery(SysOrg.class)
-                            .select(SysOrg::getId)
-                            .eq(SysOrg::getDefaultRechargeRoleId, vo.getId()))
-                    .stream().map(SysOrg::getId).collect(Collectors.toList());
-            vo.setOrgIds(orgIds);
+            List<SysOrg> orgList = sysOrgMapper.selectList(Wrappers.lambdaQuery(SysOrg.class)
+                    .eq(SysOrg::getDefaultRechargeRoleId, vo.getId()));
+            vo.setOrgs(sysOrgService.getOrgSimpleListByIds(
+                    orgList.stream().map(SysOrg::getId).toList()));
         }
         return vo;
     }

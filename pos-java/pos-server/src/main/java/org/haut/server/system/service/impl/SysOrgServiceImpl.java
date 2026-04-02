@@ -12,6 +12,7 @@ import org.haut.common.domain.dto.system.OrgCreateDTO;
 import org.haut.common.domain.dto.system.OrgPrintWidthUpdateDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.vo.system.OrgInfoVO;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.system.entity.SysOrg;
@@ -26,7 +27,11 @@ import org.haut.server.system.service.SysOrgService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
 * @author daiji
@@ -113,6 +118,23 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg>
                 .set(SysOrg::getPrintWidth, dto.getPrintWidth())
                 .eq(SysOrg::getId, dto.getId())
                 .update();
+    }
+
+    @Override
+    public Map<Long, OrgSimpleVO> getOrgSimpleMapByIds(Collection<Long> orgIds) {
+        if (orgIds == null || orgIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return this.listByIds(orgIds).stream()
+                .collect(Collectors.toMap(SysOrg::getId, o -> BeanUtil.toBean(o, OrgSimpleVO.class)));
+    }
+
+    @Override
+    public List<OrgSimpleVO> getOrgSimpleListByIds(Collection<Long> orgIds) {
+        if (orgIds == null || orgIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return BeanUtil.copyToList(this.listByIds(orgIds), OrgSimpleVO.class);
     }
 }
 

@@ -10,6 +10,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import org.haut.common.domain.vo.system.OrgSimpleVO;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -80,8 +82,8 @@ public class RechargeRoleVO {
     private Integer status;
 
     /**
-     * 关联的门店ID列表
+     * 关联的门店列表
      */
-    @Schema(description = "关联的门店ID列表")
-    private List<Long> orgIds;
+    @Schema(description = "关联的门店列表")
+    private List<OrgSimpleVO> orgs;
 }

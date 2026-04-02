@@ -3,6 +3,7 @@ package org.haut.common.domain.vo.vip;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -85,10 +86,10 @@ public class VipTicketVO {
     private List<ServerItemVO> serverItems;
 
     /**
-     * 关联门店ID列表
+     * 关联门店列表
      */
-    @Schema(description = "关联门店ID列表")
-    private List<Long> orgIds;
+    @Schema(description = "关联门店列表")
+    private List<OrgSimpleVO> orgs;
 
     /**
      * 优惠券描述

@@ -3,6 +3,7 @@ package org.haut.controller.server;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.server.ServerProductCreateDTO;
 import org.haut.common.domain.dto.server.ServerProductUpdateDTO;
 import org.haut.common.domain.query.server.ServerProductListQuery;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.enums.OperLogModule;
 import org.haut.common.exception.BusinessException;
 
 import java.util.List;
@@ -50,6 +52,7 @@ public class ServerProductController {
 
     @Operation(description = "添加服务产品", summary = "添加服务产品")
     @PostMapping("/add-product")
+    @OperLog(module = OperLogModule.SERVER, description = "添加服务产品")
     public JsonVO<String> addServerProduct(@Validated @RequestBody ServerProductCreateDTO product) {
         String result = serverProductService.addProduct(product);
         if ("添加成功".equals(result)) {
@@ -61,6 +64,7 @@ public class ServerProductController {
 
     @PutMapping("/update-product")
     @Operation(description = "更新服务产品", summary = "更新服务产品")
+    @OperLog(module = OperLogModule.SERVER, description = "更新服务产品")
     public JsonVO<String> updateServerProduct(@Validated @RequestBody ServerProductUpdateDTO product) {
         String result = serverProductService.updateProduct(product);
         if ("更新成功".equals(result)) {
@@ -72,6 +76,7 @@ public class ServerProductController {
 
     @Operation(description = "更新产品状态", summary = "更新产品状态")
     @PutMapping("/update-status")
+    @OperLog(module = OperLogModule.SERVER, description = "更新服务产品状态")
     public JsonVO<String> updateProductStatus(@RequestParam Long id, @RequestParam Integer status) {
         String result = serverProductService.updateProductStatus(id, status);
         if ("更新成功".equals(result)) {

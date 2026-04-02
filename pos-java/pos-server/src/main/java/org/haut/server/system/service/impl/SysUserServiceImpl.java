@@ -19,14 +19,13 @@ import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.UserContextHolder;
-import org.haut.server.system.entity.SysOrg;
 import org.haut.server.system.entity.SysRole;
 import org.haut.server.system.entity.SysUser;
 import org.haut.server.system.entity.SysUserRole;
-import org.haut.server.system.mapper.SysOrgMapper;
 import org.haut.server.system.mapper.SysRoleMapper;
 import org.haut.server.system.mapper.SysUserRoleMapper;
 import org.haut.server.system.mapper.SysUserMapper;
+import org.haut.server.system.service.SysOrgService;
 import org.haut.server.system.service.SysOrgUserService;
 import org.haut.server.system.service.SysUserService;
 import org.springframework.security.core.userdetails.User;
@@ -45,10 +44,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         implements SysUserService {
 
     private final SysUserMapper sysUserMapper;
-    private final SysOrgMapper sysOrgMapper;
     private final SysUserRoleMapper sysUserRoleMapper;
     private final SysRoleMapper sysRoleMapper;
     private final SysOrgUserService sysOrgUserService;
+    private final SysOrgService sysOrgService;
     private final BCryptPasswordEncoder encoder;
 
     @Override
@@ -73,17 +72,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
                 allOrgIds.addAll(extra);
             }
             // 批量查询门店信息
-            Map<Long, OrgSimpleVO> orgMap = Collections.emptyMap();
-            if (!allOrgIds.isEmpty()) {
-                List<SysOrg> orgs = sysOrgMapper.selectBatchIds(allOrgIds);
-                orgMap = orgs.stream().collect(Collectors.toMap(SysOrg::getId, o -> {
-                    OrgSimpleVO svo = new OrgSimpleVO();
-                    svo.setId(o.getId());
-                    svo.setOrgName(o.getOrgName());
-                    svo.setOrgCode(o.getOrgCode());
-                    return svo;
-                }));
-            }
+            Map<Long, OrgSimpleVO> orgMap = sysOrgService.getOrgSimpleMapByIds(allOrgIds);
             // 填充每个用户的门店列表
             for (UserInfoVO vo : records) {
                 List<OrgSimpleVO> orgs = new ArrayList<>();
@@ -183,17 +172,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         mergedOrgIds.add(user.getOrgId());
         mergedOrgIds.addAll(extraOrgIds);
         // 查询门店详情
-        List<OrgSimpleVO> orgs = new ArrayList<>();
-        if (!mergedOrgIds.isEmpty()) {
-            List<SysOrg> orgList = sysOrgMapper.selectBatchIds(mergedOrgIds);
-            for (SysOrg org : orgList) {
-                OrgSimpleVO svo = new OrgSimpleVO();
-                svo.setId(org.getId());
-                svo.setOrgName(org.getOrgName());
-                svo.setOrgCode(org.getOrgCode());
-                orgs.add(svo);
-            }
-        }
+        List<OrgSimpleVO> orgs = sysOrgService.getOrgSimpleListByIds(mergedOrgIds);
         userInfoVO.setOrgs(orgs);
 
         return userInfoVO;

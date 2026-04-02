@@ -36,7 +36,7 @@ public class OperLogAspect {
         HttpServletRequest request = attributes != null ? attributes.getRequest() : null;
 
         SysOperLog sysOperLog = new SysOperLog();
-        sysOperLog.setModule(operLog.module());
+        sysOperLog.setModule(operLog.module().getCode());
         sysOperLog.setDescription(operLog.description());
         sysOperLog.setCreateTime(new Date());
 

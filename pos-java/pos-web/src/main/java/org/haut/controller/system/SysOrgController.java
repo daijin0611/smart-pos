@@ -4,7 +4,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.vo.JsonVO;
+import org.haut.common.enums.OperLogModule;
 import org.haut.common.domain.vo.system.OrgInfoVO;
 import org.haut.server.system.entity.SysOrg;
 import org.haut.server.system.service.SysOrgService;
@@ -47,6 +49,7 @@ public class SysOrgController {
 
     @PostMapping("/add-org")
     @Operation(description = "添加机构", summary = "添加机构")
+    @OperLog(module = OperLogModule.SYSTEM, description = "添加机构")
     public JsonVO<String> addOrg(@RequestBody OrgCreateDTO dto) {
         sysOrgService.addOrg(dto);
         return JsonVO.success();
@@ -54,6 +57,7 @@ public class SysOrgController {
 
     @PutMapping("/update-org")
     @Operation(description = "更新机构", summary = "更新机构")
+    @OperLog(module = OperLogModule.SYSTEM, description = "更新机构")
     public JsonVO<String> updateOrg(@RequestBody OrgUpdateDTO dto) {
         sysOrgService.updateById(BeanUtil.copyProperties(dto, SysOrg.class));
         return JsonVO.success();
@@ -61,6 +65,7 @@ public class SysOrgController {
 
     @PutMapping("/update-default-rule")
     @Operation(description = "修改门店默认相关规则", summary = "修改门店默认相关规则")
+    @OperLog(module = OperLogModule.SYSTEM, description = "修改门店默认规则")
     public JsonVO<String> updateDefaultRule(@RequestBody OrgDefaultRuleUpdateDTO dto) {
         sysOrgService.updateDefaultRule(dto);
         if (dto.getDefaultRechargeRoleId() != null) {
@@ -71,6 +76,7 @@ public class SysOrgController {
 
     @PutMapping("/update-org-status")
     @Operation(description = "更新机构状态", summary = "更新机构状态")
+    @OperLog(module = OperLogModule.SYSTEM, description = "更新机构状态")
     public JsonVO<String> updateOrgStatus(@RequestParam("id") Long id, @RequestParam("status") Integer status) {
         LambdaUpdateWrapper<SysOrg> updateWrapper = Wrappers.lambdaUpdate(SysOrg.class)
                 .eq(SysOrg::getId, id)
@@ -81,6 +87,7 @@ public class SysOrgController {
 
     @PutMapping("/update-print-width")
     @Operation(description = "修改门店打印宽度", summary = "修改门店打印宽度")
+    @OperLog(module = OperLogModule.SYSTEM, description = "修改门店打印宽度")
     public JsonVO<String> updatePrintWidth(@RequestBody @Validated OrgPrintWidthUpdateDTO dto) {
         sysOrgService.updatePrintWidth(dto);
         return JsonVO.success();
