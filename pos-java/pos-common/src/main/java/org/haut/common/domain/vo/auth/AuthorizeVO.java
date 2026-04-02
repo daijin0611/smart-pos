@@ -7,6 +7,7 @@ import lombok.Data;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 丁铭瀚
@@ -26,6 +27,8 @@ public class AuthorizeVO {
     String token;
     @Schema(description = "机构id")
     Long orgId;
+    @Schema(description = "用户关联的所有门店ID列表")
+    List<Long> orgIds;
     @Schema(description = "令牌过期时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     Date expire;
