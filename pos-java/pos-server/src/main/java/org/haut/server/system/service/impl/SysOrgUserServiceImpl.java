@@ -9,8 +9,8 @@ import org.haut.server.system.service.SysOrgUserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,5 +56,18 @@ public class SysOrgUserServiceImpl extends ServiceImpl<SysOrgUserMapper, SysOrgU
             return Collections.emptyList();
         }
         return list.stream().map(SysOrgUser::getUsrId).toList();
+    }
+
+    @Override
+    public Map<Long, List<Long>> batchGetOrgIdsByUserIds(List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<SysOrgUser> list = list(new LambdaQueryWrapper<SysOrgUser>()
+                .in(SysOrgUser::getUsrId, userIds));
+        return list.stream().collect(Collectors.groupingBy(
+                SysOrgUser::getUsrId,
+                Collectors.mapping(SysOrgUser::getOrgId, Collectors.toList())
+        ));
     }
 }

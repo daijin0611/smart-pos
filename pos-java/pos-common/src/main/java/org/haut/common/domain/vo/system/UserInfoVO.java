@@ -72,7 +72,7 @@ public class UserInfoVO {
     @Schema(description = "角色信息")
     private RoleInfoVo role;
 
-    @Schema(description = "用户关联的所有门店ID列表")
-    private List<Long> orgIds;
+    @Schema(description = "用户关联的所有门店列表")
+    private List<OrgSimpleVO> orgs;
 
 }

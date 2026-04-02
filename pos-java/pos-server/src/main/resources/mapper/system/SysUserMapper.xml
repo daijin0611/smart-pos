@@ -89,10 +89,10 @@
                 AND u.role_id = #{query.roleId}
             </if>
             <if test="query.orgId != null">
-                AND u.org_id = #{query.orgId}
+                AND (u.org_id = #{query.orgId} OR EXISTS (SELECT 1 FROM sys_org_user sou WHERE sou.usr_id = u.id AND sou.org_id = #{query.orgId}))
             </if>
             <if test="query.orgId == null">
-                AND u.org_id = #{orgId}
+                AND (u.org_id = #{orgId} OR EXISTS (SELECT 1 FROM sys_org_user sou WHERE sou.usr_id = u.id AND sou.org_id = #{orgId}))
             </if>
     </select>
 </mapper>

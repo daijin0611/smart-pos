@@ -13,11 +13,13 @@ import org.haut.common.domain.dto.system.UserCreateDTO;
 import org.haut.common.domain.dto.system.UserDTO;
 import org.haut.common.domain.dto.system.UserUpdateDTO;
 import org.haut.common.domain.query.system.UserListQuery;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.common.domain.vo.system.RoleInfoVo;
 import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.UserContextHolder;
+import org.haut.server.system.entity.SysOrg;
 import org.haut.server.system.entity.SysRole;
 import org.haut.server.system.entity.SysUser;
 import org.haut.server.system.entity.SysUserRole;
@@ -35,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +58,52 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         page.setCurrent(query.getPageNum());
         page.setSize(query.getPageSize());
         sysUserMapper.getList(page, query, auth.getOrgId());
+
+        // 批量填充每个用户的关联门店信息
+        List<UserInfoVO> records = page.getRecords();
+        if (records != null && !records.isEmpty()) {
+            List<Long> userIds = records.stream().map(UserInfoVO::getId).toList();
+            // 批量查询每个用户关联的额外门店ID
+            Map<Long, List<Long>> userOrgMap = sysOrgUserService.batchGetOrgIdsByUserIds(userIds);
+            // 收集所有需要查询的门店ID
+            Set<Long> allOrgIds = new LinkedHashSet<>();
+            for (UserInfoVO vo : records) {
+                allOrgIds.add(vo.getOrgId());
+                List<Long> extra = userOrgMap.getOrDefault(vo.getId(), Collections.emptyList());
+                allOrgIds.addAll(extra);
+            }
+            // 批量查询门店信息
+            Map<Long, OrgSimpleVO> orgMap = Collections.emptyMap();
+            if (!allOrgIds.isEmpty()) {
+                List<SysOrg> orgs = sysOrgMapper.selectBatchIds(allOrgIds);
+                orgMap = orgs.stream().collect(Collectors.toMap(SysOrg::getId, o -> {
+                    OrgSimpleVO svo = new OrgSimpleVO();
+                    svo.setId(o.getId());
+                    svo.setOrgName(o.getOrgName());
+                    svo.setOrgCode(o.getOrgCode());
+                    return svo;
+                }));
+            }
+            // 填充每个用户的门店列表
+            for (UserInfoVO vo : records) {
+                List<OrgSimpleVO> orgs = new ArrayList<>();
+                // 主门店
+                OrgSimpleVO primaryOrg = orgMap.get(vo.getOrgId());
+                if (primaryOrg != null) {
+                    orgs.add(primaryOrg);
+                }
+                // 关联门店
+                List<Long> extra = userOrgMap.getOrDefault(vo.getId(), Collections.emptyList());
+                for (Long orgId : extra) {
+                    OrgSimpleVO orgVo = orgMap.get(orgId);
+                    if (orgVo != null) {
+                        orgs.add(orgVo);
+                    }
+                }
+                vo.setOrgs(orgs);
+            }
+        }
+
         return PageDTO.create(page);
     }
 
@@ -130,10 +179,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
         // 查询关联门店，合并主门店（去重）
         List<Long> extraOrgIds = sysOrgUserService.getOrgIdsByUserId(user.getId());
-        Set<Long> merged = new LinkedHashSet<>();
-        merged.add(user.getOrgId());
-        merged.addAll(extraOrgIds);
-        userInfoVO.setOrgIds(new ArrayList<>(merged));
+        Set<Long> mergedOrgIds = new LinkedHashSet<>();
+        mergedOrgIds.add(user.getOrgId());
+        mergedOrgIds.addAll(extraOrgIds);
+        // 查询门店详情
+        List<OrgSimpleVO> orgs = new ArrayList<>();
+        if (!mergedOrgIds.isEmpty()) {
+            List<SysOrg> orgList = sysOrgMapper.selectBatchIds(mergedOrgIds);
+            for (SysOrg org : orgList) {
+                OrgSimpleVO svo = new OrgSimpleVO();
+                svo.setId(org.getId());
+                svo.setOrgName(org.getOrgName());
+                svo.setOrgCode(org.getOrgCode());
+                orgs.add(svo);
+            }
+        }
+        userInfoVO.setOrgs(orgs);
 
         return userInfoVO;
     }

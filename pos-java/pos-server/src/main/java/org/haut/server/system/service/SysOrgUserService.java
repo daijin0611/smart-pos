@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.haut.server.system.entity.SysOrgUser;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SysOrgUserService extends IService<SysOrgUser> {
 
@@ -26,4 +27,9 @@ public interface SysOrgUserService extends IService<SysOrgUser> {
      * 查询门店下的用户ID列表
      */
     List<Long> getUserIdsByOrgId(Long orgId);
+
+    /**
+     * 批量查询多个用户关联的门店ID（不含主门店），返回 Map<userId, List<orgId>>
+     */
+    Map<Long, List<Long>> batchGetOrgIdsByUserIds(List<Long> userIds);
 }
