@@ -106,7 +106,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         }
         // 创建用户
         SysUser sysUser = BeanUtil.toBean(user, SysUser.class);
-        sysUser.setOrgId(auth.getOrgId());
+        sysUser.setOrgId(user.getOrgId() != null ? user.getOrgId() : auth.getOrgId());
         this.save(sysUser);
 
         // 绑定额外关联门店（过滤主门店，避免重复）

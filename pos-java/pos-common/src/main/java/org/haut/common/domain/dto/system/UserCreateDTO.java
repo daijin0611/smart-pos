@@ -79,6 +79,9 @@ public class UserCreateDTO {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date userHealth;
 
+    @Schema(description = "默认登录门店ID，不传则使用当前操作者的门店")
+    private Long orgId;
+
     @Schema(description = "角色id")
     @NotNull(message = "角色不能为空")
     private Long roleId;

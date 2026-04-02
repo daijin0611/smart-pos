@@ -86,6 +86,9 @@ public class UserUpdateDTO {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date userHealth;
 
+    @Schema(description = "默认登录门店ID")
+    private Long orgId;
+
     @Schema(description = "角色id")
     @NotNull(message = "角色不能为空")
     private Long roleId;
