@@ -34,7 +34,8 @@ public class SysOperLogServiceImpl extends ServiceImpl<SysOperLogMapper, SysOper
     public PageDTO<SysOperLogVO> queryPage(OperLogQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         LambdaQueryWrapper<SysOperLog> queryWrapper = Wrappers.lambdaQuery(SysOperLog.class)
-                .eq(auth.getOrgId() != null, SysOperLog::getOrgId, auth.getOrgId())
+                .eq(query.getOrgId() != null, SysOperLog::getOrgId, query.getOrgId())
+                .eq(query.getOrgId() == null && auth.getOrgId() != null, SysOperLog::getOrgId, auth.getOrgId())
                 .eq(StringUtils.isNotBlank(query.getModule()), SysOperLog::getModule, query.getModule())
                 .like(StringUtils.isNotBlank(query.getOperatorName()), SysOperLog::getOperatorName, query.getOperatorName())
                 .eq(query.getStatus() != null, SysOperLog::getStatus, query.getStatus())

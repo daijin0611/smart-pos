@@ -11,6 +11,9 @@ import java.util.Date;
 @Schema(description = "操作日志查询对象")
 public class OperLogQuery {
 
+    @Schema(description = "门店ID")
+    private Long orgId;
+
     @Schema(description = "操作模块")
     private String module;
 
