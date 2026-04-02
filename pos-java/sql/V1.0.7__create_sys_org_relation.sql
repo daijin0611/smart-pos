@@ -29,3 +29,4 @@ ALTER TABLE vip_ticket DROP COLUMN org_id;
 ALTER TABLE vip_recharge_active DROP COLUMN org_id;
 
 -- test ok
+-- 生产环境已更新：2026/4/2

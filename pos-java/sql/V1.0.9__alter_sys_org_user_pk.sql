@@ -12,3 +12,4 @@ ALTER TABLE sys_org_user
     ADD CONSTRAINT fk_sys_org_user_sys_user FOREIGN KEY (usr_id) REFERENCES sys_user(id);
 
 -- 已在测试环境执行：2026-04-02
+-- 生产环境已更新：2026/4/2

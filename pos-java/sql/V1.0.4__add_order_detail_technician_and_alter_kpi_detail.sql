@@ -17,3 +17,4 @@ ALTER TABLE kpi_detail ADD COLUMN detail_code VARCHAR(50) NULL COMMENT '订单�
 ALTER TABLE kpi_detail ADD INDEX idx_detail_id (detail_id);
 
 -- test ok
+-- 生产环境已更新：2026/4/2

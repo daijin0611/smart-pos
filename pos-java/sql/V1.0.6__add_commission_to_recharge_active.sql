@@ -2,3 +2,4 @@ ALTER TABLE vip_recharge_active ADD COLUMN commission_type TINYINT DEFAULT 1 COM
 ALTER TABLE vip_recharge_active ADD COLUMN commission_value DECIMAL(5,2) DEFAULT 0.00 COMMENT '提成值' AFTER commission_type;
 
 -- test ok
+-- 生产环境已更新：2026/4/2
