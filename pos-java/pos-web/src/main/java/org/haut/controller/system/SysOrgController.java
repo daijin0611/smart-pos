@@ -69,7 +69,7 @@ public class SysOrgController {
     public JsonVO<String> updateDefaultRule(@RequestBody OrgDefaultRuleUpdateDTO dto) {
         sysOrgService.updateDefaultRule(dto);
         if (dto.getDefaultRechargeRoleId() != null) {
-            serverRechargeRoleService.setDefaultRole(dto.getDefaultRechargeRoleId());
+            serverRechargeRoleService.setDefaultRole(dto.getDefaultRechargeRoleId(), dto.getOrgId());
         }
         return JsonVO.success("设置成功");
     }

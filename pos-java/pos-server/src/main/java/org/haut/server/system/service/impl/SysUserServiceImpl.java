@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.haut.common.domain.dto.PageDTO;
-import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.system.UserAllocateRoleDTO;
 import org.haut.common.domain.dto.system.UserCreateDTO;
 import org.haut.common.domain.dto.system.UserDTO;
@@ -17,7 +16,6 @@ import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.common.domain.vo.system.RoleInfoVo;
 import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.common.exception.BusinessException;
-import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.UserContextHolder;
 import org.haut.server.system.entity.SysRole;
 import org.haut.server.system.entity.SysUser;
@@ -52,11 +50,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     @Override
     public PageDTO<UserInfoVO> getList(UserListQuery query) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
         Page<UserInfoVO> page = new Page<>();
         page.setCurrent(query.getPageNum());
         page.setSize(query.getPageSize());
-        sysUserMapper.getList(page, query, auth.getOrgId());
+        sysUserMapper.getList(page, query);
 
         // 批量填充每个用户的关联门店信息
         List<UserInfoVO> records = page.getRecords();
@@ -99,20 +96,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addUser(UserCreateDTO user) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
         Long roleId = user.getRoleId();
         if (roleId == null) {
             throw new BusinessException("用户必须分配一个角色");
         }
         // 创建用户
         SysUser sysUser = BeanUtil.toBean(user, SysUser.class);
-        sysUser.setOrgId(user.getOrgId() != null ? user.getOrgId() : auth.getOrgId());
         this.save(sysUser);
 
         // 绑定额外关联门店（过滤主门店，避免重复）
         if (user.getOrgIds() != null && !user.getOrgIds().isEmpty()) {
             List<Long> filtered = user.getOrgIds().stream()
-                    .filter(id -> !id.equals(auth.getOrgId()))
+                    .filter(id -> !id.equals(user.getOrgId()))
                     .toList();
             if (!filtered.isEmpty()) {
                 sysOrgUserService.bindOrgs(sysUser.getId(), filtered);

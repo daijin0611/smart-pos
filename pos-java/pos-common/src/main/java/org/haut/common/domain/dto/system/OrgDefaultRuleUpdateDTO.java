@@ -17,6 +17,10 @@ import lombok.Data;
 @Schema(description = "门店默认规则更新对象")
 public class OrgDefaultRuleUpdateDTO {
 
+    @Schema(description = "门店ID")
+    @NotNull(message = "门店ID不能为空")
+    private Long orgId;
+
     @Schema(description = "折扣率（百分比）", example = "100")
     @NotNull(message = "折扣率不能为空")
     @Min(value = 0, message = "折扣率不能小于0")

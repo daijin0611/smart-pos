@@ -10,11 +10,9 @@ import org.haut.common.domain.query.system.OrgListQuery;
 import org.haut.common.domain.dto.system.OrgDefaultRuleUpdateDTO;
 import org.haut.common.domain.dto.system.OrgCreateDTO;
 import org.haut.common.domain.dto.system.OrgPrintWidthUpdateDTO;
-import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.vo.system.OrgInfoVO;
 import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.common.exception.BusinessException;
-import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.system.entity.SysOrg;
 import org.haut.server.system.entity.SysRole;
 import org.haut.server.system.entity.SysUser;
@@ -65,13 +63,12 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg>
 
     @Override
     public void updateDefaultRule(OrgDefaultRuleUpdateDTO dto) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
         this.lambdaUpdate()
                 .set(SysOrg::getDefaultDiscountRate, dto.getDefaultDiscountRate())
                 .set(SysOrg::getDefaultDiscountBase, dto.getDefaultDiscountBase())
                 .set(SysOrg::getDefaultIsCrossStore, dto.getDefaultIsCrossStore())
                 .set(SysOrg::getDefaultRechargeRoleId, dto.getDefaultRechargeRoleId())
-                .eq(SysOrg::getId, auth.getOrgId())
+                .eq(SysOrg::getId, dto.getOrgId())
                 .update();
     }
 

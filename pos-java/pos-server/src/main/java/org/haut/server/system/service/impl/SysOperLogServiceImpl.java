@@ -7,10 +7,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.haut.common.domain.dto.PageDTO;
-import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.system.OperLogQuery;
 import org.haut.common.domain.vo.system.SysOperLogVO;
-import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.system.entity.SysOperLog;
 import org.haut.server.system.mapper.SysOperLogMapper;
 import org.haut.server.system.service.SysOperLogService;
@@ -32,10 +30,8 @@ public class SysOperLogServiceImpl extends ServiceImpl<SysOperLogMapper, SysOper
 
     @Override
     public PageDTO<SysOperLogVO> queryPage(OperLogQuery query) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
         LambdaQueryWrapper<SysOperLog> queryWrapper = Wrappers.lambdaQuery(SysOperLog.class)
                 .eq(query.getOrgId() != null, SysOperLog::getOrgId, query.getOrgId())
-                .eq(query.getOrgId() == null && auth.getOrgId() != null, SysOperLog::getOrgId, auth.getOrgId())
                 .eq(StringUtils.isNotBlank(query.getModule()), SysOperLog::getModule, query.getModule())
                 .like(StringUtils.isNotBlank(query.getOperatorName()), SysOperLog::getOperatorName, query.getOperatorName())
                 .eq(query.getStatus() != null, SysOperLog::getStatus, query.getStatus())
