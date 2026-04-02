@@ -10,3 +10,5 @@ ALTER TABLE sys_org_user
     ADD PRIMARY KEY (usr_id, org_id),
     ADD CONSTRAINT fk_sys_org_user_sys_org FOREIGN KEY (org_id) REFERENCES sys_org(id),
     ADD CONSTRAINT fk_sys_org_user_sys_user FOREIGN KEY (usr_id) REFERENCES sys_user(id);
+
+-- 已在测试环境执行：2026-04-02

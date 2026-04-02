@@ -1,4 +1,4 @@
--- 已在测试环境执行：2026-04-01
+
 CREATE TABLE sys_oper_log (
     id              BIGINT UNSIGNED AUTO_INCREMENT COMMENT '主键',
     module          VARCHAR(50)     NOT NULL COMMENT '操作模块（order/vip/payment等）',
@@ -21,3 +21,5 @@ CREATE TABLE sys_oper_log (
     INDEX idx_create_time (create_time),
     INDEX idx_org_id (org_id)
 ) COMMENT '系统操作日志表';
+
+-- 已在测试环境执行：2026-04-01
