@@ -67,6 +67,9 @@ public class ServerProductCreateDTO {
     @NotBlank
     private String unit;
 
+    @Schema(description = "分类")
+    private String category;
+
     @Schema(description = "关联门店ID列表")
     private List<Long> orgIds;
 }

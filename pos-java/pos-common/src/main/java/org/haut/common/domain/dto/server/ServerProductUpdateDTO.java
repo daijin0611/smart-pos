@@ -68,6 +68,9 @@ public class ServerProductUpdateDTO {
     @Schema(description = "单位", example = "个")
     private String unit;
 
+    @Schema(description = "分类")
+    private String category;
+
     @Schema(description = "关联门店ID列表")
     private List<Long> orgIds;
 }

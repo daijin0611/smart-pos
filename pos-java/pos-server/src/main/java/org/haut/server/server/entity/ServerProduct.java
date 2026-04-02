@@ -122,6 +122,12 @@ public class ServerProduct {
     private Integer quantity;
 
     /**
+     * 分类
+     */
+    @Schema(description = "分类")
+    private String category;
+
+    /**
      * 版本号（乐观锁）
      */
     @Version

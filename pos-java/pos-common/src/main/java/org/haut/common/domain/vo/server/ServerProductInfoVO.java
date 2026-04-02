@@ -59,6 +59,9 @@ public class ServerProductInfoVO {
     @Schema(description = "单位", example = "个")
     private String unit;
 
+    @Schema(description = "分类")
+    private String category;
+
     @Schema(description = "库存", example = "100")
     private String quantity;
 }

@@ -132,6 +132,11 @@ public class ServerItemCreateDTO {
     private Integer itemStatus;
 
     /**
+     * 分类
+     */
+    private String category;
+
+    /**
      * 关联门店ID列表
      */
     @Schema(description = "关联门店ID列表")
