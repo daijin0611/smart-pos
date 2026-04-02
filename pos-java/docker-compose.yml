@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  # POS应用服务
+  pos-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pos-app
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+      - SPRING_PROFILES_ACTIVE=dev
+    volumes:
+      - app_logs:/tmp/logs
+
+# 数据卷定义
+volumes:
+  app_logs:
+    driver: local

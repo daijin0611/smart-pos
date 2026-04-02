@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.vip.mapper.VipAssetMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.vip.entity.VipAsset">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="assetNum" column="asset_num" />
+            <result property="assetBalance" column="asset_balance" />
+            <result property="assetType" column="asset_type" />
+            <result property="assetBaseDiscount" column="asset_base_discount" />
+            <result property="assetDiscountRate" column="asset_discount_rate" />
+            <result property="assetIsCrossStore" column="asset_is_cross_store" />
+            <result property="assetCardNumber" column="asset_card_number" />
+            <result property="vipId" column="vip_id" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,asset_num,
+        asset_balance,asset_type,asset_base_discount,asset_discount_rate,asset_is_cross_store,
+        asset_card_number,vip_id
+    </sql>
+</mapper>

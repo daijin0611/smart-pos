@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.system.mapper.SysRoleMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.system.entity.SysRole">
+        <id property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
+        <result property="roleCode" column="role_code"/>
+        <result property="roleName" column="role_name"/>
+        <result property="remark" column="remark"/>
+        <result property="roleSort" column="role_sort"/>
+        <result property="roleStatus" column="role_status"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,role_code,role_name,
+        remark,role_sort,role_status
+    </sql>
+
+    <!--查询当前角色分配的用户-->
+    <select id="getAllocatedUserList" resultType="org.haut.common.domain.vo.system.UserInfoVO">
+        SELECT
+            u.id,
+            u.user_code,
+            u.user_password,
+            u.user_name,
+            u.user_number,
+            u.user_position,
+            u.user_sex,
+            u.user_birthday,
+            u.user_dept,
+            u.user_entry_date,
+            u.user_status,
+            u.user_id_card,
+            u.user_address,
+            u.user_marry,
+            u.user_edu,
+            u.user_health,
+            u.org_id,
+            u.create_time,
+            u.update_time
+        FROM sys_user_role ur
+        LEFT JOIN sys_user u ON ur.user_id = u.id
+        WHERE ur.role_id = #{query.roleId}
+        AND u.is_delete = 0
+        AND u.org_id = #{orgId}
+    </select>
+    <!--查询未当前角色的用户-->
+    <select id="getUnAllocatedUserList" resultType="org.haut.common.domain.vo.system.UserInfoVO">
+        SELECT u.id,
+               u.user_code,
+               u.user_password,
+               u.user_name,
+               u.user_number,
+               u.user_position,
+               u.user_sex,
+               u.user_birthday,
+               u.user_dept,
+               u.user_entry_date,
+               u.user_status,
+               u.user_id_card,
+               u.user_address,
+               u.user_marry,
+               u.user_edu,
+               u.user_health,
+               u.org_id,
+               u.create_time,
+               u.update_time
+        FROM sys_user u
+                 LEFT JOIN sys_user_role ur ON ur.user_id = u.id
+        WHERE (ur.role_id != #{query.roleId} OR ur.role_id IS NULL)
+            AND u.is_delete = 0
+            AND u.org_id = #{orgId}
+    </select>
+</mapper>

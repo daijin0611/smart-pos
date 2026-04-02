@@ -1,0 +1,738 @@
+### 多人业绩分配功能 API 测试用例
+### 环境: dev | 执行顺序: 从上到下（存在数据依赖）
+
+### 0. 登录获取 Token
+POST {{baseUrl}}/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=N15287842664&password=123456
+
+> {%
+  client.global.set("token", response.body.data.token);
+  client.log("Token saved");
+%}
+
+### A1: 开单 - 单技师单明细
+POST {{baseUrl}}/order/add-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerType": 1,
+  "customerName": "丁铭瀚",
+  "bedId": 39,
+  "orderDetails": [
+    {
+      "detailType": 1,
+      "bid": 1,
+      "quantity": 1,
+      "stdPrice": 100.00,
+      "truePrice": 100.00,
+      "serverType": 0,
+      "technicians": [
+        {"userId": 2, "userName": "方睿"}
+      ]
+    }
+  ]
+}
+
+> {%
+  client.test("A1: code=10000", function () {
+    client.assert(response.body.code === 10000, "Expected 10000, got " + response.body.code);
+    client.assert(response.body.data.orderId != null, "orderId should not be null");
+  });
+  client.global.set("orderId_A1", response.body.data.orderId);
+%}
+
+### A1-清理: 结算释放床位
+POST {{baseUrl}}/order/settle-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "orderId": {{orderId_A1}},
+  "customerType": 1,
+  "customerName": "A1-Test",
+  "totalAmount": 100.00,
+  "actualAmount": 100.00,
+  "discountAmount": 0,
+  "orderDetails": [
+    {
+      "detailType": 1, "bid": 1, "businessName": "FootMassage", "businessCode": "SRV001",
+      "stdPrice": 100.00, "truePrice": 100.00, "quantity": 1, "serverType": 0,
+      "technicians": [{"userId": 2, "userName": "FR"}]
+    }
+  ],
+  "paymentInfoList": [{"paymentType": 1, "paymentName": "Cash", "paymentAmount": 100.00}]
+}
+
+> {%
+  client.test("A1-settle", function () {
+    client.assert(response.body.code === 10000, "Settle failed: " + response.body.message);
+  });
+%}
+
+### A2: 开单 - 双技师单明细
+POST {{baseUrl}}/order/add-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerType": 1,
+  "customerName": "A2-Test",
+  "bedId": 39,
+  "orderDetails": [
+    {
+      "detailType": 1,
+      "bid": 1,
+      "quantity": 1,
+      "stdPrice": 100.00,
+      "truePrice": 100.00,
+      "serverType": 0,
+      "technicians": [
+        {"userId": 2, "userName": "FR"},
+        {"userId": 3, "userName": "YZY"}
+      ]
+    }
+  ]
+}
+
+> {%
+  client.test("A2: code=10000", function () {
+    client.assert(response.body.code === 10000, "Expected 10000, got " + response.body.code);
+  });
+  client.global.set("orderId_A2", response.body.data.orderId);
+%}
+
+### A2-清理: 结算释放床位
+POST {{baseUrl}}/order/settle-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "orderId": {{orderId_A2}},
+  "customerType": 1,
+  "customerName": "A2-Test",
+  "totalAmount": 100.00,
+  "actualAmount": 100.00,
+  "discountAmount": 0,
+  "orderDetails": [
+    {
+      "detailType": 1, "bid": 1, "businessName": "FootMassage", "businessCode": "SRV001",
+      "stdPrice": 100.00, "truePrice": 100.00, "quantity": 1, "serverType": 0,
+      "technicians": [{"userId": 2, "userName": "FR"}, {"userId": 3, "userName": "YZY"}]
+    }
+  ],
+  "paymentInfoList": [{"paymentType": 1, "paymentName": "Cash", "paymentAmount": 100.00}]
+}
+
+> {%
+  client.test("A2-settle", function () {
+    client.assert(response.body.code === 10000, "Settle failed: " + response.body.message);
+  });
+%}
+
+### A3: 开单 - 三技师单明细
+POST {{baseUrl}}/order/add-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerType": 1,
+  "customerName": "A3-Test",
+  "bedId": 39,
+  "orderDetails": [
+    {
+      "detailType": 1,
+      "bid": 1,
+      "quantity": 1,
+      "stdPrice": 100.00,
+      "truePrice": 100.00,
+      "serverType": 0,
+      "technicians": [
+        {"userId": 4, "userName": "YJH"},
+        {"userId": 5, "userName": "ZYX"},
+        {"userId": 6, "userName": "ZXY"}
+      ]
+    }
+  ]
+}
+
+> {%
+  client.test("A3: code=10000", function () {
+    client.assert(response.body.code === 10000, "Expected 10000, got " + response.body.code);
+  });
+  client.global.set("orderId_A3", response.body.data.orderId);
+%}
+
+### A3-清理: 结算释放床位
+POST {{baseUrl}}/order/settle-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "orderId": {{orderId_A3}},
+  "customerType": 1,
+  "customerName": "A3-Test",
+  "totalAmount": 100.00,
+  "actualAmount": 100.00,
+  "discountAmount": 0,
+  "orderDetails": [
+    {
+      "detailType": 1, "bid": 1, "businessName": "FootMassage", "businessCode": "SRV001",
+      "stdPrice": 100.00, "truePrice": 100.00, "quantity": 1, "serverType": 0,
+      "technicians": [{"userId": 4, "userName": "YJH"}, {"userId": 5, "userName": "ZYX"}, {"userId": 6, "userName": "ZXY"}]
+    }
+  ],
+  "paymentInfoList": [{"paymentType": 1, "paymentName": "Cash", "paymentAmount": 100.00}]
+}
+
+> {%
+  client.test("A3-settle", function () {
+    client.assert(response.body.code === 10000, "Settle failed: " + response.body.message);
+  });
+%}
+
+###
+### A7: 完整结算流程（主线，后续 C1-C4 / D1-D3 依赖此流程）
+### 流程: 开单 → 添加明细 → 结算 → 查询
+###
+
+### A7-1: 开单 (2技师)
+POST {{baseUrl}}/order/add-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerType": 1,
+  "customerName": "A7-Test",
+  "bedId": 39,
+  "orderDetails": [
+    {
+      "detailType": 1,
+      "bid": 1,
+      "quantity": 1,
+      "stdPrice": 100.00,
+      "truePrice": 100.00,
+      "serverType": 0,
+      "technicians": [
+        {"userId": 2, "userName": "FR"},
+        {"userId": 3, "userName": "YZY"}
+      ]
+    }
+  ]
+}
+
+> {%
+  client.test("A7-1: order created", function () {
+    client.assert(response.body.code === 10000, "Failed: " + response.body.message);
+  });
+  client.global.set("orderId_A7", response.body.data.orderId);
+  client.global.set("orderCode_A7", response.body.data.orderCode);
+%}
+
+### A7-2: 查询订单
+GET {{baseUrl}}/order/query-by-id/{{orderId_A7}}
+Authorization: Bearer {{token}}
+
+> {%
+  var details = response.body.data.orderDetails;
+  client.test("A7-2: query ok", function () {
+    client.assert(response.body.code === 10000, "Query failed");
+    client.assert(details.length >= 1, "Should have at least 1 detail");
+  });
+  if (details && details.length >= 1) {
+    client.log("technicianNames: " + JSON.stringify(details[0].technicianNames));
+  }
+%}
+
+### A7-3: 添加明细 (3技师)
+POST {{baseUrl}}/order/add-detail/{{orderId_A7}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "detailType": 1,
+  "bid": 2,
+  "quantity": 1,
+  "stdPrice": 100.00,
+  "truePrice": 100.00,
+  "serverType": 1,
+  "technicians": [
+    {"userId": 4, "userName": "YJH"},
+    {"userId": 5, "userName": "ZYX"},
+    {"userId": 6, "userName": "ZXY"}
+  ]
+}
+
+> {%
+  client.test("A7-3: detail added", function () {
+    client.assert(response.body.code === 10000, "Add detail failed: " + response.body.message);
+  });
+%}
+
+### A7-4: 结算订单
+POST {{baseUrl}}/order/settle-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "orderId": {{orderId_A7}},
+  "customerType": 1,
+  "customerName": "A7-Test",
+  "totalAmount": 200.00,
+  "actualAmount": 200.00,
+  "discountAmount": 0,
+  "orderDetails": [
+    {
+      "detailType": 1, "bid": 1, "businessName": "FootMassage", "businessCode": "SRV001",
+      "stdPrice": 100.00, "truePrice": 100.00, "quantity": 1, "serverType": 0,
+      "technicians": [{"userId": 2, "userName": "FR"}, {"userId": 3, "userName": "YZY"}]
+    },
+    {
+      "detailType": 1, "bid": 2, "businessName": "EarClean", "businessCode": "SRV002",
+      "stdPrice": 100.00, "truePrice": 100.00, "quantity": 1, "serverType": 1,
+      "technicians": [{"userId": 4, "userName": "YJH"}, {"userId": 5, "userName": "ZYX"}, {"userId": 6, "userName": "ZXY"}]
+    }
+  ],
+  "paymentInfoList": [{"paymentType": 1, "paymentName": "Cash", "paymentAmount": 200.00}]
+}
+
+> {%
+  client.test("A7-4: settle success", function () {
+    client.assert(response.body.code === 10000, "Settle failed: " + response.body.message);
+  });
+  client.global.set("orderCode_A7", response.body.data.orderCode);
+%}
+
+### A8: 查询已结算订单 - 验证 technicianNames
+GET {{baseUrl}}/order/query-by-id/{{orderId_A7}}
+Authorization: Bearer {{token}}
+
+> {%
+  var details = response.body.data.orderDetails;
+  client.test("A8: 2 details", function () {
+    client.assert(response.body.code === 10000, "Query failed");
+    client.assert(details.length === 2, "Expected 2 details, got " + details.length);
+  });
+  if (details && details.length >= 2) {
+    client.test("A8: detail[0] has 2 technicians", function () {
+      client.assert(details[0].technicianNames.length === 2, "Expected 2");
+    });
+    client.test("A8: detail[1] has 3 technicians", function () {
+      client.assert(details[1].technicianNames.length === 3, "Expected 3");
+    });
+    client.log("detail[0]: " + JSON.stringify(details[0].technicianNames));
+    client.log("detail[1]: " + JSON.stringify(details[1].technicianNames));
+  }
+%}
+
+###
+### A4 + A5 + A6: 独立流程（需新开未结算订单）
+###
+
+### A4-prep: 开单
+POST {{baseUrl}}/order/add-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerType": 1,
+  "customerName": "A4-Test",
+  "bedId": 39,
+  "orderDetails": [
+    {
+      "detailType": 1, "bid": 1, "quantity": 1,
+      "stdPrice": 100.00, "truePrice": 100.00, "serverType": 0,
+      "technicians": [{"userId": 2, "userName": "FR"}]
+    }
+  ]
+}
+
+> {%
+  client.global.set("orderId_A4", response.body.data.orderId);
+%}
+
+### A4: 添加明细 - 多技师
+POST {{baseUrl}}/order/add-detail/{{orderId_A4}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "detailType": 1, "bid": 2, "quantity": 1,
+  "stdPrice": 100.00, "truePrice": 100.00, "serverType": 1,
+  "technicians": [
+    {"userId": 4, "userName": "YJH"},
+    {"userId": 5, "userName": "ZYX"},
+    {"userId": 6, "userName": "ZXY"}
+  ]
+}
+
+> {%
+  client.test("A4: add detail", function () {
+    client.assert(response.body.code === 10000, "Failed: " + response.body.message);
+  });
+%}
+
+### A5-prep: 查询获取 detailId
+GET {{baseUrl}}/order/query-by-id/{{orderId_A4}}
+Authorization: Bearer {{token}}
+
+> {%
+  var details = response.body.data.orderDetails;
+  if (details && details.length >= 1) {
+    client.global.set("detailId_A5", details[0].id);
+    client.log("detailId: " + details[0].id);
+  }
+%}
+
+### A5: 修改技师 - 替换为另一组技师
+PUT {{baseUrl}}/order/update-server-employee/{{detailId_A5}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+[
+  {"userId": 7, "userName": "ZZN"},
+  {"userId": 8, "userName": "QL"}
+]
+
+> {%
+  client.test("A5: update technicians", function () {
+    client.assert(response.body.code === 10000, "Failed: " + response.body.message);
+  });
+%}
+
+### A6: 修改上钟类型
+PUT {{baseUrl}}/order/update-server-type/{{detailId_A5}}?serverType=1
+Authorization: Bearer {{token}}
+
+> {%
+  client.test("A6: update server type", function () {
+    client.assert(response.body.code === 10000, "Failed: " + response.body.message);
+  });
+%}
+
+### A4-清理: 结算
+POST {{baseUrl}}/order/settle-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "orderId": {{orderId_A4}},
+  "customerType": 1, "customerName": "A4-Test",
+  "totalAmount": 200.00, "actualAmount": 200.00, "discountAmount": 0,
+  "orderDetails": [
+    {
+      "detailType": 1, "bid": 1, "businessName": "FootMassage", "businessCode": "SRV001",
+      "stdPrice": 100.00, "truePrice": 100.00, "quantity": 1, "serverType": 1,
+      "technicians": [{"userId": 7, "userName": "ZZN"}, {"userId": 8, "userName": "QL"}]
+    },
+    {
+      "detailType": 1, "bid": 2, "businessName": "EarClean", "businessCode": "SRV002",
+      "stdPrice": 100.00, "truePrice": 100.00, "quantity": 1, "serverType": 1,
+      "technicians": [{"userId": 4, "userName": "YJH"}, {"userId": 5, "userName": "ZYX"}, {"userId": 6, "userName": "ZXY"}]
+    }
+  ],
+  "paymentInfoList": [{"paymentType": 1, "paymentName": "Cash", "paymentAmount": 200.00}]
+}
+
+> {%
+  client.test("A4-cleanup", function () {
+    client.assert(response.body.code === 10000, "Cleanup failed");
+  });
+%}
+
+###
+### B. 边界场景
+###
+
+### B1: 单技师业绩分配 (无平分)
+POST {{baseUrl}}/order/add-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerType": 1, "customerName": "B1-Test", "bedId": 39,
+  "orderDetails": [{
+    "detailType": 1, "bid": 1, "quantity": 1,
+    "stdPrice": 100.00, "truePrice": 100.00, "serverType": 0,
+    "technicians": [{"userId": 2, "userName": "FR"}]
+  }]
+}
+
+> {%
+  client.global.set("orderId_B1", response.body.data.orderId);
+%}
+
+### B1-结算
+POST {{baseUrl}}/order/settle-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "orderId": {{orderId_B1}},
+  "customerType": 1, "customerName": "B1-Test",
+  "totalAmount": 100.00, "actualAmount": 100.00, "discountAmount": 0,
+  "orderDetails": [{
+    "detailType": 1, "bid": 1, "businessName": "FootMassage", "businessCode": "SRV001",
+    "stdPrice": 100.00, "truePrice": 100.00, "quantity": 1, "serverType": 0,
+    "technicians": [{"userId": 2, "userName": "FR"}]
+  }],
+  "paymentInfoList": [{"paymentType": 1, "paymentName": "Cash", "paymentAmount": 100.00}]
+}
+
+> {%
+  client.test("B1: single tech settle", function () {
+    client.assert(response.body.code === 10000, "Failed: " + response.body.message);
+  });
+  client.global.set("orderCode_B1", response.body.data.orderCode);
+%}
+
+### B2: 三技师平分精度 (100/3=33.33)
+POST {{baseUrl}}/order/add-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerType": 1, "customerName": "B2-Test", "bedId": 39,
+  "orderDetails": [{
+    "detailType": 1, "bid": 1, "quantity": 1,
+    "stdPrice": 100.00, "truePrice": 100.00, "serverType": 0,
+    "technicians": [
+      {"userId": 4, "userName": "YJH"},
+      {"userId": 5, "userName": "ZYX"},
+      {"userId": 6, "userName": "ZXY"}
+    ]
+  }]
+}
+
+> {%
+  client.global.set("orderId_B2", response.body.data.orderId);
+%}
+
+### B2-结算
+POST {{baseUrl}}/order/settle-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "orderId": {{orderId_B2}},
+  "customerType": 1, "customerName": "B2-Test",
+  "totalAmount": 100.00, "actualAmount": 100.00, "discountAmount": 0,
+  "orderDetails": [{
+    "detailType": 1, "bid": 1, "businessName": "FootMassage", "businessCode": "SRV001",
+    "stdPrice": 100.00, "truePrice": 100.00, "quantity": 1, "serverType": 0,
+    "technicians": [{"userId": 4, "userName": "YJH"}, {"userId": 5, "userName": "ZYX"}, {"userId": 6, "userName": "ZXY"}]
+  }],
+  "paymentInfoList": [{"paymentType": 1, "paymentName": "Cash", "paymentAmount": 100.00}]
+}
+
+> {%
+  client.test("B2: three tech settle", function () {
+    client.assert(response.body.code === 10000, "Failed: " + response.body.message);
+  });
+%}
+
+### B4-a: technicians 为空数组
+POST {{baseUrl}}/order/add-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerType": 1, "customerName": "B4a-Test", "bedId": 39,
+  "orderDetails": [{
+    "detailType": 1, "bid": 1, "quantity": 1,
+    "stdPrice": 100.00, "truePrice": 100.00, "serverType": 0,
+    "technicians": []
+  }]
+}
+
+> {%
+  client.test("B4a: empty technicians", function () {
+    client.assert(response.body.code === 10000, "Should succeed: " + response.body.message);
+  });
+  client.global.set("orderId_B4a", response.body.data.orderId);
+%}
+
+### B4a-清理
+POST {{baseUrl}}/order/settle-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "orderId": {{orderId_B4a}},
+  "customerType": 1, "customerName": "B4a-Test",
+  "totalAmount": 100.00, "actualAmount": 100.00, "discountAmount": 0,
+  "orderDetails": [{
+    "detailType": 1, "bid": 1, "businessName": "FootMassage", "businessCode": "SRV001",
+    "stdPrice": 100.00, "truePrice": 100.00, "quantity": 1, "serverType": 0
+  }],
+  "paymentInfoList": [{"paymentType": 1, "paymentName": "Cash", "paymentAmount": 100.00}]
+}
+
+> {%
+  client.test("B4a-settle", function () {
+    client.assert(response.body.code === 10000, "Failed");
+  });
+%}
+
+### B4-b: 不传 technicians 字段
+POST {{baseUrl}}/order/add-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerType": 1, "customerName": "B4b-Test", "bedId": 39,
+  "orderDetails": [{
+    "detailType": 1, "bid": 1, "quantity": 1,
+    "stdPrice": 100.00, "truePrice": 100.00, "serverType": 0
+  }]
+}
+
+> {%
+  client.test("B4b: no technicians field", function () {
+    client.assert(response.body.code === 10000, "Should succeed: " + response.body.message);
+  });
+  client.global.set("orderId_B4b", response.body.data.orderId);
+%}
+
+### B4b-清理
+POST {{baseUrl}}/order/settle-order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "orderId": {{orderId_B4b}},
+  "customerType": 1, "customerName": "B4b-Test",
+  "totalAmount": 100.00, "actualAmount": 100.00, "discountAmount": 0,
+  "orderDetails": [{
+    "detailType": 1, "bid": 1, "businessName": "FootMassage", "businessCode": "SRV001",
+    "stdPrice": 100.00, "truePrice": 100.00, "quantity": 1, "serverType": 0
+  }],
+  "paymentInfoList": [{"paymentType": 1, "paymentName": "Cash", "paymentAmount": 100.00}]
+}
+
+> {%
+  client.test("B4b-settle", function () {
+    client.assert(response.body.code === 10000, "Failed");
+  });
+%}
+
+###
+### C. 异常/校验场景
+### C1-C4 依赖 A7 结算结果，settledDetailId 需从数据库获取后手动填入
+### 查询SQL: SELECT id FROM order_detail WHERE order_code='<A7的orderCode>' AND is_delete=0 LIMIT 1
+###
+
+### C1: 结算后修改技师 - 应拒绝
+PUT {{baseUrl}}/order/update-server-employee/{{settledDetailId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+[{"userId": 2, "userName": "FR"}]
+
+> {%
+  client.test("C1: reject after settle", function () {
+    client.assert(response.body.code !== 10000, "Should reject");
+  });
+%}
+
+### C2: 结算后修改上钟类型 - 应拒绝
+PUT {{baseUrl}}/order/update-server-type/{{settledDetailId}}?serverType=2
+Authorization: Bearer {{token}}
+
+> {%
+  client.test("C2: reject after settle", function () {
+    client.assert(response.body.code !== 10000, "Should reject");
+  });
+%}
+
+### C3: 结算后添加明细 - 应拒绝
+POST {{baseUrl}}/order/add-detail/{{orderId_A7}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "detailType": 1, "bid": 2, "quantity": 1,
+  "stdPrice": 100.00, "truePrice": 100.00, "serverType": 1,
+  "technicians": [{"userId": 7, "userName": "ZZN"}]
+}
+
+> {%
+  client.test("C3: reject add after settle", function () {
+    client.assert(response.body.code !== 10000, "Should reject");
+  });
+%}
+
+### C4: 结算后删除明细 - 应拒绝
+DELETE {{baseUrl}}/order/delete-detail/{{settledDetailId}}
+Authorization: Bearer {{token}}
+
+> {%
+  client.test("C4: reject delete after settle", function () {
+    client.assert(response.body.code !== 10000, "Should reject");
+  });
+%}
+
+### C5: 订单ID不存在
+POST {{baseUrl}}/order/add-detail/999999
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "detailType": 1, "bid": 1, "quantity": 1, "serverType": 0,
+  "technicians": [{"userId": 2, "userName": "FR"}]
+}
+
+> {%
+  client.test("C5: order not found", function () {
+    client.assert(response.body.code === 9999, "Should be 9999");
+  });
+%}
+
+### C6: 明细ID不存在
+PUT {{baseUrl}}/order/update-server-employee/999999
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+[{"userId": 2, "userName": "FR"}]
+
+> {%
+  client.test("C6: detail not found", function () {
+    client.assert(response.body.code === 9999, "Should be 9999");
+  });
+%}
+
+### C7: 未登录访问接口
+GET {{baseUrl}}/order/query-by-id/1
+
+> {%
+  client.test("C7: unauthorized", function () {
+    client.assert(response.body.code === 401, "Should be 401");
+  });
+%}
+
+###
+### D. 数据一致性验证 (MySQL 客户端手动执行)
+### 将 <ORDER_CODE> 替换为 A7 的 orderCode_A7 值
+###
+
+### D1: 验证 order_detail_technician 表
+### SELECT detail_id, user_id, user_name
+### FROM order_detail_technician
+### WHERE detail_id IN (
+###     SELECT id FROM order_detail WHERE order_code='<ORDER_CODE>' AND is_delete=0
+### ) AND is_delete=0;
+### 预期: 5条记录 (2技师 + 3技师)
+
+### D2: 验证 kpi_detail 表 detail_id 非空
+### SELECT id, user_name, detail_id, detail_code, performance, commission
+### FROM kpi_detail WHERE order_code='<ORDER_CODE>' AND is_delete=0;
+### 预期: detail_id 和 detail_code 均非空
+
+### D3: 验证 KPI 业绩平分
+### SELECT detail_id, COUNT(*) as cnt, performance,
+###        COUNT(*) * performance as total
+### FROM kpi_detail WHERE order_code='<ORDER_CODE>' AND is_delete=0
+### GROUP BY detail_id, performance;
+### 预期: 明细1 performance=50.00 total=100.00 | 明细2 performance=33.33 total=99.99

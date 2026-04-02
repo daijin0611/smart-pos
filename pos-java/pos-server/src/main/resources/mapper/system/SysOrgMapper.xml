@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.system.mapper.SysOrgMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.system.entity.SysOrg">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="orgState" column="org_state" />
+            <result property="orgName" column="org_name" />
+            <result property="orgShortName" column="org_short_name" />
+            <result property="orgCode" column="org_code" />
+            <result property="orgParent" column="org_parent" />
+            <result property="orgProperty" column="org_property" />
+            <result property="orgType" column="org_type" />
+            <result property="orgArea" column="org_area" />
+            <result property="orgNumber" column="org_number" />
+            <result property="orgLeader" column="org_leader" />
+            <result property="orgLeaderNum" column="org_leader_num" />
+            <result property="orgAddress" column="org_address" />
+            <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,org_state,org_name,
+        org_short_name,org_code,org_parent,org_property,org_type,
+        org_area,org_number,org_leader,org_leader_num,org_address,
+        remark
+    </sql>
+</mapper>

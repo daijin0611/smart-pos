@@ -1,0 +1,13 @@
+@mixin primary-button {
+  background-color: var(--el-color-primary);
+  border-color: var(--el-color-primary);
+  color: var(--el-color-white);
+  border-radius: 0 var(--el-border-radius-base) var(--el-border-radius-base) 0;
+
+  &:hover {
+    background-color: var(--el-button-hover-bg-color);
+    border-color: var(--el-button-hover-border-color);
+    color: var(--el-button-hover-text-color);
+    outline: none;
+  }
+}

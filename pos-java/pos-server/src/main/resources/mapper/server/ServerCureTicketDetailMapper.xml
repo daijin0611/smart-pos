@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.server.mapper.ServerCureTicketDetailMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.server.entity.ServerCureTicketDetail">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="cureTicketId" column="cure_ticket_id" />
+            <result property="vipTicketId" column="vip_ticket_id" />
+            <result property="vipTicketNum" column="vip_ticket_num" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,cure_ticket_id,
+        vip_ticket_id,vip_ticket_num
+    </sql>
+</mapper>

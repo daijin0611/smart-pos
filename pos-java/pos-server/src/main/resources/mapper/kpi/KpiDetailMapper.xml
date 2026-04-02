@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.haut.server.kpi.mapper.KpiDetailMapper">
+
+    <select id="selectKpiList" resultType="org.haut.common.domain.vo.kpi.KpiListVO">
+        SELECT
+        kd.id,
+        kd.user_name,
+        kd.commission,
+        kd.create_time,
+        kd.order_code,
+        kd.service_code,
+        kd.service_name,
+        kd.service_type,
+        kd.item_type,
+        kd.performance,
+        kd.quantity,
+        so.org_name
+        FROM
+        kpi_detail kd
+        LEFT JOIN sys_org so ON so.id = kd.org_id
+        <where>
+            AND kd.is_delete = 0
+            <if test="query.username != null and query.username != ''">
+                AND kd.user_name LIKE CONCAT('%', #{query.username}, '%')
+            </if>
+            <if test="query.orgId != null">
+                AND kd.org_id = #{query.orgId}
+            </if>
+            <if test="query.beginDate != null">
+                AND kd.create_time >= #{query.beginDate}
+            </if>
+            <if test="query.endDate != null">
+                AND kd.create_time &lt;= #{query.endDate}
+            </if>
+            <if test="query.serviceCode != null and query.serviceCode != ''">
+                AND kd.service_code = #{query.serviceCode}
+            </if>
+        </where>
+        ORDER BY
+        kd.create_time DESC
+    </select>
+
+    <select id="selectKpiSummary" resultType="org.haut.common.domain.vo.kpi.KpiSummaryVO">
+        SELECT
+            kd.user_id AS userId,
+            kd.user_name AS userName,
+            so.org_name AS orgName,
+            kd.org_id AS orgId,
+            COALESCE(SUM(kd.performance), 0) AS totalPerformance,
+            COALESCE(SUM(kd.commission), 0) AS totalCommission,
+            COALESCE(SUM(CASE WHEN kd.service_type = 1 THEN 1 ELSE 0 END), 0) AS totalProjectCount,
+            
+            -- 点钟次数
+            COALESCE(SUM(CASE WHEN kd.service_type = 1 AND kd.item_type = 0 THEN 1 ELSE 0 END), 0) AS appointmentCount,
+            -- 轮牌次数  
+            COALESCE(SUM(CASE WHEN kd.service_type = 1 AND kd.item_type = 2 THEN 1 ELSE 0 END), 0) AS rotationCount,
+            -- 加钟次数
+            COALESCE(SUM(CASE WHEN kd.service_type = 1 AND kd.item_type = 1 THEN 1 ELSE 0 END), 0) AS extendCount,
+            
+            -- 项目业绩和提成（服务类型）
+            COALESCE(SUM(CASE WHEN kd.service_type = 1 THEN kd.performance ELSE 0 END), 0) AS projectPerformance,
+            COALESCE(SUM(CASE WHEN kd.service_type = 1 THEN kd.commission ELSE 0 END), 0) AS projectCommission,
+            
+            -- 产品业绩和提成
+            COALESCE(SUM(CASE WHEN kd.service_type = 0 THEN kd.performance ELSE 0 END), 0) AS productPerformance,
+            COALESCE(SUM(CASE WHEN kd.service_type = 0 THEN kd.commission ELSE 0 END), 0) AS productCommission,
+            
+            -- 疗程销售业绩和提成
+            COALESCE(SUM(CASE WHEN kd.service_type = 2 THEN kd.performance ELSE 0 END), 0) AS cureTicketPerformance,
+            COALESCE(SUM(CASE WHEN kd.service_type = 2 THEN kd.commission ELSE 0 END), 0) AS cureTicketCommission,
+            
+            -- 卡金业绩和提成（充值类型）
+            COALESCE(SUM(CASE WHEN kd.service_type = 3 THEN kd.performance ELSE 0 END), 0) AS rechargePerformance,
+            COALESCE(SUM(CASE WHEN kd.service_type = 3 THEN kd.commission ELSE 0 END), 0) AS rechargeCommission
+            
+        FROM kpi_detail kd
+        LEFT JOIN sys_org so ON so.id = kd.org_id
+        <where>
+            kd.is_delete = 0
+            <if test="userId != null">
+                AND kd.user_id = #{userId}
+            </if>
+            <if test="orgId != null">
+                AND kd.org_id = #{orgId}
+            </if>
+            <if test="beginDate != null">
+                AND kd.create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                AND kd.create_time &lt;= #{endDate}
+            </if>
+        </where>
+        GROUP BY kd.user_id, kd.user_name, kd.org_id, so.org_name
+        ORDER BY totalPerformance DESC
+    </select>
+
+</mapper>

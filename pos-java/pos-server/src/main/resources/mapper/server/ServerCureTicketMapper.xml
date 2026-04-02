@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.server.mapper.ServerCureTicketMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.server.entity.ServerCureTicket">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="name" column="name" />
+            <result property="encode" column="encode" />
+            <result property="price" column="price" />
+            <result property="type" column="type" />
+            <result property="commissionValue" column="commission_value" />
+            <result property="commissionBase" column="commission_by" />
+            <result property="status" column="status"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, create_time, update_time, is_delete, remark, `name`, encode, price, `type`, commission_value, commission_base
+    </sql>
+
+    <resultMap id="ServerCureTicketVO" type="org.haut.common.domain.vo.server.ServerCureTicketVO">
+        <id property="id" column="id" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+        <result property="isDelete" column="is_delete" />
+        <result property="remark" column="remark" />
+        <result property="name" column="name" />
+        <result property="encode" column="encode" />
+        <result property="price" column="price" />
+        <result property="type" column="type" />
+        <result property="commissionValue" column="commission_value" />
+        <result property="commissionBase" column="commission_by" />
+        <result property="status" column="status"/>
+        <collection property="ticketDetails" ofType="org.haut.common.domain.vo.server.ServerCureTicketVO$TicketDetailVO">
+            <result property="vipTicketName" column="vip_ticket_name"/>
+            <result property="vipTicketNum" column="vip_ticket_num"/>
+            <result property="vipTicketId" column="vip_ticket_id"/>
+        </collection>
+    </resultMap>
+
+    <select id="getList" resultMap="ServerCureTicketVO">
+        select
+            t.*,
+            td.vip_ticket_name as vip_ticket_name,
+            td.vip_ticket_num as vip_ticket_num,
+            td.vip_ticket_id as vip_ticket_id
+        from server_cure_ticket as t
+        left join server_cure_ticket_detail as td on t.id = td.cure_ticket_id and t.is_delete = 0
+        <where>
+            <if test="query.cureTicketName != null and query.cureTicketName != '' ">
+                t.name like concat('%',#{query.cureTicketName},'%')
+            </if>
+            <if test="query.status != null">
+                and t.status = #{query.status}
+            </if>
+            <if test="itemIds != null and itemIds.size() > 0">
+                and t.id in
+                <foreach item="id" collection="itemIds" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="getOneById" resultMap="ServerCureTicketVO">
+        select t.*,
+               td.vip_ticket_name as vip_ticket_name,
+               td.vip_ticket_num  as vip_ticket_num,
+               td.vip_ticket_id   as vip_ticket_id
+        from server_cure_ticket as t
+                 left join server_cure_ticket_detail as td on t.id = td.cure_ticket_id and t.is_delete = 0
+        where t.id = #{id}
+    </select>
+
+
+</mapper>
+

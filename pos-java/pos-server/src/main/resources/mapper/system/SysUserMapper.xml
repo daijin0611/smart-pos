@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.system.mapper.SysUserMapper">
+
+
+    <select id="queryRoleList" resultType="org.haut.common.domain.vo.system.RoleInfoVo">
+        SELECT
+            r.id,
+            r.role_code,
+            r.role_name,
+            r.role_sort,
+            r.role_status,
+            r.remark
+        FROM sys_user_role ur
+        LEFT JOIN sys_role r ON ur.role_id = r.id
+        WHERE ur.user_id = #{userId}
+        AND r.is_delete = 0
+        AND r.role_status = 0
+    </select>
+
+    <resultMap id="UserInfoVO" type="org.haut.common.domain.vo.system.UserInfoVO">
+        <id property="id" column="id" />
+        <result property="userName" column="user_name" />
+        <result property="userCode" column="user_code" />
+        <result property="userPassword" column="user_password" />
+        <result property="userNumber" column="user_number" />
+        <result property="userPosition" column="user_position" />
+        <result property="userSex" column="user_sex" />
+        <result property="userBirthday" column="user_birthday" />
+        <result property="userDept" column="user_dept" />
+        <result property="userEntryDate" column="user_entry_date" />
+        <result property="userStatus" column="user_status" />
+        <result property="userIdCard" column="user_id_card" />
+        <result property="userAddress" column="user_address" />
+        <result property="userMarry" column="user_marry" />
+        <result property="userEdu" column="user_edu" />
+        <result property="userHealth" column="user_health" />
+        <result property="orgId" column="org_id" />
+        <association property="role" javaType="org.haut.common.domain.vo.system.RoleInfoVo">
+            <id property="id" column="role_id" />
+            <result property="roleCode" column="role_code" />
+            <result property="roleName" column="role_name" />
+            <result property="roleSort" column="role_sort" />
+            <result property="roleStatus" column="role_status" />
+            <result property="remark" column="remark" />
+        </association>
+    </resultMap>
+
+    <select id="getList" resultMap="UserInfoVO">
+        SELECT
+            u.id,
+            u.user_name,
+            u.user_code,
+            u.user_password,
+            u.user_number,
+            u.user_position,
+            u.user_sex,
+            u.user_birthday,
+            u.user_dept,
+            u.user_entry_date,
+            u.user_status,
+            u.user_id_card,
+            u.user_address,
+            u.user_marry,
+            u.user_edu,
+            u.user_health,
+            u.org_id,
+            r.id as role_id,
+            r.role_code,
+            r.role_name,
+            r.role_sort,
+            r.role_status,
+            r.remark
+        FROM sys_user u
+        LEFT JOIN sys_role r ON u.role_id = r.id
+        WHERE u.is_delete = 0
+            <if test="query.userName != null and query.userName != ''">
+                AND u.user_name LIKE CONCAT('%', #{query.userName}, '%')
+            </if>
+            <if test="query.userNumber != null and query.userNumber != ''">
+                AND u.user_number LIKE CONCAT('%', #{query.userNumber}, '%')
+            </if>
+            <if test="query.userStatus != null and query.userStatus != ''">
+                AND u.user_status = #{query.userStatus}
+            </if>
+            <if test="query.roleId != null">
+                AND u.role_id = #{query.roleId}
+            </if>
+            <if test="query.orgId != null">
+                AND (u.org_id = #{query.orgId} OR EXISTS (SELECT 1 FROM sys_org_user sou WHERE sou.usr_id = u.id AND sou.org_id = #{query.orgId}))
+            </if>
+            <if test="query.orgId == null">
+                AND (u.org_id = #{orgId} OR EXISTS (SELECT 1 FROM sys_org_user sou WHERE sou.usr_id = u.id AND sou.org_id = #{orgId}))
+            </if>
+    </select>
+</mapper>

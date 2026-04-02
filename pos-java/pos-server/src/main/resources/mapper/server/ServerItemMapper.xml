@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.server.mapper.ServerItemMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.server.entity.ServerItem">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="itemName" column="item_name" />
+            <result property="itemEncode" column="item_encode" />
+            <result property="employeeType" column="employee_type" />
+            <result property="serverTime" column="server_time" />
+            <result property="itemPrice" column="item_price" />
+            <result property="vipItemPrice" column="vip_item_price" />
+            <result property="isDiscounts" column="is_discounts" />
+            <result property="commissionType" column="commission_type" />
+            <result property="commissionValueRotation" column="commission_value_rotation" />
+            <result property="commissionValueAppointment" column="commission_value_appointment" />
+            <result property="commissionValueExtend" column="commission_value_extend" />
+            <result property="commissionBase" column="commission_base" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,item_name,
+        item_encode,employee_type,server_time,item_price,vip_item_price,
+        is_discounts,commission_type,commission_value_rotation,commission_value_appointment,commission_value_extend,
+        commission_base
+    </sql>
+</mapper>

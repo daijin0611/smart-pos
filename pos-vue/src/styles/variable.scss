@@ -1,0 +1,35 @@
+// 引入element-plus的全局主题变量
+@import "element-plus/theme-chalk/src/common/var.scss";
+
+//项目提供scss全局变量
+//定义项目主题颜色
+$theme-color: $color-primary;
+
+// 主背景色
+$base-bg: #e9edfe;
+// 主内容背景色
+$base-main-bg: #fff;
+$base-child-nav-bg: #f5f7fa;
+$base-child-nav-border: #dcdfe6;
+$base-child-nav-height: 38px;
+$operation-card-height: 120px;
+$main-padding: 15px;
+// 顶部导航的背景色
+$base-header-bg: #001529;
+// 顶部导航的文字颜色
+$base-header-color: #e2e1e4;
+
+//左侧的菜单的宽度
+$base-menu-width: 180px;
+//左侧菜单的背景颜色
+$base-menu-bg: #001529;
+$base-menu-min-width: 60px;
+
+// 顶部导航的高度
+$base-tabbar-height: 50px;
+
+//左侧菜单logo高度设置
+$base-menu-logo-height: 60px;
+
+//左侧菜单logo右侧文字大小
+$base-logo-title-fontSize: 16px;

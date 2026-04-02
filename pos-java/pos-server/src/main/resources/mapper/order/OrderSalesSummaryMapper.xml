@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.order.mapper.OrderSalesSummaryMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.order.entity.OrderSalesSummary">
+            <id property="id" column="id" />
+            <result property="statsDate" column="stats_date" />
+            <result property="totalTurnover" column="total_turnover" />
+            <result property="totalActualReceipt" column="total_actual_receipt" />
+            <result property="totalSingleTime" column="total_single_time" />
+            <result property="totalPeopleTime" column="total_people_time" />
+            <result property="totalProjectCount" column="total_project_count" />
+            <result property="alipayPayment" column="alipay_payment" />
+            <result property="bankCardPayment" column="bank_card_payment" />
+            <result property="cashPayment" column="cash_payment" />
+            <result property="electronicCouponPayment" column="electronic_coupon_payment" />
+            <result property="membershipCardPayment" column="membership_card_payment" />
+            <result property="otherPayment" column="other_payment" />
+            <result property="wechatPayment" column="wechat_payment" />
+            <result property="cashRecharge" column="cash_recharge" />
+            <result property="wechatRecharge" column="wechat_recharge" />
+            <result property="otherRecharge" column="other_recharge" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,stats_date,total_turnover,total_actual_receipt,total_single_time,total_people_time,
+        total_project_count,alipay_payment,bank_card_payment,cash_payment,electronic_coupon_payment,
+        membership_card_payment,other_payment,wechat_payment,cash_recharge,wechat_recharge,
+        other_recharge
+    </sql>
+</mapper>

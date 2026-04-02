@@ -1,0 +1,137 @@
+spring:
+  data: # 数据配置
+    redis: # Redis配置
+      host: 82.156.232.52  # Redis主机地址
+      port: 6479  # Redis端口号
+      username:   # Redis用户名
+      password:    # 访问Redis所需密码
+      database: 0  # 使用的数据库编号
+      timeout: 10000ms  # 连接超时时间
+      connect-timeout: 10000ms  # 连接建立超时时间
+      lettuce: #Lettuce客户端配置
+        pool: # 连接池配置
+          max-active: 20  # 最大活跃连接数
+          max-wait: 10000ms  # 最大等待时间
+          max-idle: 10  # 最大空闲连接数
+          min-idle: 5  # 最小空闲连接数
+          time-between-eviction-runs: 30000ms  # 空闲连接检测周期
+        shutdown-timeout: 100ms  # 关闭超时时间
+        cluster:
+          refresh:
+            adaptive: true  # 自适应刷新
+            period: 30000ms  # 刷新周期
+
+  jackson:
+    time-zone: GMT+8  # 设置 Jackson 的时区为 GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss # 设置 Jackson 的日期格式
+
+  datasource: # 数据源配置
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://82.156.232.52:3306/pos-test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: pos-test
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      initial-size: 5  # 连接池初始化大小
+      max-active: 20  # 连接池最大连接数
+      max-wait: 60000  # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException
+      min-idle: 5  # 最小空闲连接数
+      test-while-idle: true  # 连接空闲时进行连接有效性检查
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*   #druid监控页面地址
+        reset-enable: false
+        login-username: druid
+        login-password: druid
+      # 配置监控过滤器
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+      keep-alive: true
+      validation-query: SELECT 1
+      validation-query-timeout: 3
+      connection-init-sqls: SELECT 1
+      time-between-eviction-runs-millis: 30000
+      keep-alive-between-time-millis: 120000
+      min-evictable-idle-time-millis: 300000
+      test-on-borrow: false
+      test-on-return: false
+      # 连接泄漏检测
+      remove-abandoned: true
+      remove-abandoned-timeout: 180
+      log-abandoned: true
+      # 性能监控
+      filter:
+        stat:
+          enabled: true
+          slow-sql-millis: 2000
+          log-slow-sql: true
+        wall:
+          enabled: true
+
+
+  security: # 安全配置
+    jwt:
+      key: abcdefghijklmnopqrstuvwxyz1234567890  # JWT密钥
+      expire: 7
+  transaction:
+    rollback-on-commit-failure: true
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+  mapper-locations: classpath*:/mapper/**/*.xml
+  global-config:
+    db-config:
+      # 逻辑删除配置
+      logic-delete-field: isDelete  # 全局逻辑删除的实体字段名
+      logic-delete-value: 1         # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0     # 逻辑未删除值(默认为 0)
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: org.haut.controller
+    - group: 'system'
+      paths-to-match: '/system/**'
+      packages-to-scan: org.haut.controller.system
+    - group: 'room'
+      paths-to-match: '/room/**'
+      packages-to-scan: org.haut.controller.room
+    - group: 'server'
+      paths-to-match: '/server/**'
+      packages-to-scan: org.haut.controller.server
+    - group: 'vip'
+      paths-to-match: '/vip/**'
+      packages-to-scan: org.haut.controller.vip
+    - group: 'stock'
+      paths-to-match: '/stock/**'
+      packages-to-scan: org.haut.controller.stock
+  default-flat-param-object: true
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+# 幂等性配置
+idempotent:
+  timeout: 60 # 幂等性超时时间(分钟)
+
+logging:
+  level:
+    # 关闭数据库相关的DEBUG日志（测试环境）
+    com.baomidou.mybatisplus: WARN
+    org.mybatis: WARN
+    org.apache.ibatis: WARN
+    com.alibaba.druid: WARN
+    org.springframework.jdbc: WARN

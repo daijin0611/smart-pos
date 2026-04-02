@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.vip.mapper.VipRechargeHistoryMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.vip.entity.VipRechargeHistory">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="rechargeStatus" column="recharge_status" />
+            <result property="rechargeType" column="recharge_type" />
+            <result property="rechargeTime" column="recharge_time" />
+            <result property="vipId" column="vip_id" />
+            <result property="vipName" column="vip_name" />
+            <result property="vipPhoneNumber" column="vip_phone_number" />
+            <result property="vipCardNumber" column="vip_card_number" />
+            <result property="activityId" column="activity_id" />
+            <result property="activeName" column="active_name" />
+            <result property="rechargeValue" column="recharge_value" />
+            <result property="assetCode" column="asset_code" />
+            <result property="presentValue" column="present_value" />
+            <result property="presentAssetCode" column="present_asset_code" />
+            <result property="ticketInfo" column="ticket_info" />
+            <result property="userName" column="user_name" />
+            <result property="userId" column="user_id" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,recharge_status,
+        recharge_type,recharge_time,vip_id,vip_name,vip_phone_number,
+        vip_card_number,activity_id,active_name,recharge_value,asset_code,
+        present_value,present_asset_code,ticket_info,user_name,user_id
+    </sql>
+
+    <resultMap id="RechargeHistoryVO" type="org.haut.common.domain.vo.vip.RechargeHistoryVO">
+        <id property="id" column="id" />
+        <result property="remark" column="remark" />
+        <result property="historyCode" column="history_code" />
+        <result property="rechargeStatus" column="recharge_status" />
+        <result property="rechargeType" column="recharge_type" />
+        <result property="rechargeTime" column="recharge_time" />
+        <result property="vipId" column="vip_id" />
+        <result property="vipName" column="vip_name" />
+        <result property="vipPhoneNumber" column="vip_phone_number" />
+        <result property="vipCardNumber" column="vip_card_number" />
+        <result property="activityId" column="activity_id" />
+        <result property="activeName" column="active_name" />
+        <result property="rechargeValue" column="recharge_value" />
+        <result property="assetCode" column="asset_code" />
+        <result property="presentValue" column="present_value" />
+        <result property="presentAssetCode" column="present_asset_code" />
+        <result property="ticketInfo" column="ticket_info" />
+        <result property="userName" column="user_name" />
+        <result property="userId" column="user_id" />
+        <result property="orgId" column="org_id" />
+        <collection property="paymentInfoList"  ofType="org.haut.common.domain.dto.vip.PaymentInfoDTO">
+            <result property="paymentType" column="payment_type" />
+            <result property="paymentName" column="payment_name" />
+            <result property="paymentAmount" column="total_amount" />
+        </collection>
+        <collection property="userKpiList" ofType="org.haut.common.domain.dto.vip.RechargeDTO$UserKpiDTO">
+            <result property="userId" column="kpi_user_id" />
+            <result property="userName" column="kpi_user_name" />
+            <result property="kpi" column="performance" />
+        </collection>
+    </resultMap>
+
+    <select id="getList" resultMap="RechargeHistoryVO">
+        SELECT 
+            vrh.id,
+            vrh.remark,
+            vrh.history_code,
+            vrh.recharge_status,
+            vrh.recharge_type,
+            vrh.recharge_time,
+            vrh.vip_id,
+            vrh.vip_name,
+            vrh.vip_phone_number,
+            vrh.vip_card_number,
+            vrh.activity_id,
+            vrh.active_name,
+            vrh.recharge_value,
+            vrh.asset_code,
+            vrh.present_value,
+            vrh.present_asset_code,
+            vrh.ticket_info,
+            vrh.user_name,
+            vrh.user_id,
+            vrh.org_id,
+            pd.payment_type,
+            pd.payment_name,
+            pd.total_amount,
+            kd.user_id as kpi_user_id,
+            kd.user_name as kpi_user_name,
+            kd.performance
+        FROM vip_recharge_history vrh
+        LEFT JOIN payment_detail pd ON vrh.history_code = pd.active_code
+        LEFT JOIN kpi_detail kd ON vrh.history_code = kd.order_code
+        <where>
+            vrh.is_delete = 0
+            AND vrh.org_id = #{orgId}
+            <if test="query.startDate != null">
+                AND DATE(vrh.recharge_time) &gt;= #{query.startDate}
+            </if>
+            <if test="query.endDate != null">
+                AND DATE(vrh.recharge_time) &lt;= #{query.endDate}
+            </if>
+            <if test="query.vipInfoFiled != null and query.vipInfoFiled != ''">
+                AND (
+                    vrh.vip_name LIKE CONCAT('%', #{query.vipInfoFiled}, '%')
+                    OR vrh.vip_phone_number LIKE CONCAT('%', #{query.vipInfoFiled}, '%')
+                    OR vrh.vip_card_number LIKE CONCAT('%', #{query.vipInfoFiled}, '%')
+                )
+            </if>
+            <if test="query.userId != null">
+                AND EXISTS (
+                    SELECT 1 FROM kpi_detail kd2 
+                    WHERE kd2.order_code = vrh.history_code 
+                    AND kd2.user_id = #{query.userId}
+                    AND kd2.is_delete = 0
+                )
+            </if>
+            <if test="query.paymentType != null">
+                AND EXISTS (
+                    SELECT 1 FROM payment_detail pd2 
+                    WHERE pd2.active_code = vrh.history_code 
+                    AND pd2.payment_type = #{query.paymentType}
+                    AND pd2.is_delete = 0
+                )
+            </if>
+            <if test="query.rechargeStatus != null">
+                AND vrh.recharge_status = #{query.rechargeStatus}
+            </if>
+        </where>
+        ORDER BY vrh.recharge_time DESC
+    </select>
+</mapper>

@@ -1,0 +1,24 @@
+//引入清除默认样式
+@import './variable.scss';
+@import './reset.scss';
+@import './global.scss';
+@import './mixins.scss';
+
+//滚动条外观设置
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  // background: $theme-color;
+}
+
+::-webkit-scrollbar-thumb {
+  // width: 10px;
+  // background-color: $theme-color;
+  // border-radius: 10px;
+}
+
+body {
+  background-color: $base-bg;
+}

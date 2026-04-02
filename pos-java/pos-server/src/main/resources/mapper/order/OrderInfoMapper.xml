@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.order.mapper.OrderInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.haut.server.order.entity.OrderInfoEntity">
+        <id column="id" property="id" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="remark" property="remark" />
+        <result column="order_code" property="orderCode" />
+        <result column="order_time" property="orderTime" />
+        <result column="order_status" property="orderStatus" />
+        <result column="customer_name" property="customerName" />
+        <result column="customer_type" property="customerType" />
+        <result column="vip_id" property="vipId" />
+        <result column="vip_name" property="vipName" />
+        <result column="vip_card_number" property="vipCardNumber" />
+        <result column="vip_phone_number" property="vipPhoneNumber" />
+        <result column="before_balance" property="beforeBalance" />
+        <result column="after_balance" property="afterBalance" />
+        <result column="settle_time" property="settleTime" />
+        <result column="total_amount" property="totalAmount" />
+        <result column="actual_amount" property="actualAmount" />
+        <result column="discount_amount" property="discountAmount" />
+        <result column="bed_id" property="bedId" />
+        <result column="bed_name" property="bedName" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="org_id" property="orgId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, create_time, update_time, is_delete, remark, order_code, order_time, order_status,
+        customer_name, customer_type, vip_id, vip_name, vip_card_number, vip_phone_number, 
+        before_balance, after_balance, settle_time, total_amount, actual_amount, discount_amount, 
+        bed_id, bed_name, user_id, user_name, org_id
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="queryCondition">
+        <where>
+            is_delete = 0
+            <if test="query != null">
+                <if test="query.orderNo != null and query.orderNo != ''">
+                    AND order_no LIKE CONCAT('%', #{query.orderNo}, '%')
+                </if>
+                <if test="query.orderStatus != null">
+                    AND order_status = #{query.orderStatus}
+                </if>
+                <if test="query.vipId != null">
+                    AND vip_id = #{query.vipId}
+                </if>
+                <if test="query.vipName != null and query.vipName != ''">
+                    AND vip_name LIKE CONCAT('%', #{query.vipName}, '%')
+                </if>
+                <if test="query.vipCardNumber != null and query.vipCardNumber != ''">
+                    AND vip_card_number LIKE CONCAT('%', #{query.vipCardNumber}, '%')
+                </if>
+                <if test="query.vipPhoneNumber != null and query.vipPhoneNumber != ''">
+                    AND vip_phone_number LIKE CONCAT('%', #{query.vipPhoneNumber}, '%')
+                </if>
+                <if test="query.customerType != null">
+                    AND customer_type = #{query.customerType}
+                </if>
+                <if test="query.bedId != null">
+                    AND bed_id = #{query.bedId}
+                </if>
+                <if test="query.userId != null">
+                    AND user_id = #{query.userId}
+                </if>
+                <if test="query.orgId != null">
+                    AND org_id = #{query.orgId}
+                </if>
+                <if test="query.orderTimeStart != null">
+                    AND order_time >= #{query.orderTimeStart}
+                </if>
+                <if test="query.orderTimeEnd != null">
+                    AND order_time &lt;= #{query.orderTimeEnd}
+                </if>
+                <if test="query.settleTimeStart != null">
+                    AND settle_time >= #{query.settleTimeStart}
+                </if>
+                <if test="query.settleTimeEnd != null">
+                    AND settle_time &lt;= #{query.settleTimeEnd}
+                </if>
+                <if test="query.totalAmountMin != null">
+                    AND total_amount >= #{query.totalAmountMin}
+                </if>
+                <if test="query.totalAmountMax != null">
+                    AND total_amount &lt;= #{query.totalAmountMax}
+                </if>
+                <if test="query.actualAmountMin != null">
+                    AND actual_amount >= #{query.actualAmountMin}
+                </if>
+                <if test="query.actualAmountMax != null">
+                    AND actual_amount &lt;= #{query.actualAmountMax}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询订单信息 -->
+    <select id="queryOrderInfoPage" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_info
+        <include refid="queryCondition" />
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据条件查询订单信息列表 -->
+    <select id="queryOrderInfoList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_info
+        <include refid="queryCondition" />
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据订单号查询订单信息 -->
+    <select id="queryByOrderNo" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_info
+        WHERE order_no = #{orderNo} AND is_delete = 0
+    </select>
+
+    <!-- 根据会员ID查询订单信息列表 -->
+    <select id="queryByVipId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_info
+        WHERE vip_id = #{vipId} AND is_delete = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据床位ID查询最新的订单信息 -->
+    <select id="queryLatestByBedId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_info
+        WHERE bed_id = #{bedId} AND is_delete = 0 AND org_id = #{orgId}
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- 统计订单数量 -->
+    <select id="countOrderInfo" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM order_info
+        <include refid="queryCondition" />
+    </select>
+
+    <resultMap id="orderInfoVO" type="org.haut.common.domain.vo.order.OrderInfoVO">
+        <!-- 主键ID -->
+        <id column="id" property="id" />
+        
+        <!-- 基础字段 -->
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="remark" property="remark" />
+        
+        <!-- 订单基本信息 -->
+        <result column="order_code" property="orderCode" />
+        <result column="order_time" property="orderTime" />
+        <result column="order_status" property="orderStatus" />
+        
+        <!-- 客户信息 -->
+        <result column="customer_name" property="customerName" />
+        <result column="customer_type" property="customerType" />
+        
+        <!-- 会员信息 -->
+        <result column="vip_id" property="vipId" />
+        <result column="vip_name" property="vipName" />
+        <result column="vip_card_number" property="vipCardNumber" />
+        <result column="vip_phone_number" property="vipPhoneNumber" />
+        
+        <!-- 余额信息 -->
+        <result column="before_balance" property="beforeBalance" />
+        <result column="after_balance" property="afterBalance" />
+        
+        <!-- 时间信息 -->
+        <result column="settle_time" property="settleTime" />
+        
+        <!-- 金额信息 -->
+        <result column="total_amount" property="totalAmount" />
+        <result column="actual_amount" property="actualAmount" />
+        <result column="discount_amount" property="discountAmount" />
+        
+        <!-- 床位信息 -->
+        <result column="bed_id" property="bedId" />
+        <result column="bed_name" property="bedName" />
+        
+        <!-- 收银人信息 -->
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        
+        <!-- 门店信息 -->
+        <result column="org_id" property="orgId" />
+        
+        <!-- 订单明细列表 - 一对多关联 -->
+        <collection property="orderDetails" ofType="org.haut.common.domain.vo.order.OrderDetailVO">
+            <id column="detail_id" property="id" />
+            <result column="detail_create_time" property="createTime" />
+            <result column="detail_update_time" property="updateTime" />
+            <result column="detail_remark" property="remark" />
+            <result column="detail_code" property="detailCode" />
+            <result column="detail_order_id" property="orderId" />
+            <result column="detail_order_code" property="orderCode" />
+            <result column="detail_user_id" property="userId" />
+            <result column="detail_user_name" property="userName" />
+            <result column="detail_type" property="detailType" />
+            <result column="detail_bid" property="bid" />
+            <result column="business_name" property="businessName" />
+            <result column="std_price" property="stdPrice" />
+            <result column="true_price" property="truePrice" />
+            <result column="quantity" property="quantity" />
+            <result column="server_type" property="serverType" />
+            <result column="settled_time" property="settledTime" />
+            <result column="detail_order_status" property="orderStatus" />
+        </collection>
+        
+        <!-- 支付信息列表 - 一对多关联 -->
+        <collection property="payments" ofType="org.haut.common.domain.vo.order.PaymentVO">
+            <id column="payment_id" property="id" />
+            <result column="active_code" property="activeCode" />
+            <result column="active_type" property="activeType" />
+            <result column="active_name" property="activeName" />
+            <result column="payment_total_amount" property="totalAmount" />
+            <result column="asset_code" property="assetCode" />
+            <result column="payment_type" property="paymentType"/>
+            <result column="payment_name" property="paymentName"/>
+        </collection>
+    </resultMap>
+
+
+    <sql id="pageQueryCondition">
+        <where>
+            AND oi.is_delete = 0
+            <if test="query.date != null">
+                AND oi.order_time BETWEEN #{query.date[0]} AND #{query.date[1]}
+            </if>
+            <if test="query.userId != null">
+                AND oi.user_id = #{query.userId}
+            </if>
+            <if test="query.status != null">
+                AND oi.order_status = #{query.status}
+            </if>
+            <!-- 支付方式条件需要通过支付明细表关联查询 -->
+            <if test="query.paymentType != null">
+                AND EXISTS (
+                SELECT 1
+                FROM payment_detail pd
+                WHERE pd.active_code = oi.order_code
+                    AND pd.payment_type = #{query.paymentType}
+                )
+            </if>
+            <if test="query.vipInfoFiled != null and query.vipInfoFiled != ''">
+                AND (
+                oi.vip_card_number like CONCAT('%', #{query.vipInfoFiled}, '%')
+                OR oi.vip_phone_number like CONCAT('%', #{query.vipInfoFiled}, '%')
+                )
+            </if>
+            <if test="query.orderCode != null and query.orderCode != ''">
+                AND oi.order_code like CONCAT('%', #{query.orderCode}, '%')
+            </if>
+            <if test="query.payZero == 0">
+                AND oi.actual_amount = 0.00
+            </if>
+            AND oi.org_id = #{query.orgId}
+        </where>
+    </sql>
+
+    <!--分页多表联查-->
+    <!--Deprecated-->
+<!--    <select id="pageQuery" resultMap="orderInfoVO">-->
+<!--        SELECT-->
+<!--            &#45;&#45; 订单主表字段-->
+<!--            oi.id,-->
+<!--            oi.create_time,-->
+<!--            oi.update_time,-->
+<!--            oi.remark,-->
+<!--            oi.order_code,-->
+<!--            oi.order_time,-->
+<!--            oi.order_status,-->
+<!--            oi.customer_name,-->
+<!--            oi.customer_type,-->
+<!--            oi.vip_id,-->
+<!--            oi.vip_name,-->
+<!--            oi.vip_card_number,-->
+<!--            oi.vip_phone_number,-->
+<!--            oi.before_balance,-->
+<!--            oi.after_balance,-->
+<!--            oi.settle_time,-->
+<!--            oi.total_amount,-->
+<!--            oi.actual_amount,-->
+<!--            oi.discount_amount,-->
+<!--            oi.bed_id,-->
+<!--            oi.bed_name,-->
+<!--            oi.user_id,-->
+<!--            oi.user_name,-->
+<!--            oi.org_id,-->
+<!--            -->
+<!--            &#45;&#45; 订单明细字段（带别名）-->
+<!--            od.id AS detail_id,-->
+<!--            od.create_time AS detail_create_time,-->
+<!--            od.update_time AS detail_update_time,-->
+<!--            od.remark AS detail_remark,-->
+<!--            od.detail_code,-->
+<!--            od.order_id AS detail_order_id,-->
+<!--            od.order_code AS detail_order_code,-->
+<!--            od.user_id AS detail_user_id,-->
+<!--            od.user_name AS detail_user_name,-->
+<!--            od.detail_type,-->
+<!--            od.bid AS detail_bid,-->
+<!--            od.business_name,-->
+<!--            od.std_price,-->
+<!--            od.true_price,-->
+<!--            od.quantity,-->
+<!--            od.server_type,-->
+<!--            od.settled_time,-->
+<!--            od.order_status AS detail_order_status,-->
+<!--            -->
+<!--            &#45;&#45; 支付信息字段（带别名）-->
+<!--            pd.id AS payment_id,-->
+<!--            pd.active_code,-->
+<!--            pd.active_type,-->
+<!--            pd.active_name,-->
+<!--            pd.total_amount AS payment_total_amount,-->
+<!--            pd.asset_code,-->
+<!--            pd.payment_type,-->
+<!--            pd.payment_name-->
+<!--        FROM order_info oi-->
+<!--        LEFT JOIN order_detail od ON oi.id = od.order_id AND od.is_delete = 0-->
+<!--        LEFT JOIN payment_detail pd ON oi.order_code = pd.active_code AND pd.is_delete = 0-->
+<!--        -->
+<!--        <include refid="pageQueryCondition"/>-->
+
+<!--        ORDER BY oi.create_time DESC-->
+<!--    </select>-->
+    <select id="pageQuery" resultMap="orderInfoVO">
+
+        SELECT
+            -- 订单主表字段
+            oi.id,
+            oi.create_time,
+            oi.update_time,
+            oi.remark,
+            oi.order_code,
+            oi.order_time,
+            oi.order_status,
+            oi.customer_name,
+            oi.customer_type,
+            oi.vip_id,
+            oi.vip_name,
+            oi.vip_card_number,
+            oi.vip_phone_number,
+            oi.before_balance,
+            oi.after_balance,
+            oi.settle_time,
+            oi.total_amount,
+            oi.actual_amount,
+            oi.discount_amount,
+            oi.bed_id,
+            oi.bed_name,
+            oi.user_id,
+            oi.user_name,
+            oi.org_id
+        FROM  order_info oi
+
+        <include refid="pageQueryCondition"/>
+        ORDER BY oi.create_time DESC
+    </select>
+
+
+    <!-- 更新订单状态 -->
+    <update id="updateOrderStatus">
+        UPDATE order_info
+        SET order_status = #{orderStatus}, update_time = NOW()
+        WHERE id = #{orderId} AND is_delete = 0
+    </update>
+
+</mapper>

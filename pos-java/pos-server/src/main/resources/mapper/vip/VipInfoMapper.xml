@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.vip.mapper.VipInfoMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.vip.entity.VipInfo">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="infoName" column="info_name" />
+            <result property="infoGender" column="info_gender" />
+            <result property="infoCardNumber" column="info_card_number" />
+            <result property="infoPhoneNumber" column="info_phone_munber" />
+            <result property="infoLastConsumptionTime" column="info_last_consumption_time" />
+            <result property="infoLastRechargeTime" column="info_laset_recharge_time" />
+            <result property="orgId" column="org_id" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,info_name,
+        info_gender,info_card_number,info_phone_munber,info_last_consumption_time,info_laset_recharge_time,org_id
+    </sql>
+</mapper>

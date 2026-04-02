@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.vip.mapper.VipRechargeActiveMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.vip.entity.VipRechargeActive">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="activeStatus" column="active_status" />
+            <result property="activeName" column="active_name" />
+            <result property="activeBeginTime" column="active_begin_time" />
+            <result property="activeFinalTime" column="active_final_time" />
+            <result property="activeType" column="active_type" />
+            <result property="activeCapital" column="active_capital" />
+            <result property="activeDiscount" column="active_discount" />
+            <result property="activeBase" column="active_base" />
+            <result property="isCrossStore" column="is_cross_store" />
+            <result property="presentValue" column="present_value" />
+            <result property="presentDiscountIsSame" column="present_discount_is_same" />
+            <result property="presentDiscount" column="present_discount" />
+            <result property="presentBase" column="present_base" />
+            <result property="presentIsCrossStore" column="present_is_cross_store" />
+            <result property="commissionType" column="commission_type" />
+            <result property="commissionValue" column="commission_value" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,active_status,
+        active_name,active_begin_time,active_final_time,active_type,active_capital,active_discount,
+        active_base,is_cross_store,present_value,present_discount_is_same,present_discount,
+        present_base,present_is_cross_store,commission_type,commission_value
+    </sql>
+
+    <resultMap id="VipRechargeActiveVO" type="org.haut.common.domain.vo.vip.VipRechargeActiveVO">
+        <id property="id" column="id" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+        <result property="isDelete" column="is_delete" />
+        <result property="remark" column="remark" />
+        <result property="activeStatus" column="active_status" />
+        <result property="activeName" column="active_name" />
+        <result property="activeBeginTime" column="active_begin_time" />
+        <result property="activeFinalTime" column="active_final_time" />
+        <result property="activeType" column="active_type" />
+        <result property="activeCapital" column="active_capital" />
+        <result property="activeDiscount" column="active_discount" />
+        <result property="activeBase" column="active_base" />
+        <result property="isCrossStore" column="is_cross_store" />
+        <result property="presentValue" column="present_value" />
+        <result property="presentDiscountIsSame" column="present_discount_is_same" />
+        <result property="presentDiscount" column="present_discount" />
+        <result property="presentBase" column="present_base" />
+        <result property="presentIsCrossStore" column="present_is_cross_store" />
+        <result property="commissionType" column="commission_type" />
+        <result property="commissionValue" column="commission_value" />
+        <collection property="ticketList" ofType="org.haut.common.domain.vo.vip.VipRechargeActiveVO$TicketVO">
+            <result property="ticketId" column="ticket_id"/>
+            <result property="number" column="number"/>
+            <result property="ticketName" column="ticket_name"/>
+            <result property="ticketEffectiveTime" column="effective_time"/>
+        </collection>
+    </resultMap>
+
+    <select id="queryList" resultMap="VipRechargeActiveVO">
+        select
+        vra.*,
+        t.ticket_id as ticket_id,
+        t.ticket_name as ticket_name,
+        t.number as number,
+        vt.ticket_effective_time as effective_time
+        from vip_recharge_active vra
+        left join vip_recharge_active_ticket t on vra.id = t.active_id
+        left join vip_ticket vt on t.ticket_id = vt.id
+        <where>
+            <if test="query.activeStatus != null">
+                and vra.active_status = #{query.activeStatus}
+            </if>
+            <if test="query.activeName != null and query.activeName != ''">
+                and vra.active_name like concat('%',#{query.activeName},'%')
+            </if>
+            <if test="itemIds != null and itemIds.size() > 0">
+                and vra.id in
+                <foreach collection="itemIds" item="itemId" open="(" separator="," close=")">
+                    #{itemId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="queryOneById" resultMap="VipRechargeActiveVO">
+        select
+        vra.*,
+        t.ticket_id as ticket_id,
+        t.ticket_name as ticket_name,
+        t.number as number,
+        vt.ticket_effective_time as effective_time
+        from vip_recharge_active vra
+        left join vip_recharge_active_ticket t on vra.id = t.active_id
+        left join vip_ticket vt on t.ticket_id = vt.id
+        where vra.id = #{id}
+    </select>
+</mapper>

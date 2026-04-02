@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>库存管理系统原型图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f6fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-tab:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
+        
+        .nav-tab.active {
+            background: white;
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+            min-height: 600px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            border-color: #007bff;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #007bff, #6610f2);
+        }
+        
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-card .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .feature-card p {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            color: #495057;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .mockup-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .mockup-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+        
+        .mockup-screen {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .mockup-header {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 6px 6px 0 0;
+            margin: -20px -20px 20px -20px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .workflow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .workflow-step {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            flex: 1;
+            margin: 10px;
+            min-width: 150px;
+            position: relative;
+        }
+        
+        .workflow-step::after {
+            content: '→';
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #007bff;
+        }
+        
+        .workflow-step:last-child::after {
+            display: none;
+        }
+        
+        .workflow-step.active {
+            border-color: #007bff;
+            background: #f8f9ff;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .workflow {
+                flex-direction: column;
+            }
+            
+            .workflow-step::after {
+                content: '↓';
+                right: 50%;
+                bottom: -25px;
+                top: auto;
+                transform: translateX(50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 库存管理系统</h1>
+            <p>POS收银系统 - 库存管理模块原型设计</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('overview')">📊 系统概览</button>
+            <button class="nav-tab" onclick="showTab('inbound')">📥 入库管理</button>
+            <button class="nav-tab" onclick="showTab('outbound')">📤 出库管理</button>
+            <button class="nav-tab" onclick="showTab('inventory')">📋 库存查询</button>
+            <button class="nav-tab" onclick="showTab('reports')">📈 统计报表</button>
+        </div>
+        
+        <!-- 系统概览 -->
+        <div id="overview" class="tab-content active">
+            <h2 style="color: #2c3e50; margin-bottom: 30px; text-align: center;">🎯 库存管理系统功能概览</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="icon">📥</span>入库管理</h3>
+                    <p>完整的入库流程管理，支持多种入库类型和批量操作</p>
+                    <ul class="feature-list">
+                        <li>采购入库</li>
+                        <li>退货入库</li>
+                        <li>调拨入库</li>
+                        <li>盘盈入库</li>
+                        <li>批量导入</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3><span class="icon">📤</span>出库管理</h3>
+                    <p>灵活的出库控制，确保库存准确性和业务连续性</p>
+                    <ul class="feature-list">
+                        <li>销售出库</li>
+                        <li>调拨出库</li>
+                        <li>报损出库</li>
+                        <li>盘亏出库</li>
+                        <li>库存预警</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3><span class="icon">📋</span>库存查询</h3>
+                    <p>实时库存监控，多维度查询和统计分析</p>
+                    <ul class="feature-list">
+                        <li>实时库存查询</li>
+                        <li>库存流水记录</li>
+                        <li>多门店库存</li>
+                        <li>库存预警设置</li>
+                        <li>库存盘点</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3><span class="icon">📈</span>统计报表</h3>
+                    <p>丰富的报表功能，为决策提供数据支持</p>
+                    <ul class="feature-list">
+                        <li>进销存报表</li>
+                        <li>库存周转分析</li>
+                        <li>成本分析报表</li>
+                        <li>ABC分类分析</li>
+                        <li>库存预警报表</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mockup-section">
+                <h3 class="mockup-title">🔄 库存管理业务流程</h3>
+                <div class="workflow">
+                    <div class="workflow-step active">
+                        <div class="step-number">1</div>
+                        <h4>商品入库</h4>
+                        <p>录入商品信息<br>更新库存数量</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <h4>库存监控</h4>
+                        <p>实时库存查询<br>预警提醒</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <h4>销售出库</h4>
+                        <p>自动扣减库存<br>更新库存状态</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <h4>统计分析</h4>
+                        <p>生成报表<br>决策支持</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 入库管理 -->
+        <div id="inbound" class="tab-content">
+            <h2 style="color: #2c3e50; margin-bottom: 30px;">📥 入库管理界面</h2>
+            
+            <div class="mockup-screen">
+                <div class="mockup-header">新增入库单</div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>入库类型</label>
+                        <select class="form-control">
+                            <option>采购入库</option>
+                            <option>退货入库</option>
+                            <option>调拨入库</option>
+                            <option>盘盈入库</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>入库日期</label>
+                        <input type="date" class="form-control" value="2024-01-15">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>供应商</label>
+                        <select class="form-control">
+                            <option>供应商A</option>
+                            <option>供应商B</option>
+                            <option>供应商C</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>经办人</label>
+                        <input type="text" class="form-control" value="张三" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea class="form-control" rows="3" placeholder="请输入备注信息..."></textarea>
+                </div>
+                
+                <h4 style="margin: 25px 0 15px 0; color: #495057;">商品明细</h4>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>商品编码</th>
+                            <th>商品名称</th>
+                            <th>规格</th>
+                            <th>入库数量</th>
+                            <th>单价</th>
+                            <th>金额</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PROD001</td>
+                            <td>基础护理产品</td>
+                            <td>500ml</td>
+                            <td><input type="number" class="form-control" value="100" style="width: 80px;"></td>
+                            <td><input type="number" class="form-control" value="50.00" style="width: 80px;"></td>
+                            <td>5000.00</td>
+                            <td><button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">删除</button></td>
+                        </tr>
+                        <tr>
+                            <td>PROD002</td>
+                            <td>高级护理套装</td>
+                            <td>1套</td>
+                            <td><input type="number" class="form-control" value="50" style="width: 80px;"></td>
+                            <td><input type="number" class="form-control" value="120.00" style="width: 80px;"></td>
+                            <td>6000.00</td>
+                            <td><button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">删除</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div style="margin: 20px 0; text-align: right;">
+                    <button class="btn btn-success">+ 添加商品</button>
+                    <span style="margin-left: 20px; font-size: 18px; font-weight: bold; color: #2c3e50;">总金额: ¥11,000.00</span>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-primary">保存草稿</button>
+                    <button class="btn btn-success">提交审核</button>
+                    <button class="btn" style="background: #6c757d; color: white;">取消</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 出库管理 -->
+        <div id="outbound" class="tab-content">
+            <h2 style="color: #2c3e50; margin-bottom: 30px;">📤 出库管理界面</h2>
+            
+            <div class="mockup-screen">
+                <div class="mockup-header">出库单列表</div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div style="display: flex; gap: 15px;">
+                        <input type="text" class="form-control" placeholder="搜索出库单号..." style="width: 200px;">
+                        <select class="form-control" style="width: 150px;">
+                            <option>全部类型</option>
+                            <option>销售出库</option>
+                            <option>调拨出库</option>
+                            <option>报损出库</option>
+                        </select>
+                        <button class="btn btn-primary">搜索</button>
+                    </div>
+                    <button class="btn btn-success">+ 新增出库单</button>
+                </div>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>出库单号</th>
+                            <th>出库类型</th>
+                            <th>出库日期</th>
+                            <th>商品数量</th>
+                            <th>总金额</th>
+                            <th>状态</th>
+                            <th>经办人</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>OUT202401001</td>
+                            <td>销售出库</td>
+                            <td>2024-01-15</td>
+                            <td>25</td>
+                            <td>¥2,500.00</td>
+                            <td><span class="status-badge status-success">已完成</span></td>
+                            <td>李四</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">查看</button>
+                                <button class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">打印</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>OUT202401002</td>
+                            <td>调拨出库</td>
+                            <td>2024-01-15</td>
+                            <td>50</td>
+                            <td>¥5,000.00</td>
+                            <td><span class="status-badge status-warning">待审核</span></td>
+                            <td>王五</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">查看</button>
+                                <button class="btn btn-success" style="padding: 5px 10px; font-size: 12px;">审核</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>OUT202401003</td>
+                            <td>报损出库</td>
+                            <td>2024-01-14</td>
+                            <td>5</td>
+                            <td>¥250.00</td>
+                            <td><span class="status-badge status-danger">已驳回</span></td>
+                            <td>赵六</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">查看</button>
+                                <button class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">修改</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" style="background: #6c757d; color: white;">上一页</button>
+                    <span style="margin: 0 15px; color: #495057;">第 1 页，共 5 页</span>
+                    <button class="btn" style="background: #6c757d; color: white;">下一页</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 库存查询 -->
+        <div id="inventory" class="tab-content">
+            <h2 style="color: #2c3e50; margin-bottom: 30px;">📋 库存查询界面</h2>
+            
+            <div class="mockup-screen">
+                <div class="mockup-header">实时库存查询</div>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label>商品编码</label>
+                        <input type="text" class="form-control" placeholder="输入商品编码">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>商品名称</label>
+                        <input type="text" class="form-control" placeholder="输入商品名称">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>库存状态</label>
+                        <select class="form-control">
+                            <option>全部</option>
+                            <option>正常</option>
+                            <option>预警</option>
+                            <option>缺货</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>门店</label>
+                        <select class="form-control">
+                            <option>全部门店</option>
+                            <option>总店</option>
+                            <option>分店A</option>
+                            <option>分店B</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <button class="btn btn-primary">查询</button>
+                    <button class="btn btn-success">导出Excel</button>
+                    <button class="btn btn-warning">库存盘点</button>
+                </div>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>商品编码</th>
+                            <th>商品名称</th>
+                            <th>规格</th>
+                            <th>单位</th>
+                            <th>当前库存</th>
+                            <th>预警数量</th>
+                            <th>库存状态</th>
+                            <th>最后更新</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PROD001</td>
+                            <td>基础护理产品</td>
+                            <td>500ml</td>
+                            <td>瓶</td>
+                            <td style="font-weight: bold; color: #28a745;">150</td>
+                            <td>50</td>
+                            <td><span class="status-badge status-success">正常</span></td>
+                            <td>2024-01-15 14:30</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">详情</button>
+                                <button class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">调整</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>PROD002</td>
+                            <td>高级护理套装</td>
+                            <td>1套</td>
+                            <td>套</td>
+                            <td style="font-weight: bold; color: #ffc107;">25</td>
+                            <td>30</td>
+                            <td><span class="status-badge status-warning">预警</span></td>
+                            <td>2024-01-15 12:15</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">详情</button>
+                                <button class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">调整</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>PROD003</td>
+                            <td>专业美容仪器</td>
+                            <td>标准版</td>
+                            <td>台</td>
+                            <td style="font-weight: bold; color: #dc3545;">0</td>
+                            <td>5</td>
+                            <td><span class="status-badge status-danger">缺货</span></td>
+                            <td>2024-01-14 16:45</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">详情</button>
+                                <button class="btn btn-success" style="padding: 5px 10px; font-size: 12px;">采购</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mockup-section">
+                <h3 class="mockup-title">📊 库存统计概览</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+                    <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #28a745;">
+                        <h3 style="color: #28a745; margin-bottom: 10px;">1,250</h3>
+                        <p style="color: #6c757d;">总库存数量</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #007bff;">
+                        <h3 style="color: #007bff; margin-bottom: 10px;">156</h3>
+                        <p style="color: #6c757d;">商品种类</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #ffc107;">
+                        <h3 style="color: #ffc107; margin-bottom: 10px;">23</h3>
+                        <p style="color: #6c757d;">预警商品</p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #dc3545;">
+                        <h3 style="color: #dc3545; margin-bottom: 10px;">8</h3>
+                        <p style="color: #6c757d;">缺货商品</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 统计报表 -->
+        <div id="reports" class="tab-content">
+            <h2 style="color: #2c3e50; margin-bottom: 30px;">📈 统计报表界面</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="icon">📊</span>进销存报表</h3>
+                    <p>详细的进销存数据统计，包含期初、期末库存及流转情况</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary">查看报表</button>
+                        <button class="btn btn-success">导出Excel</button>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3><span class="icon">🔄</span>库存周转分析</h3>
+                    <p>分析商品库存周转率，识别滞销和畅销商品</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary">查看分析</button>
+                        <button class="btn btn-warning">设置参数</button>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3><span class="icon">💰</span>库存成本分析</h3>
+                    <p>库存成本构成分析，帮助优化库存结构和成本控制</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-primary">成本分析</button>
+                        <button class="btn btn-success">成本优化建议</button>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <h3><span class="icon">⚠️</span>库存预警报表</h3>
+                    <p>库存预警情况统计，及时发现库存异常和风险</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-warning">预警报表</button>
+                        <button class="btn btn-danger">紧急处理</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mockup-screen">
+                <div class="mockup-header">📊 进销存报表示例</div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <label>统计周期:</label>
+                        <input type="date" class="form-control" value="2024-01-01" style="width: 150px;">
+                        <span>至</span>
+                        <input type="date" class="form-control" value="2024-01-31" style="width: 150px;">
+                        <button class="btn btn-primary">查询</button>
+                    </div>
+                    <button class="btn btn-success">导出报表</button>
+                </div>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>商品编码</th>
+                            <th>商品名称</th>
+                            <th>期初库存</th>
+                            <th>本期入库</th>
+                            <th>本期出库</th>
+                            <th>期末库存</th>
+                            <th>周转率</th>
+                            <th>库存金额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PROD001</td>
+                            <td>基础护理产品</td>
+                            <td>100</td>
+                            <td>200</td>
+                            <td>150</td>
+                            <td>150</td>
+                            <td>1.2</td>
+                            <td>¥7,500.00</td>
+                        </tr>
+                        <tr>
+                            <td>PROD002</td>
+                            <td>高级护理套装</td>
+                            <td>50</td>
+                            <td>100</td>
+                            <td>125</td>
+                            <td>25</td>
+                            <td>3.3</td>
+                            <td>¥3,000.00</td>
+                        </tr>
+                        <tr>
+                            <td>PROD003</td>
+                            <td>专业美容仪器</td>
+                            <td>10</td>
+                            <td>5</td>
+                            <td>15</td>
+                            <td>0</td>
+                            <td>2.0</td>
+                            <td>¥0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <h4 style="color: #495057; margin-bottom: 15px;">📈 统计汇总</h4>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+                        <div>
+                            <strong>总入库金额:</strong><br>
+                            <span style="color: #28a745; font-size: 18px;">¥36,500.00</span>
+                        </div>
+                        <div>
+                            <strong>总出库金额:</strong><br>
+                            <span style="color: #dc3545; font-size: 18px;">¥34,750.00</span>
+                        </div>
+                        <div>
+                            <strong>期末库存金额:</strong><br>
+                            <span style="color: #007bff; font-size: 18px;">¥10,500.00</span>
+                        </div>
+                        <div>
+                            <strong>平均周转率:</strong><br>
+                            <span style="color: #6610f2; font-size: 18px;">2.17</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            // 隐藏所有标签页内容
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 移除所有标签页按钮的激活状态
+            const tabButtons = document.querySelectorAll('.nav-tab');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // 显示选中的标签页内容
+            document.getElementById(tabName).classList.add('active');
+            
+            // 激活选中的标签页按钮
+            event.target.classList.add('active');
+        }
+        
+        // 添加一些交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为按钮添加点击效果
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // 防止表单提交等默认行为
+                    e.preventDefault();
+                    
+                    // 添加点击动画效果
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                    
+                    // 模拟操作反馈
+                    const originalText = this.textContent;
+                    if (this.textContent.includes('查询') || this.textContent.includes('搜索')) {
+                        this.textContent = '查询中...';
+                        this.disabled = true;
+                        setTimeout(() => {
+                            this.textContent = originalText;
+                            this.disabled = false;
+                        }, 1000);
+                    }
+                });
+            });
+            
+            // 为表格行添加悬停效果
+            const tableRows = document.querySelectorAll('.table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f8f9fa';
+                });
+                row.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

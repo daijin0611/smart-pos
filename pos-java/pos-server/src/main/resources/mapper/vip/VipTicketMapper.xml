@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.vip.mapper.VipTicketMapper">
+
+    <resultMap id="BaseResultMap" type="org.haut.server.vip.entity.VipTicket">
+            <id property="id" column="id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="isDelete" column="is_delete" />
+            <result property="remark" column="remark" />
+            <result property="ticketStatus" column="ticket_status" />
+            <result property="ticketName" column="ticket_name" />
+            <result property="ticketType" column="ticket_type" />
+            <result property="ticketEffectiveTime" column="ticket_effective_time" />
+            <result property="ticketFullPayment" column="ticket_full_payment" />
+            <result property="ticketValue" column="ticket_value" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_time,update_time,is_delete,remark,ticket_status,
+        ticket_name,ticket_type,ticket_effective_time,ticket_full_payment,ticket_value,
+        ticket_after_day,is_package_ticket,server_id,package_id
+    </sql>
+
+    <resultMap id="VipTicketVO" type="org.haut.common.domain.vo.vip.VipTicketVO">
+        <id property="id" column="id" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+        <result property="isDelete" column="is_delete" />
+        <result property="ticketStatus" column="ticket_status" />
+        <result property="ticketName" column="ticket_name" />
+        <result property="ticketType" column="ticket_type" />
+        <result property="ticketEffectiveTime" column="ticket_effective_time" />
+        <result property="ticketFullPayment" column="ticket_full_payment" />
+        <result property="ticketValue" column="ticket_value" />
+        <result property="ticketDescription" column="remark"/>
+        <collection property="serverItems" ofType="org.haut.common.domain.vo.vip.VipTicketVO$ServerItemVO">
+            <id property="id" column="server_item_id" />
+            <result property="itemName" column="item_name"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="getList" resultMap="VipTicketVO">
+        select vt.*, si.id as server_item_id, si.item_name as item_name
+        from vip_ticket vt
+        left join vip_ticket_detail vtd on vt.id = vtd.ticket_id
+        left join server_item si on vtd.server_item_id = si.id and si.is_delete = 0
+        where vt.is_delete = 0
+        <if test="query.ticketName != null and query.ticketName != '' ">
+            and vt.ticket_name like concat('%',#{query.ticketName},'%')
+        </if>
+        <if test="query.ticketStatus != null">
+            and vt.ticket_status = #{query.ticketStatus}
+        </if>
+        <if test="itemIds != null">
+            and vt.id in
+            <foreach item="id" collection="itemIds" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+    </select>
+    <select id="getOneById" resultMap="VipTicketVO">
+        select vt.*, si.id as server_item_id, si.item_name as item_name
+        from vip_ticket vt
+        left join vip_ticket_detail vtd on vt.id = vtd.ticket_id
+        left join server_item si on vtd.server_item_id = si.id and si.is_delete = 0
+        where vt.is_delete = 0
+        and vt.id = #{ticketId}
+    </select>
+    <select id="getListByIds" resultMap="VipTicketVO">
+        select vt.*, si.id as server_item_id, si.item_name as item_name
+        from vip_ticket vt
+        left join vip_ticket_detail vtd on vt.id = vtd.ticket_id
+        left join server_item si on vtd.server_item_id = si.id and si.is_delete = 0
+        where vt.is_delete = 0
+        and vt.id in
+        <foreach item="item" collection="ticketIds" separator="," open="(" close=")" index="">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

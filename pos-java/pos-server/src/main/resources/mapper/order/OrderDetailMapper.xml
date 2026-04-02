@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.haut.server.order.mapper.OrderDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="org.haut.server.order.entity.OrderDetailEntity">
+        <id column="id" property="id" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_delete" property="isDelete" />
+        <result column="remark" property="remark" />
+        <result column="detail_code" property="detailCode" />
+        <result column="order_id" property="orderId" />
+        <result column="order_code" property="orderCode" />
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="detail_type" property="detailType" />
+        <result column="bid" property="bid" />
+        <result column="business_name" property="businessName" />
+        <result column="business_code" property="businessCode" />
+        <result column="std_price" property="stdPrice" />
+        <result column="true_price" property="truePrice" />
+        <result column="vip_price" property="vipPrice" />
+        <result column="quantity" property="quantity" />
+        <result column="server_type" property="serverType" />
+        <result column="settled_time" property="settledTime" />
+        <result column="order_status" property="orderStatus" />
+        <result column="org_id" property="orgId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, create_time, update_time, is_delete, remark, detail_code, order_id, order_code,
+        user_id, user_name, detail_type, bid, business_name, business_code, std_price, true_price, vip_price, quantity, server_type, settled_time, order_status, org_id
+    </sql>
+
+</mapper>
