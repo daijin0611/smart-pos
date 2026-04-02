@@ -3,7 +3,6 @@ package org.haut.common.domain.dto.system;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.haut.common.domain.vo.system.PermissionInfoVO;
 import java.util.List;
@@ -55,7 +54,6 @@ public class PermissionCreateDTO {
      * 权限状态(0 启用，1 停用)
      */
     @Schema(description = "权限状态(0 启用，1 停用)")
-    @NotNull
-    private Integer permStatus;
+    private Integer permStatus = 0;
 
 }
