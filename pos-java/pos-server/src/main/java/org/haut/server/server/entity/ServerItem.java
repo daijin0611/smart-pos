@@ -102,4 +102,9 @@ public class ServerItem {
      * 项目状态（0 启用， 1 禁用）
      */
     private Integer itemStatus;
+
+    /**
+     * 分类
+     */
+    private String category;
 }

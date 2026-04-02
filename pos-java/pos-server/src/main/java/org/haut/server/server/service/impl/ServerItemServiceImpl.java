@@ -60,7 +60,8 @@ public class ServerItemServiceImpl extends ServiceImpl<ServerItemMapper, ServerI
                         w -> w.like(ServerItem::getItemName, query.getKeyWord())
                                 .or()
                                 .like(ServerItem::getItemEncode, query.getKeyWord()))
-                .eq(query.getItemStatus() != null, ServerItem::getItemStatus, query.getItemStatus());
+                .eq(query.getItemStatus() != null, ServerItem::getItemStatus, query.getItemStatus())
+                .eq(StringUtils.isNotBlank(query.getCategory()), ServerItem::getCategory, query.getCategory());
         if (query.getOrgId() != null) {
             List<Long> itemIds = orgRelationService.getItemIdsByOrg(
                     OrgRelationTypeEnum.SERVER_ITEM.getValue(), query.getOrgId());

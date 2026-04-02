@@ -25,8 +25,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
     IPage<UserInfoVO> getList(
             @Param("page") Page<UserInfoVO> page,
-            @Param("query") UserListQuery query,
-            @Param("orgId") Long orgId);
+            @Param("query") UserListQuery query);
 }
 
 

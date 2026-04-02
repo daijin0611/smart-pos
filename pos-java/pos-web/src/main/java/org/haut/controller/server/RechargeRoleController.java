@@ -53,9 +53,9 @@ public class RechargeRoleController {
     @PutMapping("/set-default/{roleId}")
     @Operation(description = "设置默认充值提成规则", summary = "设置默认充值提成规则")
     @OperLog(module = OperLogModule.SERVER, description = "设置默认充值提成规则")
-    public JsonVO<String> setDefaultRole(@PathVariable Long roleId) {
-        log.info("设置默认充值提成规则，roleId: {}", roleId);
-        serverRechargeRoleService.setDefaultRole(roleId);
+    public JsonVO<String> setDefaultRole(@PathVariable Long roleId, @RequestParam Long orgId) {
+        log.info("设置默认充值提成规则，roleId: {}, orgId: {}", roleId, orgId);
+        serverRechargeRoleService.setDefaultRole(roleId, orgId);
         return JsonVO.success("设置成功");
     }
 

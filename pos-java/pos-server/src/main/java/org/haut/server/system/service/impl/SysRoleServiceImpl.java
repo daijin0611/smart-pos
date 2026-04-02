@@ -2,7 +2,6 @@ package org.haut.server.system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.dto.system.RolePermissionAddDTO;
 import org.haut.common.domain.dto.system.RoleUserAddDTO;
 import org.haut.server.system.entity.SysRolePermission;
@@ -12,7 +11,6 @@ import org.haut.common.domain.query.system.UnAllocatedListQuery;
 import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.server.system.entity.SysRole;
 import org.haut.common.exception.BusinessException;
-import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.system.mapper.SysRolePermissionMapper;
 import org.haut.server.system.mapper.SysUserRoleMapper;
 import org.haut.server.system.service.SysRoleService;
@@ -44,8 +42,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
      */
     @Override
     public List<UserInfoVO> getAllocatedUserList(AllocatedListQuery query) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
-        return sysRoleMapper.getAllocatedUserList(query, auth.getOrgId());
+        return sysRoleMapper.getAllocatedUserList(query);
     }
 
     /**
@@ -56,8 +53,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
      */
     @Override
     public List<UserInfoVO> getUnAllocatedUserList(UnAllocatedListQuery query) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
-        return sysRoleMapper.getUnAllocatedUserList(query, auth.getOrgId());
+        return sysRoleMapper.getUnAllocatedUserList(query);
     }
 
     /**

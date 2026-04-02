@@ -17,4 +17,7 @@ public class ServerItemQuery {
 
     @Schema(description = "门店ID（可选，不传则查全部）")
     private Long orgId;
+
+    @Schema(description = "分类(筛选条件)")
+    private String category;
 }

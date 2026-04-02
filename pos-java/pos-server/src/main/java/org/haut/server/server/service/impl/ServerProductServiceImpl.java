@@ -65,7 +65,8 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
                         .like(ServerProduct::getProductEncode, query.getKeyWord())
                         .or()
                         .like(ServerProduct::getProductName, query.getKeyWord()))
-                .eq(query.getProductStatus() != null, ServerProduct::getStatus, query.getProductStatus());
+                .eq(query.getProductStatus() != null, ServerProduct::getStatus, query.getProductStatus())
+                .eq(StringUtils.isNotBlank(query.getCategory()), ServerProduct::getCategory, query.getCategory());
         if (query.getOrgId() != null) {
             List<Long> itemIds = orgRelationService.getItemIdsByOrg(
                     OrgRelationTypeEnum.SERVER_PRODUCT.getValue(), query.getOrgId());
@@ -158,6 +159,7 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
                 .set(ServerProduct::getCommissionBase, product.getCommissionBase())
                 .set(ServerProduct::getUnit, product.getUnit())
                 .set(ServerProduct::getRemark, product.getRemark())
+                .set(ServerProduct::getCategory, product.getCategory())
                 .eq(ServerProduct::getId, product.getId())
                 .update();
         if (product.getOrgIds() != null) {

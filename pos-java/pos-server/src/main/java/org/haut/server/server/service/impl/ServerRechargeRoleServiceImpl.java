@@ -99,9 +99,8 @@ public class ServerRechargeRoleServiceImpl extends ServiceImpl<ServerRechargeRol
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void setDefaultRole(Long roleId) {
-        AuthInfoDTO auth = AuthContextHolder.getAuth();
-        log.info("设置默认充值提成规则，门店ID：{}，规则ID：{}", auth.getOrgId(), roleId);
+    public void setDefaultRole(Long roleId, Long orgId) {
+        log.info("设置默认充值提成规则，门店ID：{}，规则ID：{}", orgId, roleId);
         ServerRechargeRole role = this.getById(roleId);
         if (role == null) {
             throw new BusinessException("提成规则不存在");
@@ -109,7 +108,7 @@ public class ServerRechargeRoleServiceImpl extends ServiceImpl<ServerRechargeRol
         // 将当前门店的默认充值提成规则设置为指定规则
         sysOrgMapper.update(null, Wrappers.lambdaUpdate(SysOrg.class)
                 .set(SysOrg::getDefaultRechargeRoleId, roleId)
-                .eq(SysOrg::getId, auth.getOrgId()));
+                .eq(SysOrg::getId, orgId));
         log.info("默认充值提成规则设置成功");
     }
 

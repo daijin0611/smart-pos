@@ -28,4 +28,10 @@ public class ServerProductListQuery {
     @Schema(description = "组织ID（可选，用于按门店筛选）")
     private Long orgId;
 
+    /**
+     * 分类(筛选条件)
+     */
+    @Schema(description = "分类(筛选条件)")
+    private String category;
+
 }

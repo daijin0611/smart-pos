@@ -106,6 +106,11 @@ public class ServerItemVO {
     private Integer itemStatus;
 
     /**
+     * 分类
+     */
+    private String category;
+
+    /**
      * 关联门店列表
      */
     @Schema(description = "关联门店列表")
