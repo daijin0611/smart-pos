@@ -276,7 +276,9 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                 .eq(StringUtils.isNotBlank(query.getBusinessCode()), OrderDetailEntity::getBusinessCode, query.getBusinessCode())
                 .eq(OrderDetailEntity::getOrderStatus, OrderStatusEnum.SETTLED.getCode())
                 .between(date != null && date.length >= 2 && date[0] != null && date[1] != null,
-                        OrderDetailEntity::getCreateTime, date[0], date[1])
+                        OrderDetailEntity::getCreateTime,
+                        date != null && date.length >= 1 ? date[0] : null,
+                        date != null && date.length >= 2 ? date[1] : null)
                 .in(OrderDetailEntity::getOrgId, orgIds)
                 .orderByDesc(OrderDetailEntity::getSettledTime)
                 .page(page);
