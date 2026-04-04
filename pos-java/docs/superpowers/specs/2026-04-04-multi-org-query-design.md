@@ -59,3 +59,18 @@ query.setOrgIds(orgIds);
 ### SQL 改动
 
 `org_id = #{orgId}` → `<if test="query.orgIds != null and !query.orgIds.isEmpty()">AND org_id IN (...)</if>`
+
+### VO 响应字段补充
+
+多门店查询时每条记录需要携带门店信息（orgId、orgName、orgCode），当前各 VO 字段现状：
+
+| VO 类 | orgId | orgName | orgCode | 需补充 |
+|-------|-------|---------|---------|--------|
+| RechargeHistoryVO | 有 | 无 | 无 | 加 orgName、orgCode |
+| OrderInfoVO | 有 | 无 | 无 | 加 orgName、orgCode |
+| OrderSummaryVO | 有 | 无 | 无 | 加 orgName、orgCode |
+| OrderDetailVO | 无 | 无 | 无 | 加 orgId、orgName、orgCode |
+| KpiListVO | 无 | 有(orgName) | 无 | 加 orgId、orgCode |
+| KpiSummaryVO | 有 | 有(orgName) | 无 | 加 orgCode |
+
+Service 层在返回结果后，批量查询涉及门店的 `OrgSimpleVO`，填充 orgName 和 orgCode。对于使用 Mapper XML 的模块，可在 SQL 中 JOIN 查询；对于使用 lambdaQuery 的模块，在 Service 层批量填充。
