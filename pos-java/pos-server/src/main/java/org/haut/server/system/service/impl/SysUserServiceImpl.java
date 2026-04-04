@@ -16,6 +16,8 @@ import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.common.domain.vo.system.RoleInfoVo;
 import org.haut.common.domain.vo.system.UserInfoVO;
 import org.haut.common.exception.BusinessException;
+import org.haut.common.domain.dto.system.AuthInfoDTO;
+import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.UserContextHolder;
 import org.haut.server.system.entity.SysRole;
 import org.haut.server.system.entity.SysUser;
@@ -50,6 +52,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     @Override
     public PageDTO<UserInfoVO> getList(UserListQuery query) {
+        if (query.getOrgIds() == null || query.getOrgIds().isEmpty()) {
+            AuthInfoDTO auth = AuthContextHolder.getAuth();
+            query.setOrgIds(sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), null));
+        }
         Page<UserInfoVO> page = new Page<>();
         page.setCurrent(query.getPageNum());
         page.setSize(query.getPageSize());
