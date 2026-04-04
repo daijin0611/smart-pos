@@ -4,6 +4,8 @@ package org.haut.common.domain.query.vip;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Schema(description = "会员列表查询对象")
 public class VipListQuery {
@@ -25,4 +27,7 @@ public class VipListQuery {
      */
     @Schema(description = "每页条数", example = "10")
     private Integer pageSize = 10;
+
+    @Schema(description = "门店ID列表，不传则查全部关联门店")
+    private List<Long> orgIds;
 }

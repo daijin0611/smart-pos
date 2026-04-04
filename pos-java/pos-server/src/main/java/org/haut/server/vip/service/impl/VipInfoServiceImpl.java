@@ -32,6 +32,7 @@ import org.haut.server.server.entity.ServerRechargeRole;
 import org.haut.server.server.mapper.ServerRechargeRoleMapper;
 import org.haut.server.system.entity.SysOrg;
 import org.haut.server.system.service.SysOrgService;
+import org.haut.server.system.service.SysOrgUserService;
 import org.haut.server.vip.entity.*;
 import org.haut.server.vip.mapper.VipAssetMapper;
 import org.haut.server.vip.mapper.VipRechargeActiveMapper;
@@ -81,6 +82,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     private final VipInfoTicketService vipInfoTicketService;
     private final VipTicketService vipTicketService;
     private final SysOrgService sysOrgService;
+    private final SysOrgUserService sysOrgUserService;
 
     /**
      * 获取会员列表,条件查询
@@ -92,8 +94,9 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     @Override
     public PageDTO<VipInfoVO> getList(VipListQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
+        List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), query.getOrgIds());
         LambdaQueryWrapper<VipInfo> queryWrapper = Wrappers.lambdaQuery(VipInfo.class)
-                .eq(VipInfo::getOrgId,auth.getOrgId());
+                .in(VipInfo::getOrgId, orgIds);
         // 条件查询
         if (query.getQueryField() != null && StringUtils.isNotBlank(query.getQueryField())) {
             queryWrapper
