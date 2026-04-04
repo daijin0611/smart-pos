@@ -8,6 +8,8 @@ import org.haut.common.domain.query.vip.RechargeHistoryQuery;
 import org.haut.common.domain.vo.vip.RechargeHistoryVO;
 import org.haut.server.vip.entity.VipRechargeHistory;
 
+import java.util.List;
+
 /**
 * @author daiji
 * @description 针对表【vip_recharge_history(充值记录表)】的数据库操作Mapper
@@ -16,7 +18,7 @@ import org.haut.server.vip.entity.VipRechargeHistory;
 */
 public interface VipRechargeHistoryMapper extends BaseMapper<VipRechargeHistory> {
 
-    IPage<RechargeHistoryVO> getList(Page<RechargeHistoryVO> page, @Param("query") RechargeHistoryQuery query, @Param("orgId") Long orgId);
+    IPage<RechargeHistoryVO> getList(Page<RechargeHistoryVO> page, @Param("query") RechargeHistoryQuery query, @Param("orgIds") List<Long> orgIds);
 }
 
 

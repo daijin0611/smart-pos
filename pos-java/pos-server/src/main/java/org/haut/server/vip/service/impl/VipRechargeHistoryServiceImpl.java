@@ -17,6 +17,7 @@ import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.vip.entity.VipRechargeHistory;
 import org.haut.server.vip.service.VipRechargeHistoryService;
 import org.haut.server.vip.mapper.VipRechargeHistoryMapper;
+import org.haut.server.system.service.SysOrgUserService;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -43,6 +44,7 @@ interface VipRechargeHistoryConvert {
 public class VipRechargeHistoryServiceImpl extends ServiceImpl<VipRechargeHistoryMapper, VipRechargeHistory>
     implements VipRechargeHistoryService{
     private final VipRechargeHistoryConvert convert;
+    private final SysOrgUserService sysOrgUserService;
     /**
      * 获取会员充值记录列表（分页）
      * @param query 查询参数
@@ -51,8 +53,9 @@ public class VipRechargeHistoryServiceImpl extends ServiceImpl<VipRechargeHistor
     @Override
     public PageDTO<RechargeHistoryVO> getList(RechargeHistoryQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
+        List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), query.getOrgIds());
         Page<RechargeHistoryVO> page = new Page<>(query.getPageNum(), query.getPageSize());
-        IPage<RechargeHistoryVO> result = this.baseMapper.getList(page, query, auth.getOrgId());
+        IPage<RechargeHistoryVO> result = this.baseMapper.getList(page, query, orgIds);
         return PageDTO.create(result);
     }
 
