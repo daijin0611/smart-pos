@@ -53,6 +53,9 @@ import org.haut.server.stock.service.StockInOrderService;
 import org.haut.common.domain.dto.stock.StockInOrderCreateDTO;
 import org.haut.server.vip.mapper.VipTicketMapper;
 import org.haut.common.domain.vo.vip.VipTicketVO;
+import org.haut.server.system.service.SysOrgUserService;
+import org.haut.server.system.service.SysOrgService;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
@@ -92,6 +95,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private final VipAssetService vipAssetService;
     private final StockInOrderService stockInOrderService;
     private final VipTicketMapper vipTicketMapper;
+    private final SysOrgUserService sysOrgUserService;
+    private final SysOrgService sysOrgService;
 
 
 
@@ -410,7 +415,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public PageDTO<OrderInfoVO> pageQuery(OrderPageQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
-        query.setOrgId(auth.getOrgId());
+        List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), query.getOrgIds());
+        query.setOrgIds(orgIds);
         Page<OrderInfoVO> page = Page.of(query.getPageNum(), query.getPageSize());
         IPage<OrderInfoVO> result = baseMapper.pageQuery(page,query);
 
@@ -459,6 +465,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             List<PaymentVO> payments = paymentMap.getOrDefault(orderInfoVO.getOrderCode(), new ArrayList<>());
             orderInfoVO.setPayments(payments);
         });
+
+        // 批量填充门店信息
+        if (!records.isEmpty()) {
+            Set<Long> allOrgIds = records.stream().map(OrderInfoVO::getOrgId).filter(Objects::nonNull).collect(Collectors.toSet());
+            if (!allOrgIds.isEmpty()) {
+                Map<Long, OrgSimpleVO> orgMap = sysOrgService.getOrgSimpleMapByIds(allOrgIds);
+                records.forEach(vo -> {
+                    OrgSimpleVO org = orgMap.get(vo.getOrgId());
+                    if (org != null) {
+                        vo.setOrgName(org.getOrgName());
+                        vo.setOrgCode(org.getOrgCode());
+                    }
+                });
+            }
+        }
 
         return PageDTO.create(result, OrderInfoVO.class);
     }

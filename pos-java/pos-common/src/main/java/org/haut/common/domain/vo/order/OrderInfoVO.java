@@ -169,6 +169,12 @@ public class OrderInfoVO {
      */
     @Schema(description = "门店ID")
     private Long orgId;
+
+    @Schema(description = "门店名称")
+    private String orgName;
+
+    @Schema(description = "门店编码")
+    private String orgCode;
     
     /**
      * 订单明细列表

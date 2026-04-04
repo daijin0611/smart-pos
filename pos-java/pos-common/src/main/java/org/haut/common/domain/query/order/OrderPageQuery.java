@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Schema(description = "订单分页查询参数")
 @Data
@@ -45,8 +46,8 @@ public class OrderPageQuery {
     @Schema(description = "订单号")
     private String orderCode;
 
-    @Schema(description = "机构ID", hidden = true)
-    private Long orgId;
+    @Schema(description = "门店ID列表，不传则查全部关联门店")
+    private List<Long> orgIds;
 
     @Schema(description = "进查看支付为0的订单")
     private Integer payZero;
