@@ -74,4 +74,16 @@ public class SysOrgUserServiceImpl extends ServiceImpl<SysOrgUserMapper, SysOrgU
                 Collectors.mapping(SysOrgUser::getOrgId, Collectors.toList())
         ));
     }
+
+    @Override
+    public List<Long> resolveOrgIds(Long userId, Long primaryOrgId, List<Long> queryOrgIds) {
+        if (queryOrgIds != null && !queryOrgIds.isEmpty()) {
+            return queryOrgIds;
+        }
+        List<Long> extraOrgIds = getOrgIdsByUserId(userId);
+        List<Long> result = new java.util.ArrayList<>();
+        result.add(primaryOrgId);
+        result.addAll(extraOrgIds);
+        return result;
+    }
 }
