@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.haut.server.system.entity.SysOrgUser;
 import org.haut.server.system.mapper.SysOrgUserMapper;
+import org.haut.server.system.service.SysOrgService;
 import org.haut.server.system.service.SysOrgUserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +18,15 @@ import java.util.stream.Collectors;
 public class SysOrgUserServiceImpl extends ServiceImpl<SysOrgUserMapper, SysOrgUser>
         implements SysOrgUserService {
 
+    private final SysOrgService sysOrgService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void bindOrgs(Long userId, List<Long> orgIds) {
         if (orgIds == null || orgIds.isEmpty()) {
             return;
         }
+        sysOrgService.validateOrgIdsExist(orgIds);
         List<SysOrgUser> records = orgIds.stream().map(orgId -> {
             SysOrgUser entity = new SysOrgUser();
             entity.setUsrId(userId);

@@ -133,6 +133,16 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg>
         }
         return BeanUtil.copyToList(this.listByIds(orgIds), OrgSimpleVO.class);
     }
+
+    @Override
+    public void validateOrgIdsExist(Collection<Long> orgIds) {
+        long existCount = this.count(
+                Wrappers.lambdaQuery(SysOrg.class)
+                        .in(SysOrg::getId, orgIds));
+        if (existCount != orgIds.size()) {
+            throw new BusinessException("关联门店ID不存在");
+        }
+    }
 }
 
 

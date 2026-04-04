@@ -110,6 +110,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
                     .filter(id -> !id.equals(user.getOrgId()))
                     .toList();
             if (!filtered.isEmpty()) {
+                sysOrgService.validateOrgIdsExist(filtered);
                 sysOrgUserService.bindOrgs(sysUser.getId(), filtered);
             }
         }
@@ -130,6 +131,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
                     .filter(id -> !id.equals(existing.getOrgId()))
                     .toList();
             if (!filtered.isEmpty()) {
+                sysOrgService.validateOrgIdsExist(filtered);
                 sysOrgUserService.bindOrgs(user.getId(), filtered);
             }
         }

@@ -141,6 +141,7 @@ public class ServerRechargeRoleServiceImpl extends ServiceImpl<ServerRechargeRol
         if (orgIds == null || orgIds.isEmpty()) {
             return;
         }
+        sysOrgService.validateOrgIdsExist(orgIds);
         log.info("绑定门店到提成规则，规则ID：{}，门店数量：{}", roleId, orgIds.size());
         for (Long orgId : orgIds) {
             sysOrgMapper.update(null, Wrappers.lambdaUpdate(SysOrg.class)

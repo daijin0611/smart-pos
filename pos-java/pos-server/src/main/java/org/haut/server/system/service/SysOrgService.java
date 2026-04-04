@@ -41,4 +41,9 @@ public interface SysOrgService extends IService<SysOrg> {
      * 批量查询门店简要信息，返回列表
      */
     List<OrgSimpleVO> getOrgSimpleListByIds(Collection<Long> orgIds);
+
+    /**
+     * 校验门店ID是否全部存在，不存在则抛出 BusinessException
+     */
+    void validateOrgIdsExist(Collection<Long> orgIds);
 }
