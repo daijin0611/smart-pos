@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @author 丁铭瀚
@@ -32,4 +33,8 @@ public class OrderDetailPageQuery {
 
 
     @Schema(description = "搜索日期范围")
-    private LocalDate[] date;}
+    private LocalDate[] date;
+
+    @Schema(description = "门店ID列表，不传则查全部关联门店")
+    private List<Long> orgIds;
+}

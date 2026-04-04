@@ -18,6 +18,7 @@ import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.common.domain.vo.server.ServerItemVO;
 import org.haut.common.domain.vo.server.ServerProductInfoVO;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.common.enums.OrderStatusEnum;
 import org.haut.common.enums.ServiceTypeEnum;
 import org.haut.common.enums.Status;
@@ -33,6 +34,8 @@ import org.haut.server.order.mapper.OrderInfoMapper;
 import org.haut.server.order.service.OrderDetailService;
 import org.haut.server.order.service.OrderDetailTechnicianService;
 import org.haut.server.server.entity.ServerCureTicket;
+import org.haut.server.system.service.SysOrgService;
+import org.haut.server.system.service.SysOrgUserService;
 import org.haut.server.server.entity.ServerItem;
 import org.haut.server.server.entity.ServerProduct;
 import org.haut.server.server.service.ServerCureTicketService;
@@ -46,6 +49,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -75,6 +79,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     private final StockOutOrderService stockOutOrderService;
     private final KpiDetailService kpiDetailService;
     private final OrderDetailTechnicianService orderDetailTechnicianService;
+    private final SysOrgUserService sysOrgUserService;
+    private final SysOrgService sysOrgService;
 
     /**
      * 创建订单明细
@@ -261,20 +267,45 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     @Override
     public PageDTO<OrderDetailVO> pageQuery(OrderDetailPageQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
+        List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), query.getOrgIds());
         Page<OrderDetailEntity> page = new Page<>(query.getPageNum(), query.getPageSize());
         LocalDate[] date = query.getDate();
 
-        // 复杂的LambdaQuery
-        this.lambdaQuery().eq(query.getUserId() != null, OrderDetailEntity::getUserId, query.getUserId())
+        this.lambdaQuery()
+                .eq(query.getUserId() != null, OrderDetailEntity::getUserId, query.getUserId())
                 .eq(StringUtils.isNotBlank(query.getBusinessCode()), OrderDetailEntity::getBusinessCode, query.getBusinessCode())
                 .eq(OrderDetailEntity::getOrderStatus, OrderStatusEnum.SETTLED.getCode())
-                .between(date != null && date.length >= 2 && date[0] != null && date[1] != null, 
-                        OrderDetailEntity::getCreateTime, date != null && date.length >= 2 ? date[0] : null,
-                        date != null && date.length >= 2 ? date[1] : null)
-                .eq(OrderDetailEntity::getOrgId, auth.getOrgId())
+                .between(date != null && date.length >= 2 && date[0] != null && date[1] != null,
+                        OrderDetailEntity::getCreateTime, date[0], date[1])
+                .in(OrderDetailEntity::getOrgId, orgIds)
                 .orderByDesc(OrderDetailEntity::getSettledTime)
                 .page(page);
-        return PageDTO.create(page, OrderDetailVO.class);
+
+        PageDTO<OrderDetailVO> result = PageDTO.create(page, OrderDetailVO.class);
+
+        // 批量填充门店信息
+        List<OrderDetailVO> records = result.getRecords();
+        if (records != null && !records.isEmpty()) {
+            Map<Long, OrgSimpleVO> orgMap = sysOrgService.getOrgSimpleMapByIds(
+                    page.getRecords().stream()
+                            .map(OrderDetailEntity::getOrgId)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toSet()));
+            Map<Long, Long> entityIdToOrgId = page.getRecords().stream()
+                    .collect(Collectors.toMap(OrderDetailEntity::getId, OrderDetailEntity::getOrgId));
+            records.forEach(vo -> {
+                Long orgId = entityIdToOrgId.get(vo.getId());
+                if (orgId != null) {
+                    OrgSimpleVO org = orgMap.get(orgId);
+                    if (org != null) {
+                        vo.setOrgId(orgId);
+                        vo.setOrgName(org.getOrgName());
+                        vo.setOrgCode(org.getOrgCode());
+                    }
+                }
+            });
+        }
+        return result;
     }
     
     @Override

@@ -144,4 +144,13 @@ public class OrderDetailVO {
     @Schema(description = "技师列表")
     private List<OrderDetailTechnicianDTO> technicians;
 
+    @Schema(description = "门店ID")
+    private Long orgId;
+
+    @Schema(description = "门店名称")
+    private String orgName;
+
+    @Schema(description = "门店编码")
+    private String orgCode;
+
 }
