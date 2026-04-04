@@ -184,7 +184,8 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
     @Override
     public List<KpiSummaryVO> getKpiSummary(KpiSummaryQuery kpiListQuery) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
-        kpiListQuery.setOrgId(auth.getOrgId());
+        List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), kpiListQuery.getOrgIds());
+        kpiListQuery.setOrgIds(orgIds);
         
         // 处理日期查询条件
         if(ArrayUtil.isNotEmpty(kpiListQuery.getDate())) {

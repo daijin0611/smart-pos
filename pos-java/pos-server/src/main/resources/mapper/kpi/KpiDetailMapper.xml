@@ -51,6 +51,7 @@
             kd.user_id AS userId,
             kd.user_name AS userName,
             so.org_name AS orgName,
+            so.org_code AS orgCode,
             kd.org_id AS orgId,
             COALESCE(SUM(kd.performance), 0) AS totalPerformance,
             COALESCE(SUM(kd.commission), 0) AS totalCommission,
@@ -83,20 +84,23 @@
         LEFT JOIN sys_org so ON so.id = kd.org_id
         <where>
             kd.is_delete = 0
-            <if test="userId != null">
-                AND kd.user_id = #{userId}
+            <if test="query.userId != null">
+                AND kd.user_id = #{query.userId}
             </if>
-            <if test="orgId != null">
-                AND kd.org_id = #{orgId}
+            <if test="query.orgIds != null and !query.orgIds.isEmpty()">
+                AND kd.org_id IN
+                <foreach collection="query.orgIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
             </if>
-            <if test="beginDate != null">
-                AND kd.create_time >= #{beginDate}
+            <if test="query.beginDate != null">
+                AND kd.create_time >= #{query.beginDate}
             </if>
-            <if test="endDate != null">
-                AND kd.create_time &lt;= #{endDate}
+            <if test="query.endDate != null">
+                AND kd.create_time &lt;= #{query.endDate}
             </if>
         </where>
-        GROUP BY kd.user_id, kd.user_name, kd.org_id, so.org_name
+        GROUP BY kd.user_id, kd.user_name, kd.org_id, so.org_name, so.org_code
         ORDER BY totalPerformance DESC
     </select>
 
