@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.order.OrderSummaryQuery;
 import org.haut.common.domain.vo.order.OrderSummaryVO;
@@ -88,12 +89,11 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), query.getOrgIds());
         LocalDate[] date = query.getDate();
-        if (date == null) {
-            date = new LocalDate[]{LocalDate.now(), LocalDate.now()};
-        }
         List<OrderSalesSummary> summaries = lambdaQuery()
                 .in(OrderSalesSummary::getOrgId, orgIds)
-                .between(OrderSalesSummary::getStatsDate, date[0], date[1])
+                .between(ArrayUtils.isNotEmpty(date) && date.length == 2, OrderSalesSummary::getStatsDate,
+                        ArrayUtils.isNotEmpty(date) ? date[0] : null,
+                        ArrayUtils.isNotEmpty(date) && date.length >= 2 ? date[1] : null)
                 .list();
 
         List<OrderSummaryVO> voList = orderSalesSummaryConvert.toVOList(summaries);
