@@ -284,8 +284,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         PageDTO<OrderDetailVO> result = PageDTO.create(page, OrderDetailVO.class);
 
         // 批量填充门店信息
-        List<OrderDetailVO> records = result.getRecords();
-        if (records != null && !records.isEmpty()) {
+        List<OrderDetailVO> rows = result.getRows();
+        if (rows != null && !rows.isEmpty()) {
             Map<Long, OrgSimpleVO> orgMap = sysOrgService.getOrgSimpleMapByIds(
                     page.getRecords().stream()
                             .map(OrderDetailEntity::getOrgId)
@@ -293,7 +293,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                             .collect(Collectors.toSet()));
             Map<Long, Long> entityIdToOrgId = page.getRecords().stream()
                     .collect(Collectors.toMap(OrderDetailEntity::getId, OrderDetailEntity::getOrgId));
-            records.forEach(vo -> {
+            rows.forEach(vo -> {
                 Long orgId = entityIdToOrgId.get(vo.getId());
                 if (orgId != null) {
                     OrgSimpleVO org = orgMap.get(orgId);
