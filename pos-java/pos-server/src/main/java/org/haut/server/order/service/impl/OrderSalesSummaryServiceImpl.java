@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.order.OrderSummaryQuery;
 import org.haut.common.domain.vo.order.OrderSummaryVO;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.common.enums.*;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.order.entity.OrderDetailEntity;
@@ -21,6 +22,7 @@ import org.haut.server.payment.entity.PaymentDetail;
 import org.haut.server.payment.service.PaymentDetailService;
 import org.haut.server.system.entity.SysOrg;
 import org.haut.server.system.service.SysOrgService;
+import org.haut.server.system.service.SysOrgUserService;
 import org.haut.server.vip.entity.VipRechargeHistory;
 import org.haut.server.vip.service.VipRechargeHistoryService;
 import org.mapstruct.Mapper;
@@ -30,6 +32,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * OrderSalesSummary转换器
@@ -72,6 +76,7 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
     private final OrderDetailService orderDetailService;
     private final PaymentDetailService paymentDetailService;
     private final SysOrgService sysOrgService;
+    private final SysOrgUserService sysOrgUserService;
         
     /**
      * 获取某时间段内的销售数据，并在最后添加汇总记录
@@ -81,16 +86,31 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
     @Override
     public List<OrderSummaryVO> getOrderSummaries(OrderSummaryQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
+        List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), query.getOrgIds());
         LocalDate[] date = query.getDate();
         if (date == null) {
             date = new LocalDate[]{LocalDate.now(), LocalDate.now()};
         }
-        List<OrderSalesSummary> summaries = lambdaQuery().eq(OrderSalesSummary::getOrgId, auth.getOrgId())
+        List<OrderSalesSummary> summaries = lambdaQuery()
+                .in(OrderSalesSummary::getOrgId, orgIds)
                 .between(OrderSalesSummary::getStatsDate, date[0], date[1])
                 .list();
-        
-        // 转换为VO对象
-        return orderSalesSummaryConvert.toVOList(summaries);
+
+        List<OrderSummaryVO> voList = orderSalesSummaryConvert.toVOList(summaries);
+
+        // 批量填充门店信息
+        if (!voList.isEmpty()) {
+            Map<Long, OrgSimpleVO> orgMap = sysOrgService.getOrgSimpleMapByIds(
+                    voList.stream().map(OrderSummaryVO::getOrgId).collect(Collectors.toSet()));
+            voList.forEach(vo -> {
+                OrgSimpleVO org = orgMap.get(vo.getOrgId());
+                if (org != null) {
+                    vo.setOrgName(org.getOrgName());
+                    vo.setOrgCode(org.getOrgCode());
+                }
+            });
+        }
+        return voList;
     }
 
 

@@ -32,6 +32,16 @@ public class OrderSummaryVO {
     private Long orgId;
 
     /**
+     * 门店名称
+     */
+    private String orgName;
+
+    /**
+     * 门店编码
+     */
+    private String orgCode;
+
+    /**
      * 销售数据创建时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
