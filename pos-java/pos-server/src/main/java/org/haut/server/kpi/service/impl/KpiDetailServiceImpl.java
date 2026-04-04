@@ -31,6 +31,7 @@ import org.haut.server.server.entity.ServerProduct;
 import org.haut.server.server.service.ServerCureTicketService;
 import org.haut.server.server.service.ServerItemService;
 import org.haut.server.server.service.ServerProductService;
+import org.haut.server.system.service.SysOrgUserService;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,7 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
     private final ServerItemService serverItemService;
     private final ServerProductService serverProductService;
     private final ServerCureTicketService serverCureTicketService;
+    private final SysOrgUserService sysOrgUserService;
 
     /**
      * 创建业绩明细
@@ -76,7 +78,8 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
     @Override
     public PageDTO<KpiListVO> getKpiList(KpiListQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
-        query.setOrgId(auth.getOrgId());
+        List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), query.getOrgIds());
+        query.setOrgIds(orgIds);
 
         if(ArrayUtil.isNotEmpty(query.getDate())) {
             query.setBeginDate(query.getDate()[0].atStartOfDay());

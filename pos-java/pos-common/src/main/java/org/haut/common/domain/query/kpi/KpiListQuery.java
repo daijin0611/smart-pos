@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Schema(description = "员工业绩明细查询条件")
@@ -17,8 +18,8 @@ public class KpiListQuery {
     @Schema(description = "员工姓名")
     private String username;
 
-    @Schema(description = "机构ID", hidden = true)
-    private Long orgId;
+    @Schema(description = "门店ID列表，不传则查全部关联门店")
+    private List<Long> orgIds;
 
     @Schema(description = "查询开始日期", hidden = true)
     private LocalDateTime beginDate;
