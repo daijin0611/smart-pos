@@ -101,4 +101,10 @@ public class VipInfoVO {
      */
     @Schema(description = "组织ID")
     private Long orgId;
+
+    @Schema(description = "门店名称")
+    private String orgName;
+
+    @Schema(description = "门店编码")
+    private String orgCode;
 }

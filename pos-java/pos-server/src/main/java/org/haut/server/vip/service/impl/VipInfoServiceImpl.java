@@ -47,6 +47,10 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.haut.common.domain.vo.system.OrgSimpleVO;;
 
 @Mapper(componentModel = "spring")
 interface VipInfoConvert{
@@ -109,8 +113,25 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         //查询数据库
         Page<VipInfo> page = new Page<>(query.getPageNum(), query.getPageSize());
         vipInfoMapper.selectPage(page, queryWrapper);
-        //转化为DTO
-        return PageDTO.create(page, VipInfoVO.class);
+
+        PageDTO<VipInfoVO> result = PageDTO.create(page, VipInfoVO.class);
+
+        // 批量填充门店信息
+        List<VipInfoVO> rows = result.getRows();
+        if (rows != null && !rows.isEmpty()) {
+            Set<Long> allOrgIds = page.getRecords().stream()
+                    .map(VipInfo::getOrgId).collect(Collectors.toSet());
+            Map<Long, OrgSimpleVO> orgMap = sysOrgService.getOrgSimpleMapByIds(allOrgIds);
+            rows.forEach(vo -> {
+                OrgSimpleVO org = orgMap.get(vo.getOrgId());
+                if (org != null) {
+                    vo.setOrgName(org.getOrgName());
+                    vo.setOrgCode(org.getOrgCode());
+                }
+            });
+        }
+
+        return result;
     }
 
     /*

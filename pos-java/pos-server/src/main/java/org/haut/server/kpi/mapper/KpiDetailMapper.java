@@ -2,7 +2,7 @@ package org.haut.server.kpi.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.lettuce.core.dynamic.annotation.Param;
+import org.apache.ibatis.annotations.Param;
 import org.haut.common.domain.query.kpi.KpiListQuery;
 import org.haut.common.domain.query.kpi.KpiSummaryQuery;
 import org.haut.common.domain.vo.kpi.KpiListVO;
