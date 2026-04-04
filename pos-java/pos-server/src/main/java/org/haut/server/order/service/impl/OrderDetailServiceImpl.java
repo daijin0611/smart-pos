@@ -147,7 +147,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String addDetails(OrderDetailCreateDTO dto, Long orderId) {
+    public Long addDetails(OrderDetailCreateDTO dto, Long orderId) {
         log.info("添加订单明细，订单ID：{}，明细信息：{}", orderId, dto);
         
         // 参数校验
@@ -189,8 +189,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         // 保存技师关联
         orderDetailTechnicianService.saveTechnicians(detailEntity.getId(), dto.getTechnicians());
 
-        log.info("订单明细添加成功，明细编号：{}", detailEntity.getDetailCode());
-        return "订单明细添加成功";
+        log.info("订单明细添加成功，明细ID：{}，明细编号：{}", detailEntity.getId(), detailEntity.getDetailCode());
+        return detailEntity.getId();
     }
 
     /**

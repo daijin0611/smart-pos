@@ -49,7 +49,7 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
      * @param orderId
      * @return
      */
-    String addDetails(OrderDetailCreateDTO dto, Long orderId);
+    Long addDetails(OrderDetailCreateDTO dto, Long orderId);
 
     /**
      * 结算订单明细
