@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 /**
  * @author 丁铭瀚
- * @version 1.0
+ * @version 2.0
  */
 @Data
 @Accessors(chain = true)
@@ -78,52 +78,56 @@ public class OrderSummaryVO {
     private Integer totalProjectCount;
 
     /**
-     * 支付宝支付金额
+     * 扫码支付金额
      */
-    private BigDecimal alipayPayment;
-
-    /**
-     * 银行卡支付金额
-     */
-    private BigDecimal bankCardPayment;
+    @Schema(description = "扫码支付金额")
+    private BigDecimal qrPayment;
 
     /**
      * 现金支付金额
      */
+    @Schema(description = "现金支付金额")
     private BigDecimal cashPayment;
 
     /**
-     * 电子优惠券支付金额
+     * POS支付金额
      */
-    private BigDecimal electronicCouponPayment;
+    @Schema(description = "POS支付金额")
+    private BigDecimal posPayment;
+
+    /**
+     * 抖音支付金额
+     */
+    @Schema(description = "抖音支付金额")
+    private BigDecimal douyinPayment;
+
+    /**
+     * 美团支付金额
+     */
+    @Schema(description = "美团支付金额")
+    private BigDecimal meituanPayment;
 
     /**
      * 会员卡支付金额
      */
-    private BigDecimal membershipCardPayment;
-
-    /**
-     * 其他方式支付金额
-     */
-    private BigDecimal otherPayment;
-
-    /**
-     * 微信支付金额
-     */
-    private BigDecimal wechatPayment;
+    @Schema(description = "会员卡支付金额")
+    private BigDecimal memberCardPayment;
 
     /**
      * 现金充值金额
      */
+    @Schema(description = "现金充值金额")
     private BigDecimal cashRecharge;
 
     /**
      * 微信充值金额
      */
+    @Schema(description = "微信充值金额")
     private BigDecimal wechatRecharge;
 
     /**
      * 其他方式充值
      */
+    @Schema(description = "其他方式充值")
     private BigDecimal otherRecharge;
 }

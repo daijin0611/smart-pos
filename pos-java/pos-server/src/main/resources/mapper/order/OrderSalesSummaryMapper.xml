@@ -12,13 +12,12 @@
             <result property="totalSingleTime" column="total_single_time" />
             <result property="totalPeopleTime" column="total_people_time" />
             <result property="totalProjectCount" column="total_project_count" />
-            <result property="alipayPayment" column="alipay_payment" />
-            <result property="bankCardPayment" column="bank_card_payment" />
+            <result property="qrPayment" column="qr_payment" />
             <result property="cashPayment" column="cash_payment" />
-            <result property="electronicCouponPayment" column="electronic_coupon_payment" />
-            <result property="membershipCardPayment" column="membership_card_payment" />
-            <result property="otherPayment" column="other_payment" />
-            <result property="wechatPayment" column="wechat_payment" />
+            <result property="posPayment" column="pos_payment" />
+            <result property="douyinPayment" column="douyin_payment" />
+            <result property="meituanPayment" column="meituan_payment" />
+            <result property="memberCardPayment" column="member_card_payment" />
             <result property="cashRecharge" column="cash_recharge" />
             <result property="wechatRecharge" column="wechat_recharge" />
             <result property="otherRecharge" column="other_recharge" />
@@ -26,8 +25,7 @@
 
     <sql id="Base_Column_List">
         id,stats_date,total_turnover,total_actual_receipt,total_single_time,total_people_time,
-        total_project_count,alipay_payment,bank_card_payment,cash_payment,electronic_coupon_payment,
-        membership_card_payment,other_payment,wechat_payment,cash_recharge,wechat_recharge,
-        other_recharge
+        total_project_count,qr_payment,cash_payment,pos_payment,douyin_payment,meituan_payment,
+        member_card_payment,cash_recharge,wechat_recharge,other_recharge
     </sql>
 </mapper>

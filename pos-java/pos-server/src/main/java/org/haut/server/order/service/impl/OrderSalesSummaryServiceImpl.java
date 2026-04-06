@@ -162,53 +162,48 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
      */
     private OrderSummaryVO calculateTotal(List<OrderSummaryVO> summaries) {
         OrderSummaryVO totalSummary = new OrderSummaryVO();
-        
+
         // 初始化数值类型字段为0
         totalSummary.setTotalTurnover(BigDecimal.ZERO);
         totalSummary.setTotalActualReceipt(BigDecimal.ZERO);
         totalSummary.setTotalSingleTime(0);
         totalSummary.setTotalPeopleTime(0);
         totalSummary.setTotalProjectCount(0);
-        totalSummary.setAlipayPayment(BigDecimal.ZERO);
-        totalSummary.setBankCardPayment(BigDecimal.ZERO);
+        totalSummary.setQrPayment(BigDecimal.ZERO);
         totalSummary.setCashPayment(BigDecimal.ZERO);
-        totalSummary.setElectronicCouponPayment(BigDecimal.ZERO);
-        totalSummary.setMembershipCardPayment(BigDecimal.ZERO);
-        totalSummary.setOtherPayment(BigDecimal.ZERO);
-        totalSummary.setWechatPayment(BigDecimal.ZERO);
+        totalSummary.setPosPayment(BigDecimal.ZERO);
+        totalSummary.setDouyinPayment(BigDecimal.ZERO);
+        totalSummary.setMeituanPayment(BigDecimal.ZERO);
+        totalSummary.setMemberCardPayment(BigDecimal.ZERO);
         totalSummary.setCashRecharge(BigDecimal.ZERO);
         totalSummary.setWechatRecharge(BigDecimal.ZERO);
         totalSummary.setOtherRecharge(BigDecimal.ZERO);
-        
+
         // 累加所有记录的数值
         for (OrderSummaryVO summary : summaries) {
-            // 累加BigDecimal类型字段
             if (summary.getTotalTurnover() != null) {
                 totalSummary.setTotalTurnover(totalSummary.getTotalTurnover().add(summary.getTotalTurnover()));
             }
             if (summary.getTotalActualReceipt() != null) {
                 totalSummary.setTotalActualReceipt(totalSummary.getTotalActualReceipt().add(summary.getTotalActualReceipt()));
             }
-            if (summary.getAlipayPayment() != null) {
-                totalSummary.setAlipayPayment(totalSummary.getAlipayPayment().add(summary.getAlipayPayment()));
-            }
-            if (summary.getBankCardPayment() != null) {
-                totalSummary.setBankCardPayment(totalSummary.getBankCardPayment().add(summary.getBankCardPayment()));
+            if (summary.getQrPayment() != null) {
+                totalSummary.setQrPayment(totalSummary.getQrPayment().add(summary.getQrPayment()));
             }
             if (summary.getCashPayment() != null) {
                 totalSummary.setCashPayment(totalSummary.getCashPayment().add(summary.getCashPayment()));
             }
-            if (summary.getElectronicCouponPayment() != null) {
-                totalSummary.setElectronicCouponPayment(totalSummary.getElectronicCouponPayment().add(summary.getElectronicCouponPayment()));
+            if (summary.getPosPayment() != null) {
+                totalSummary.setPosPayment(totalSummary.getPosPayment().add(summary.getPosPayment()));
             }
-            if (summary.getMembershipCardPayment() != null) {
-                totalSummary.setMembershipCardPayment(totalSummary.getMembershipCardPayment().add(summary.getMembershipCardPayment()));
+            if (summary.getDouyinPayment() != null) {
+                totalSummary.setDouyinPayment(totalSummary.getDouyinPayment().add(summary.getDouyinPayment()));
             }
-            if (summary.getOtherPayment() != null) {
-                totalSummary.setOtherPayment(totalSummary.getOtherPayment().add(summary.getOtherPayment()));
+            if (summary.getMeituanPayment() != null) {
+                totalSummary.setMeituanPayment(totalSummary.getMeituanPayment().add(summary.getMeituanPayment()));
             }
-            if (summary.getWechatPayment() != null) {
-                totalSummary.setWechatPayment(totalSummary.getWechatPayment().add(summary.getWechatPayment()));
+            if (summary.getMemberCardPayment() != null) {
+                totalSummary.setMemberCardPayment(totalSummary.getMemberCardPayment().add(summary.getMemberCardPayment()));
             }
             if (summary.getCashRecharge() != null) {
                 totalSummary.setCashRecharge(totalSummary.getCashRecharge().add(summary.getCashRecharge()));
@@ -219,8 +214,6 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
             if (summary.getOtherRecharge() != null) {
                 totalSummary.setOtherRecharge(totalSummary.getOtherRecharge().add(summary.getOtherRecharge()));
             }
-            
-            // 累加Integer类型字段
             if (summary.getTotalSingleTime() != null) {
                 totalSummary.setTotalSingleTime(totalSummary.getTotalSingleTime() + summary.getTotalSingleTime());
             }
@@ -231,7 +224,7 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
                 totalSummary.setTotalProjectCount(totalSummary.getTotalProjectCount() + summary.getTotalProjectCount());
             }
         }
-        
+
         return totalSummary;
     }
 
@@ -314,13 +307,12 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
                     .list();
 
             // 初始化各支付方式金额
-            BigDecimal alipayPayment = BigDecimal.ZERO;
-            BigDecimal bankCardPayment = BigDecimal.ZERO;
+            BigDecimal qrPayment = BigDecimal.ZERO;
             BigDecimal cashPayment = BigDecimal.ZERO;
-            BigDecimal electronicCouponPayment = BigDecimal.ZERO;
-            BigDecimal membershipCardPayment = BigDecimal.ZERO;
-            BigDecimal otherPayment = BigDecimal.ZERO;
-            BigDecimal wechatPayment = BigDecimal.ZERO;
+            BigDecimal posPayment = BigDecimal.ZERO;
+            BigDecimal douyinPayment = BigDecimal.ZERO;
+            BigDecimal meituanPayment = BigDecimal.ZERO;
+            BigDecimal memberCardPayment = BigDecimal.ZERO;
 
             // 3.1 统计订单支付方式金额
             for (PaymentDetail payment : paymentList) {
@@ -329,16 +321,14 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
                     Integer paymentType = payment.getPaymentType();
                     BigDecimal amount = payment.getTotalAmount();
 
-                    if (PaymentTypeEnum.WECHAT.getCode().equals(String.valueOf(paymentType))) {
-                        wechatPayment = wechatPayment.add(amount);
-                    } else if (PaymentTypeEnum.ALIPAY.getCode().equals(String.valueOf(paymentType))) {
-                        alipayPayment = alipayPayment.add(amount);
-                    } else if (PaymentTypeEnum.CASH.getCode().equals(String.valueOf(paymentType))) {
-                        cashPayment = cashPayment.add(amount);
-                    } else if (PaymentTypeEnum.ASSET.getCode().equals(String.valueOf(paymentType))) {
-                        membershipCardPayment = membershipCardPayment.add(amount);
-                    } else {
-                        otherPayment = otherPayment.add(amount);
+                    switch (paymentType) {
+                        case 0 -> qrPayment = qrPayment.add(amount);
+                        case 1 -> cashPayment = cashPayment.add(amount);
+                        case 2 -> posPayment = posPayment.add(amount);
+                        case 3 -> douyinPayment = douyinPayment.add(amount);
+                        case 4 -> meituanPayment = meituanPayment.add(amount);
+                        case 5 -> memberCardPayment = memberCardPayment.add(amount);
+                        default -> log.warn("未知的支付类型: {}", paymentType);
                     }
                 }
             }
@@ -355,7 +345,7 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
                     Integer paymentType = payment.getPaymentType();
                     BigDecimal amount = payment.getTotalAmount();
 
-                    if (PaymentTypeEnum.WECHAT.getCode().equals(String.valueOf(paymentType))) {
+                    if (PaymentTypeEnum.QR.getCode().equals(String.valueOf(paymentType))) {
                         wechatRecharge = wechatRecharge.add(amount);
                     } else if (PaymentTypeEnum.CASH.getCode().equals(String.valueOf(paymentType))) {
                         cashRecharge = cashRecharge.add(amount);
@@ -374,13 +364,12 @@ public class OrderSalesSummaryServiceImpl extends ServiceImpl<OrderSalesSummaryM
                     .setTotalSingleTime(totalSingleTime)
                     .setTotalPeopleTime(totalPeopleTime)
                     .setTotalProjectCount(totalProjectCount)
-                    .setAlipayPayment(alipayPayment)
-                    .setBankCardPayment(bankCardPayment)
+                    .setQrPayment(qrPayment)
                     .setCashPayment(cashPayment)
-                    .setElectronicCouponPayment(electronicCouponPayment)
-                    .setMembershipCardPayment(membershipCardPayment)
-                    .setOtherPayment(otherPayment)
-                    .setWechatPayment(wechatPayment)
+                    .setPosPayment(posPayment)
+                    .setDouyinPayment(douyinPayment)
+                    .setMeituanPayment(meituanPayment)
+                    .setMemberCardPayment(memberCardPayment)
                     .setCashRecharge(cashRecharge)
                     .setWechatRecharge(wechatRecharge)
                     .setOtherRecharge(otherRecharge);

@@ -616,7 +616,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             List<PaymentDetail> assetPays = paymentDetailService.lambdaQuery()
                     .eq(PaymentDetail::getActiveCode, orderCode)
                     .eq(PaymentDetail::getOrgId, auth.getOrgId())
-                    .eq(PaymentDetail::getPaymentType, Integer.parseInt(PaymentTypeEnum.ASSET.getCode()))
+                    .eq(PaymentDetail::getPaymentType, Integer.parseInt(PaymentTypeEnum.MEMBER_CARD.getCode()))
                     .list();
 
             if (assetPays != null && !assetPays.isEmpty()) {
