@@ -27,3 +27,5 @@ ALTER TABLE order_sales_summary
 -- 4. 重命名 membership_card_payment → member_card_payment（对齐枚举命名）
 ALTER TABLE order_sales_summary
     CHANGE COLUMN membership_card_payment member_card_payment DECIMAL(18, 2) DEFAULT 0.00 NULL COMMENT '会员卡支付金额';
+
+-- 已在测试环境执行：2026-04-02

@@ -306,6 +306,9 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                     }
                 }
             });
+
+            // 填充技师列表
+            fillTechnicians(page.getRecords(), rows);
         }
         return result;
     }
