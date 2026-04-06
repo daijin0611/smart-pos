@@ -48,6 +48,12 @@
         </association>
     </resultMap>
 
+    <sql id="orgIdsInClause">
+        <foreach collection="query.orgIds" item="orgId" open="(" separator="," close=")">
+            #{orgId}
+        </foreach>
+    </sql>
+
     <select id="getList" resultMap="UserInfoVO">
         SELECT
             u.id,
@@ -88,8 +94,9 @@
             <if test="query.roleId != null">
                 AND u.role_id = #{query.roleId}
             </if>
-            <if test="query.orgId != null">
-                AND (u.org_id = #{query.orgId} OR EXISTS (SELECT 1 FROM sys_org_user sou WHERE sou.usr_id = u.id AND sou.org_id = #{query.orgId}))
+            <if test="query.orgIds != null and query.orgIds.size() > 0">
+                AND (u.org_id IN <include refid="orgIdsInClause"/>
+                OR EXISTS (SELECT 1 FROM sys_org_user sou WHERE sou.usr_id = u.id AND sou.org_id IN <include refid="orgIdsInClause"/>))
             </if>
     </select>
 </mapper>
