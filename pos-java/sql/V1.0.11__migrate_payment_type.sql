@@ -24,4 +24,6 @@ UPDATE payment_detail SET payment_type = 0 WHERE payment_type = 1;
 
 -- 0(微信) 保持不变，已对应扫码
 
--- 已在测试环境执行：2026-04-02
+-- 已在测试环境执行：2026-04-07
+-- 已在生产环境执行：2026-04-07
+

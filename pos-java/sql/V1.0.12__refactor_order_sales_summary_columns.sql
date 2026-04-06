@@ -28,4 +28,5 @@ ALTER TABLE order_sales_summary
 ALTER TABLE order_sales_summary
     CHANGE COLUMN membership_card_payment member_card_payment DECIMAL(18, 2) DEFAULT 0.00 NULL COMMENT '会员卡支付金额';
 
--- 已在测试环境执行：2026-04-02
+-- 已在测试环境执行：2026-04-07
+-- 已在生产环境执行：2026-04-07
