@@ -396,7 +396,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     /**
      * 填充订单明细VO的技师列表
      */
-    private void fillTechnicians(List<OrderDetailEntity> entities, List<OrderDetailVO> vos) {
+    @Override
+    public void fillTechnicians(List<OrderDetailEntity> entities, List<OrderDetailVO> vos) {
         if (entities == null || entities.isEmpty()) {
             return;
         }

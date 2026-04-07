@@ -436,6 +436,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .map(entity -> BeanUtil.toBean(entity, OrderDetailVO.class))
                 .collect(Collectors.toList());
 
+        // 填充技师列表
+        orderDetailService.fillTechnicians(allOrderDetails, orderDetailVOs);
+
         // 按订单ID分组订单明细
         Map<Long, List<OrderDetailVO>> orderDetailMap = orderDetailVOs.stream()
                 .collect(Collectors.groupingBy(OrderDetailVO::getOrderId));

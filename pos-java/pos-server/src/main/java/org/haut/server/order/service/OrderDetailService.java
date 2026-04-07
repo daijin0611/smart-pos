@@ -92,4 +92,11 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
      * @return 操作结果信息
      */
     String deleteDetail(Long detailId);
+
+    /**
+     * 填充订单明细VO的技师列表
+     * @param entities 订单明细实体列表
+     * @param vos 订单明细VO列表
+     */
+    void fillTechnicians(List<OrderDetailEntity> entities, List<OrderDetailVO> vos);
 }
