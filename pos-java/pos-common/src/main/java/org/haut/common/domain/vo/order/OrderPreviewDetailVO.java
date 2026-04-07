@@ -21,8 +21,11 @@ public class OrderPreviewDetailVO {
     @Schema(description = "原价(单价)")
     private BigDecimal stdPrice;
 
-    @Schema(description = "实价(单价)")
+    @Schema(description = "实收总价")
     private BigDecimal truePrice;
+
+    @Schema(description = "实收单价")
+    private BigDecimal trueUnitPrice;
 
     @Schema(description = "优惠金额(总)")
     private BigDecimal discountAmount;

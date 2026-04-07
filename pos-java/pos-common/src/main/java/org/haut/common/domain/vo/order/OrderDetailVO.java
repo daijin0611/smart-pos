@@ -106,10 +106,16 @@ public class OrderDetailVO {
     private BigDecimal stdPrice;
     
     /**
-     * 实际单价
+     * 实收总价
      */
-    @Schema(description = "实际单价")
+    @Schema(description = "实收总价")
     private BigDecimal truePrice;
+
+    /**
+     * 实收单价
+     */
+    @Schema(description = "实收单价")
+    private BigDecimal trueUnitPrice;
 
     /**
      * VIP价格
