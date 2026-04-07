@@ -114,20 +114,32 @@ public class OrderSummaryVO {
     private BigDecimal memberCardPayment;
 
     /**
+     * 收款码充值金额
+     */
+    @Schema(description = "收款码充值金额")
+    private BigDecimal qrRecharge;
+
+    /**
      * 现金充值金额
      */
     @Schema(description = "现金充值金额")
     private BigDecimal cashRecharge;
 
     /**
-     * 微信充值金额
+     * POS充值金额
      */
-    @Schema(description = "微信充值金额")
-    private BigDecimal wechatRecharge;
+    @Schema(description = "POS充值金额")
+    private BigDecimal posRecharge;
 
     /**
-     * 其他方式充值
+     * 抖音充值金额
      */
-    @Schema(description = "其他方式充值")
-    private BigDecimal otherRecharge;
+    @Schema(description = "抖音充值金额")
+    private BigDecimal douyinRecharge;
+
+    /**
+     * 美团充值金额
+     */
+    @Schema(description = "美团充值金额")
+    private BigDecimal meituanRecharge;
 }

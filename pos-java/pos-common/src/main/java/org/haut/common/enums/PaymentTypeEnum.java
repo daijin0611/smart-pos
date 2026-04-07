@@ -11,7 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum PaymentTypeEnum {
 
-    QR("0", "扫码"),
+    QR("0", "收款码"),
     CASH("1", "现金"),
     POS("2", "POS"),
     DOUYIN("3", "抖音"),

@@ -1,3 +1,173 @@
+# 销售数据汇总实时计算改造 实现计划
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** 将销售数据汇总从定时任务写入汇总表改为查询时实时聚合计算，同时将充值统计字段与支付枚举对齐。
+
+**Architecture:** Service 层直接查询 order_info、order_detail、payment_detail 三个原始表，按 (orgId, LocalDate) 分组在 Java 内存中聚合，返回结果。移除汇总表实体、Mapper 和定时任务。
+
+**Tech Stack:** Java 17, Spring Boot 3.5.0, MyBatis-Plus 3.5.11, Lombok
+
+---
+
+## File Structure
+
+| 操作 | 文件路径 | 说明 |
+|------|---------|------|
+| Modify | `pos-common/.../enums/PaymentTypeEnum.java` | QR 标签改为"收款码" |
+| Modify | `pos-common/.../vo/order/OrderSummaryVO.java` | 替换 3 个充值字段为 5 个 |
+| Modify | `pos-server/.../service/OrderSalesSummaryService.java` | 移除 IService 继承和 executeSummaries |
+| Rewrite | `pos-server/.../service/impl/OrderSalesSummaryServiceImpl.java` | 实时计算逻辑 |
+| Delete | `pos-server/.../entity/OrderSalesSummary.java` | 汇总表实体 |
+| Delete | `pos-server/.../mapper/OrderSalesSummaryMapper.java` | Mapper 接口 |
+| Delete | `pos-server/src/main/resources/mapper/order/OrderSalesSummaryMapper.xml` | Mapper XML |
+| Delete | `pos-server/.../task/ScheduledTaskService.java` | 定时任务 |
+
+---
+
+### Task 1: 修改 PaymentTypeEnum 标签
+
+**Files:**
+- Modify: `pos-common/src/main/java/org/haut/common/enums/PaymentTypeEnum.java`
+
+- [ ] **Step 1: 修改 QR 枚举标签**
+
+将第 14 行：
+```java
+QR("0", "扫码"),
+```
+改为：
+```java
+QR("0", "收款码"),
+```
+
+- [ ] **Step 2: 提交**
+
+```bash
+git add pos-common/src/main/java/org/haut/common/enums/PaymentTypeEnum.java
+git commit -m "feat(payment): 支付方式扫码改为收款码"
+```
+
+---
+
+### Task 2: 更新 OrderSummaryVO 充值字段
+
+**Files:**
+- Modify: `pos-common/src/main/java/org/haut/common/domain/vo/order/OrderSummaryVO.java`
+
+- [ ] **Step 1: 替换充值字段**
+
+移除旧字段（第118-132行附近）：
+```java
+/**
+ * 现金充值金额
+ */
+@Schema(description = "现金充值金额")
+private BigDecimal cashRecharge;
+
+/**
+ * 微信充值金额
+ */
+@Schema(description = "微信充值金额")
+private BigDecimal wechatRecharge;
+
+/**
+ * 其他方式充值
+ */
+@Schema(description = "其他方式充值")
+private BigDecimal otherRecharge;
+```
+
+替换为：
+```java
+/**
+ * 收款码充值金额
+ */
+@Schema(description = "收款码充值金额")
+private BigDecimal qrRecharge;
+
+/**
+ * 现金充值金额
+ */
+@Schema(description = "现金充值金额")
+private BigDecimal cashRecharge;
+
+/**
+ * POS充值金额
+ */
+@Schema(description = "POS充值金额")
+private BigDecimal posRecharge;
+
+/**
+ * 抖音充值金额
+ */
+@Schema(description = "抖音充值金额")
+private BigDecimal douyinRecharge;
+
+/**
+ * 美团充值金额
+ */
+@Schema(description = "美团充值金额")
+private BigDecimal meituanRecharge;
+```
+
+- [ ] **Step 2: 提交**
+
+```bash
+git add pos-common/src/main/java/org/haut/common/domain/vo/order/OrderSummaryVO.java
+git commit -m "feat(order): 销售汇总VO充值字段与支付枚举对齐"
+```
+
+---
+
+### Task 3: 重构 Service 接口
+
+**Files:**
+- Modify: `pos-server/src/main/java/org/haut/server/order/service/OrderSalesSummaryService.java`
+
+- [ ] **Step 1: 移除 IService 继承和 executeSummaries 方法**
+
+将整个文件内容替换为：
+```java
+package org.haut.server.order.service;
+
+import org.haut.common.domain.query.order.OrderSummaryQuery;
+import org.haut.common.domain.vo.order.OrderSummaryVO;
+
+import java.util.List;
+
+/**
+ * 销售数据汇总服务（实时计算）
+ */
+public interface OrderSalesSummaryService {
+
+    /**
+     * 实时获取销售汇总数据
+     * @param query 查询条件
+     * @return 销售汇总列表
+     */
+    List<OrderSummaryVO> getOrderSummaries(OrderSummaryQuery query);
+}
+```
+
+- [ ] **Step 2: 提交**
+
+```bash
+git add pos-server/src/main/java/org/haut/server/order/service/OrderSalesSummaryService.java
+git commit -m "refactor(order): 销售汇总Service接口移除IService继承"
+```
+
+---
+
+### Task 4: 重写 Service 实现
+
+**Files:**
+- Rewrite: `pos-server/src/main/java/org/haut/server/order/service/impl/OrderSalesSummaryServiceImpl.java`
+
+- [ ] **Step 1: 重写整个实现类**
+
+替换文件全部内容为：
+```java
 package org.haut.server.order.service.impl;
 
 import lombok.AllArgsConstructor;
@@ -223,3 +393,71 @@ public class OrderSalesSummaryServiceImpl implements OrderSalesSummaryService {
         return orgId + "|" + localDate;
     }
 }
+```
+
+- [ ] **Step 2: 提交**
+
+```bash
+git add pos-server/src/main/java/org/haut/server/order/service/impl/OrderSalesSummaryServiceImpl.java
+git commit -m "feat(order): 销售汇总改为实时计算"
+```
+
+---
+
+### Task 5: 删除汇总表实体和 Mapper
+
+**Files:**
+- Delete: `pos-server/src/main/java/org/haut/server/order/entity/OrderSalesSummary.java`
+- Delete: `pos-server/src/main/java/org/haut/server/order/mapper/OrderSalesSummaryMapper.java`
+- Delete: `pos-server/src/main/resources/mapper/order/OrderSalesSummaryMapper.xml`
+
+- [ ] **Step 1: 删除三个文件**
+
+```bash
+rm pos-server/src/main/java/org/haut/server/order/entity/OrderSalesSummary.java
+rm pos-server/src/main/java/org/haut/server/order/mapper/OrderSalesSummaryMapper.java
+rm pos-server/src/main/resources/mapper/order/OrderSalesSummaryMapper.xml
+```
+
+- [ ] **Step 2: 提交**
+
+```bash
+git add -A pos-server/src/main/java/org/haut/server/order/entity/OrderSalesSummary.java pos-server/src/main/java/org/haut/server/order/mapper/OrderSalesSummaryMapper.java pos-server/src/main/resources/mapper/order/OrderSalesSummaryMapper.xml
+git commit -m "refactor(order): 移除销售汇总表实体和Mapper"
+```
+
+---
+
+### Task 6: 删除定时任务
+
+**Files:**
+- Delete: `pos-server/src/main/java/org/haut/server/task/ScheduledTaskService.java`
+
+- [ ] **Step 1: 删除定时任务类**
+
+```bash
+rm pos-server/src/main/java/org/haut/server/task/ScheduledTaskService.java
+```
+
+- [ ] **Step 2: 提交**
+
+```bash
+git add -A pos-server/src/main/java/org/haut/server/task/ScheduledTaskService.java
+git commit -m "refactor(task): 移除销售数据统计定时任务"
+```
+
+---
+
+### Task 7: 编译验证
+
+- [ ] **Step 1: 编译项目确认无错误**
+
+```bash
+cd D:/Codes/pos/pos-java && mvn clean compile -DskipTests
+```
+
+预期：BUILD SUCCESS，无编译错误。
+
+- [ ] **Step 2: 如有编译错误，修复后重新编译**
+
+常见问题：其他模块可能引用了已删除的类，需要清理引用。
