@@ -30,7 +30,8 @@ public class OrderDetailTechnicianServiceImpl
                 .map(t -> new OrderDetailTechnicianEntity()
                         .setDetailId(detailId)
                         .setUserId(t.getUserId())
-                        .setUserName(t.getUserName()))
+                        .setUserName(t.getUserName())
+                        .setUserCode(t.getUserCode()))
                 .toList();
         saveBatch(entities);
     }
@@ -46,7 +47,8 @@ public class OrderDetailTechnicianServiceImpl
         return entities.stream()
                 .map(e -> new OrderDetailTechnicianDTO()
                         .setUserId(e.getUserId())
-                        .setUserName(e.getUserName()))
+                        .setUserName(e.getUserName())
+                        .setUserCode(e.getUserCode()))
                 .toList();
     }
 

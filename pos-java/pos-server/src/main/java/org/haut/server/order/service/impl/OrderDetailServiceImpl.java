@@ -412,7 +412,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                         Collectors.mapping(
                                 e -> new OrderDetailTechnicianDTO()
                                         .setUserId(e.getUserId())
-                                        .setUserName(e.getUserName()),
+                                        .setUserName(e.getUserName())
+                                        .setUserCode(e.getUserCode()),
                                 Collectors.toList()
                         )
                 ));
