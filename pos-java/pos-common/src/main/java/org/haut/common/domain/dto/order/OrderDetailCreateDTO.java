@@ -53,6 +53,9 @@ public class OrderDetailCreateDTO {
     @Schema(description = "销售数量")
     private Integer quantity;
 
+    @Schema(description = "是否已计算折扣（0 未计算，1 已计算）")
+    private Integer isDiscount;
+
     /**
      * 明细总价（实际单价 × 数量）
      */

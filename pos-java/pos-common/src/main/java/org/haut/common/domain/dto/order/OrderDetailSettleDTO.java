@@ -46,6 +46,9 @@ public class OrderDetailSettleDTO {
     @Schema(description = "销售数量")
     private Integer quantity;
 
+    @Schema(description = "是否已计算折扣（0 未计算，1 已计算）")
+    private Integer isDiscount;
+
     @Schema(description = "上钟类型（0 点钟，1 加钟，2 轮牌）")
     private Integer serverType;
 

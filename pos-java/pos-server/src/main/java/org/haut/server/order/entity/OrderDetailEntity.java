@@ -140,6 +140,12 @@ public class OrderDetailEntity {
     private Integer quantity;
 
     /**
+     * 是否已计算折扣（0 未计算，1 已计算）
+     */
+    @Schema(description = "是否已计算折扣（0 未计算，1 已计算）")
+    private Integer isDiscount;
+
+    /**
      * 上钟类型（0 点钟，1 加钟，2 轮牌）
      */
     @Schema(description = "上钟类型（0 点钟，1 加钟，2 轮牌）")

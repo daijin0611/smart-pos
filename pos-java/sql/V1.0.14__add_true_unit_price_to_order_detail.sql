@@ -3,3 +3,6 @@ ALTER TABLE order_detail ADD COLUMN true_unit_price DECIMAL(10, 2) DEFAULT NULL 
 
 -- 修改 true_price 字段注释
 ALTER TABLE order_detail MODIFY COLUMN true_price DECIMAL(10, 2) DEFAULT NULL COMMENT '实收总价';
+
+-- 增加是否已计算折扣字段
+ALTER TABLE order_detail ADD COLUMN is_discount TINYINT DEFAULT 0 NOT NULL COMMENT '是否已计算折扣（0 未计算，1 已计算）' AFTER quantity;
