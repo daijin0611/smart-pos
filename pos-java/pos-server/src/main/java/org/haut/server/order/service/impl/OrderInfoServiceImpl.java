@@ -159,6 +159,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             throw new BusinessException("会员不存在");
         else if (vipInfo == null)
             vipInfo = new VipInfo();
+        // 结算前先刷新会员余额，确保消费前余额准确
+        if (vipInfo.getId() != null) {
+            BigDecimal beforeBalance = vipInfoService.updateVipBalance(vipInfo.getId());
+            vipInfo.setBalance(beforeBalance);
+        }
         // 结算订单
         OrderInfoEntity order = initOrderInfo(settleOrderDTO,vipInfo);
         saveOrUpdate(order);
