@@ -38,10 +38,13 @@ public class OrderDetailCreateDTO {
     private BigDecimal stdPrice;
 
     /**
-     * 实际单价
+     * 实际总价
      */
-    @Schema(description = "实际单价(结算前和实收价保持一致；结算时更新实际单价)",example = "100.00")
+    @Schema(description = "实收价总价")
     private BigDecimal truePrice;
+
+    @Schema(description = "实收单价")
+    private BigDecimal trueUnitPrice;
 
     /**
      * 销售数量
@@ -49,6 +52,12 @@ public class OrderDetailCreateDTO {
     @NotNull(message = "销售数量不能为空")
     @Schema(description = "销售数量")
     private Integer quantity;
+
+    /**
+     * 明细总价（实际单价 × 数量）
+     */
+    @Schema(description = "明细总价（实际单价 × 数量）")
+    private BigDecimal totalPrice;
 
     /**
      * 上钟类型（0 点钟，1 加钟，2 轮牌）

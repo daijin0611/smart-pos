@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
@@ -51,6 +52,7 @@ interface KpiDetailConvert {
 * @description 针对表【kpi_detail(业绩明细)】的数据库操作Service实现
 * @createDate 2025-08-25 16:35:17
 */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail>
@@ -116,8 +118,8 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                     BigDecimal totalCommission = handelCommission(detail);
                     BigDecimal perCommission = totalCommission.divide(
                             BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
+                    // truePrice 已是实收总价，直接按技师人数平分
                     BigDecimal performance = detail.getTruePrice()
-                            .multiply(BigDecimal.valueOf(detail.getQuantity()))
                             .divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
                     return technicians.stream()
                             .map(t -> new KpiDetail()
@@ -130,6 +132,7 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                                     .setUserName(t.getUserName())
                                     .setPerformance(performance)
                                     .setCommission(perCommission)
+                                    .setQuantity(detail.getQuantity())
                                     .setDetailId(detail.getId())
                                     .setDetailCode(detail.getDetailCode())
                                     .setOrgId(order.getOrgId()));
@@ -156,8 +159,8 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
             BigDecimal totalCommission = handelCommission(dto);
             BigDecimal perCommission = totalCommission.divide(
                     BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
+            // truePrice 已是实收总价，直接按技师人数平分
             BigDecimal performance = dto.getTruePrice()
-                    .multiply(BigDecimal.valueOf(dto.getQuantity()))
                     .divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
             for (OrderDetailTechnicianDTO t : technicians) {
                 kpis.add(new KpiDetail()
@@ -170,6 +173,7 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                         .setUserName(t.getUserName())
                         .setPerformance(performance)
                         .setCommission(perCommission)
+                        .setQuantity(dto.getQuantity())
                         .setDetailId(savedDetail.getId())
                         .setDetailCode(savedDetail.getDetailCode())
                         .setOrgId(order.getOrgId()));
@@ -188,16 +192,23 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), kpiListQuery.getOrgIds());
         kpiListQuery.setOrgIds(orgIds);
-        
+
         // 处理日期查询条件
         if(ArrayUtil.isNotEmpty(kpiListQuery.getDate())) {
             kpiListQuery.setBeginDate(kpiListQuery.getDate()[0].atStartOfDay());
             kpiListQuery.setEndDate(kpiListQuery.getDate()[1].plusDays(1L).atStartOfDay());
         }
-        
+
         return baseMapper.selectKpiSummary(kpiListQuery);
     }
 
+    /**
+     * 计算提成金额
+     * 注意：dto.getTruePrice() 返回的是实收总价（= trueUnitPrice × quantity）
+     * - 固定提成：commissionValue × 数量（每件固定金额）
+     * - 比例提成-标准价基基准：commissionRatio × stdPrice × 数量（stdPrice 仍是单价）
+     * - 比例提成-实际价基基准：commissionRatio × truePrice（truePrice 已是总价，无需再乘数量）
+     */
     public BigDecimal handelCommission(OrderDetailSettleDTO dto) {
         ServiceTypeEnum serviceType = ServiceTypeEnum.getByValue(dto.getDetailType());
         switch (serviceType){
@@ -207,80 +218,80 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                 ServerItemTypeEnum serverItemType = ServerItemTypeEnum.getByValue(dto.getServerType());
                 return switch (serverItemType){
                     case APPOINTMENT -> {
-                        BigDecimal commissionValueAppointment = item.getCommissionValueAppointment();
+                        BigDecimal commissionValue = item.getCommissionValueAppointment();
                         BigDecimal qty = BigDecimal.valueOf(dto.getQuantity());
                         // 固定金额提成
                         if (CommissionTypeEnum.FIXED.getValue().equals(commissionType)) {
-                            yield commissionValueAppointment.multiply(qty);
+                            yield commissionValue.multiply(qty);
                         }
                         // 比例金额提成
                         else if (CommissionTypeEnum.RATIO.getValue().equals(commissionType)) {
-                            BigDecimal commissionRatio = commissionValueAppointment.multiply(BigDecimal.valueOf(0.01));
+                            BigDecimal commissionRatio = commissionValue.multiply(BigDecimal.valueOf(0.01));
                             // 标准价提成
                             if (CommissionBaseEnum.STAND.getValue().equals(item.getCommissionBase())){
                                 yield commissionRatio.multiply(dto.getStdPrice()).multiply(qty);
                             }
-                            // 实际价提成
+                            // 实际价提成（truePrice 已是总价）
                             else if (CommissionBaseEnum.TRUE.getValue().equals(item.getCommissionBase())) {
-                                yield commissionRatio.multiply(dto.getTruePrice()).multiply(qty);
+                                yield commissionRatio.multiply(dto.getTruePrice());
                             } else {
-                                log.warn("未知的提成基基准类型");
+                                log.warn("未知的提成基准类型");
                                 yield BigDecimal.ZERO;
                             }
                         } else {
-                            log.warn("未知的提成基基准类型");
+                            log.warn("未知的提成类型");
                             yield BigDecimal.ZERO;
                         }
                     }
                     case EXTEND -> {
-                        BigDecimal commissionValueExtend = item.getCommissionValueExtend();
+                        BigDecimal commissionValue = item.getCommissionValueExtend();
                         BigDecimal qty = BigDecimal.valueOf(dto.getQuantity());
                         // 固定金额提成
                         if (CommissionTypeEnum.FIXED.getValue().equals(commissionType)) {
-                            yield commissionValueExtend.multiply(qty);
+                            yield commissionValue.multiply(qty);
                         }
                         // 比例金额提成
                         else if (CommissionTypeEnum.RATIO.getValue().equals(commissionType)) {
-                            BigDecimal commissionRatio = commissionValueExtend.multiply(BigDecimal.valueOf(0.01));
+                            BigDecimal commissionRatio = commissionValue.multiply(BigDecimal.valueOf(0.01));
                             // 标准价提成
                             if (CommissionBaseEnum.STAND.getValue().equals(item.getCommissionBase())){
                                 yield commissionRatio.multiply(dto.getStdPrice()).multiply(qty);
                             }
-                            // 实际价提成
+                            // 实际价提成（truePrice 已是总价）
                             else if (CommissionBaseEnum.TRUE.getValue().equals(item.getCommissionBase())) {
-                                yield commissionRatio.multiply(dto.getTruePrice()).multiply(qty);
+                                yield commissionRatio.multiply(dto.getTruePrice());
                             } else {
-                                log.warn("未知的提成基基准类型");
+                                log.warn("未知的提成基准类型");
                                 yield BigDecimal.ZERO;
                             }
                         } else {
-                            log.warn("未知的提成基基准类型");
+                            log.warn("未知的提成类型");
                             yield BigDecimal.ZERO;
                         }
                     }
                     case ROTATION -> {
-                        BigDecimal commissionValueRotation = item.getCommissionValueRotation();
+                        BigDecimal commissionValue = item.getCommissionValueRotation();
                         BigDecimal qty = BigDecimal.valueOf(dto.getQuantity());
                         // 固定金额提成
                         if (CommissionTypeEnum.FIXED.getValue().equals(commissionType)) {
-                            yield commissionValueRotation.multiply(qty);
+                            yield commissionValue.multiply(qty);
                         }
                         // 比例金额提成
                         else if (CommissionTypeEnum.RATIO.getValue().equals(commissionType)) {
-                            BigDecimal commissionRatio = commissionValueRotation.multiply(BigDecimal.valueOf(0.01));
+                            BigDecimal commissionRatio = commissionValue.multiply(BigDecimal.valueOf(0.01));
                             // 标准价提成
                             if (CommissionBaseEnum.STAND.getValue().equals(item.getCommissionBase())){
                                 yield commissionRatio.multiply(dto.getStdPrice()).multiply(qty);
                             }
-                            // 实际价提成
+                            // 实际价提成（truePrice 已是总价）
                             else if (CommissionBaseEnum.TRUE.getValue().equals(item.getCommissionBase())) {
-                                yield commissionRatio.multiply(dto.getTruePrice()).multiply(qty);
+                                yield commissionRatio.multiply(dto.getTruePrice());
                             } else {
-                                log.warn("未知的提成基基准类型");
+                                log.warn("未知的提成基准类型");
                                 yield BigDecimal.ZERO;
                             }
                         } else {
-                            log.warn("未知的提成基基准类型");
+                            log.warn("未知的提成类型");
                             yield BigDecimal.ZERO;
                         }
                     }
@@ -294,45 +305,50 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                 ServerProduct product = serverProductService.getById(dto.getBid());
                 Integer commissionType = product.getCommissionType();
                 BigDecimal qty = BigDecimal.valueOf(dto.getQuantity());
+                // 固定金额提成
                 if (CommissionTypeEnum.FIXED.getValue().equals(commissionType))
                     return product.getCommissionValue().multiply(qty);
+                // 比例金额提成
                 else if (CommissionTypeEnum.RATIO.getValue().equals(commissionType)) {
                     BigDecimal commissionRatio = product.getCommissionValue().multiply(BigDecimal.valueOf(0.01));
                     // 标准价提成
                     if (CommissionBaseEnum.STAND.getValue().equals(product.getCommissionBase()))
                         return commissionRatio.multiply(dto.getStdPrice()).multiply(qty);
-                    // 实际价提成
+                    // 实际价提成（truePrice 已是总价）
                     else if (CommissionBaseEnum.TRUE.getValue().equals(product.getCommissionBase()))
-                        return commissionRatio.multiply(dto.getTruePrice()).multiply(qty);
+                        return commissionRatio.multiply(dto.getTruePrice());
                     else{
-                        log.warn("未知的提成基基准类型");
+                        log.warn("未知的提成基准类型");
                         return BigDecimal.ZERO;
                     }
-
                 }
+                return BigDecimal.ZERO;
             }
             case CURE_TICKET -> {
                 ServerCureTicket cureTicket = serverCureTicketService.getById(dto.getBid());
                 Integer type = cureTicket.getType();
                 BigDecimal qty = BigDecimal.valueOf(dto.getQuantity());
+                // 固定金额提成
                 if (CommissionTypeEnum.FIXED.getValue().equals(type))
                     return cureTicket.getCommissionValue().multiply(qty);
+                // 比例金额提成
                 else if (CommissionTypeEnum.RATIO.getValue().equals(type)) {
                     BigDecimal commissionRatio = cureTicket.getCommissionValue().multiply(BigDecimal.valueOf(0.01));
                     // 标准价提成
                     if (CommissionBaseEnum.STAND.getValue().equals(cureTicket.getCommissionBase()))
                         return commissionRatio.multiply(dto.getStdPrice()).multiply(qty);
-                        // 实际价提成
+                    // 实际价提成（truePrice 已是总价）
                     else if (CommissionBaseEnum.TRUE.getValue().equals(cureTicket.getCommissionBase()))
-                        return commissionRatio.multiply(dto.getTruePrice()).multiply(qty);
+                        return commissionRatio.multiply(dto.getTruePrice());
                     else {
-                        log.warn("未知的提成基基准类型");
+                        log.warn("未知的提成基准类型");
                         return BigDecimal.ZERO;
                     }
                 }
+                return BigDecimal.ZERO;
             }
             case UNKNOWN -> {
-                log.warn("未知的提成基基准类型");
+                log.warn("未知的业务类型");
                 return BigDecimal.ZERO;
             }
 
@@ -340,7 +356,3 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
         return BigDecimal.ZERO;
     }
 }
-
-
-
-
