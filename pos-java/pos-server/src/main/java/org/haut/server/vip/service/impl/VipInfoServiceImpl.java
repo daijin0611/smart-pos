@@ -164,6 +164,15 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         }
         List<VipAsset> vipAssets = vipAssetMapper.selectList(Wrappers.lambdaQuery(VipAsset.class)
                 .eq(VipAsset::getVipId, vipId));
+        // 老系统导入的会员可能通过卡号关联，用vipId查不到时尝试用卡号查
+        if (CollectionUtil.isEmpty(vipAssets)){
+            VipInfo vipInfo = vipInfoMapper.selectById(vipId);
+            if (vipInfo != null && StringUtils.isNotBlank(vipInfo.getCardNumber())){
+                log.info("通过vipId未查到资产，尝试用卡号{}关联查询", vipInfo.getCardNumber());
+                vipAssets = vipAssetMapper.selectList(Wrappers.lambdaQuery(VipAsset.class)
+                        .eq(VipAsset::getVipCardNumber, vipInfo.getCardNumber()));
+            }
+        }
         if (CollectionUtil.isEmpty(vipAssets)){
             log.info("会员没有资产");
             return BigDecimal.ZERO;

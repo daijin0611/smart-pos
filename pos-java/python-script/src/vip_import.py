@@ -186,8 +186,8 @@ def generate_vip_asset_sql(cards, org_id):
         create_time = ts_to_sql_datetime(open_ts)
         card_remark = card.get("cardRemark")
 
-        # 折扣率转换：老系统 * 10（如 6.9 -> 69）
-        discount_rate = discount * 10
+        # 折扣率转换：老系统 * 10（如 6.9 -> 69），0 视为无折扣即 100
+        discount_rate = discount * 10 if discount > 0 else 100
 
         # 充值金记录
         remark = ""
@@ -229,7 +229,7 @@ def generate_vip_asset_sql(cards, org_id):
                 f"{present_fee:.2f}",
                 "1",  # asset_type: 赠送金
                 "0",  # asset_discount_base: 标准价
-                "0",  # 赠送金无折扣
+                f"{discount_rate:.0f}",  # 赠送金折扣率与充值金一致
                 "1",  # asset_is_cross_store: 允许
                 "''",
                 f"'{member_id}'",
