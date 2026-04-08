@@ -61,10 +61,11 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
     @Transactional
     public void saveCureTicket(CureTicketCreateDTO cureTicket) {
         log.info("新增疗程券，数据：{}", cureTicket);
-        Long count = this.baseMapper.selectCount(Wrappers.lambdaQuery(ServerCureTicket.class)
-                .eq(ServerCureTicket::getName, cureTicket.getName()));
-        if (count > 0){
-            throw new BusinessException("疗程券名称已存在");
+        // 校验编码唯一
+        Long encodeCount = this.baseMapper.selectCount(Wrappers.lambdaQuery(ServerCureTicket.class)
+                .eq(ServerCureTicket::getEncode, cureTicket.getEncode()));
+        if (encodeCount > 0) {
+            throw new BusinessException("疗程券编码已存在");
         }
         // 插入疗程券
         ServerCureTicket entity = cureTicketConvert.toEntity(cureTicket);
@@ -97,11 +98,12 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
     @Transactional
     public void updateCureTicket(CureTicketUpdateDTO cureTicket) {
         log.info("更新疗程券，数据：{}", cureTicket);
-        Long count = this.baseMapper.selectCount(Wrappers.lambdaQuery(ServerCureTicket.class)
-                .eq(ServerCureTicket::getName, cureTicket.getName())
+        // 校验编码唯一
+        Long encodeCount = this.baseMapper.selectCount(Wrappers.lambdaQuery(ServerCureTicket.class)
+                .eq(ServerCureTicket::getEncode, cureTicket.getEncode())
                 .ne(ServerCureTicket::getId, cureTicket.getId()));
-        if (count > 0){
-            throw new BusinessException("疗程券名称已存在");
+        if (encodeCount > 0) {
+            throw new BusinessException("疗程券编码已存在");
         }
         // 更新优惠券主表
         ServerCureTicket entity = cureTicketConvert.toEntity(cureTicket);

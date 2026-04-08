@@ -110,11 +110,11 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
     @Transactional(rollbackFor = Exception.class)
     public String addProduct(ServerProductCreateDTO product) {
         log.info("新增服务产品，数据：{}", product);
-        long nameCount = this.count(Wrappers.lambdaQuery(ServerProduct.class)
-                .eq(ServerProduct::getProductName, product.getProductName()));
-        if (nameCount > 0) {
-            throw new BusinessException("已存在相同名称的产品");
-        }
+//        long nameCount = this.count(Wrappers.lambdaQuery(ServerProduct.class)
+//                .eq(ServerProduct::getProductName, product.getProductName()));
+//        if (nameCount > 0) {
+//            throw new BusinessException("已存在相同名称的产品");
+//        }
         long encodeCount = this.count(Wrappers.lambdaQuery(ServerProduct.class)
                 .eq(ServerProduct::getProductEncode, product.getProductEncode()));
         if (encodeCount > 0) {
@@ -135,12 +135,12 @@ public class ServerProductServiceImpl extends ServiceImpl<ServerProductMapper, S
     @Transactional(rollbackFor = Exception.class)
     public String updateProduct(ServerProductUpdateDTO product) {
         log.info("更新服务产品，数据：{}", product);
-        long nameCount = this.count(Wrappers.lambdaQuery(ServerProduct.class)
-                .eq(ServerProduct::getProductName, product.getProductName())
-                .ne(ServerProduct::getId, product.getId()));
-        if (nameCount > 0) {
-            throw new BusinessException("已存在相同名称的产品");
-        }
+//        long nameCount = this.count(Wrappers.lambdaQuery(ServerProduct.class)
+//                .eq(ServerProduct::getProductName, product.getProductName())
+//                .ne(ServerProduct::getId, product.getId()));
+//        if (nameCount > 0) {
+//            throw new BusinessException("已存在相同名称的产品");
+//        }
         long encodeCount = this.count(Wrappers.lambdaQuery(ServerProduct.class)
                 .eq(ServerProduct::getProductEncode, product.getProductEncode())
                 .ne(ServerProduct::getId, product.getId()));
