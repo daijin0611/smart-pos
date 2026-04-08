@@ -1,5 +1,7 @@
 package org.haut.server.order.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -271,19 +273,22 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         Page<OrderDetailEntity> page = new Page<>(query.getPageNum(), query.getPageSize());
         LocalDate[] date = query.getDate();
 
-        this.lambdaQuery()
+        LambdaQueryChainWrapper<OrderDetailEntity> wrapper = this.lambdaQuery()
                 .eq(query.getUserId() != null, OrderDetailEntity::getUserId, query.getUserId())
                 .eq(StringUtils.isNotBlank(query.getBusinessCode()), OrderDetailEntity::getBusinessCode, query.getBusinessCode())
                 .eq(OrderDetailEntity::getOrderStatus, OrderStatusEnum.SETTLED.getCode())
-                .ge(date != null && date.length >= 2 && date[0] != null,
-                        OrderDetailEntity::getCreateTime,
-                        date[0])
-                .lt(date != null && date.length >= 2 && date[1] != null,
-                        OrderDetailEntity::getCreateTime,
-                        date[1].plusDays(1))
-                .in(OrderDetailEntity::getOrgId, orgIds)
-                .orderByDesc(OrderDetailEntity::getSettledTime)
-                .page(page);
+                .in(OrderDetailEntity::getOrgId, orgIds);
+
+        if (date != null && date.length >= 2) {
+            if (date[0] != null) {
+                wrapper.ge(OrderDetailEntity::getCreateTime, date[0]);
+            }
+            if (date[1] != null) {
+                wrapper.lt(OrderDetailEntity::getCreateTime, date[1].plusDays(1));
+            }
+        }
+
+        wrapper.orderByDesc(OrderDetailEntity::getSettledTime).page(page);
 
         PageDTO<OrderDetailVO> result = PageDTO.create(page, OrderDetailVO.class);
 
