@@ -18,6 +18,7 @@ import org.haut.common.domain.vo.ResultStatus;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.common.domain.vo.server.ServerItemVO;
 import org.haut.common.domain.vo.server.ServerProductInfoVO;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.common.enums.OrderStatusEnum;
 import org.haut.common.enums.ServiceTypeEnum;
 import org.haut.common.enums.Status;
@@ -33,6 +34,8 @@ import org.haut.server.order.mapper.OrderInfoMapper;
 import org.haut.server.order.service.OrderDetailService;
 import org.haut.server.order.service.OrderDetailTechnicianService;
 import org.haut.server.server.entity.ServerCureTicket;
+import org.haut.server.system.service.SysOrgService;
+import org.haut.server.system.service.SysOrgUserService;
 import org.haut.server.server.entity.ServerItem;
 import org.haut.server.server.entity.ServerProduct;
 import org.haut.server.server.service.ServerCureTicketService;
@@ -46,6 +49,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -75,6 +79,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     private final StockOutOrderService stockOutOrderService;
     private final KpiDetailService kpiDetailService;
     private final OrderDetailTechnicianService orderDetailTechnicianService;
+    private final SysOrgUserService sysOrgUserService;
+    private final SysOrgService sysOrgService;
 
     /**
      * 创建订单明细
@@ -147,7 +153,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String addDetails(OrderDetailCreateDTO dto, Long orderId) {
+    public Long addDetails(OrderDetailCreateDTO dto, Long orderId) {
         log.info("添加订单明细，订单ID：{}，明细信息：{}", orderId, dto);
         
         // 参数校验
@@ -189,8 +195,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         // 保存技师关联
         orderDetailTechnicianService.saveTechnicians(detailEntity.getId(), dto.getTechnicians());
 
-        log.info("订单明细添加成功，明细编号：{}", detailEntity.getDetailCode());
-        return "订单明细添加成功";
+        log.info("订单明细添加成功，明细ID：{}，明细编号：{}", detailEntity.getId(), detailEntity.getDetailCode());
+        return detailEntity.getId();
     }
 
     /**
@@ -261,20 +267,50 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     @Override
     public PageDTO<OrderDetailVO> pageQuery(OrderDetailPageQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
+        List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), query.getOrgIds());
         Page<OrderDetailEntity> page = new Page<>(query.getPageNum(), query.getPageSize());
         LocalDate[] date = query.getDate();
 
-        // 复杂的LambdaQuery
-        this.lambdaQuery().eq(query.getUserId() != null, OrderDetailEntity::getUserId, query.getUserId())
+        this.lambdaQuery()
+                .eq(query.getUserId() != null, OrderDetailEntity::getUserId, query.getUserId())
                 .eq(StringUtils.isNotBlank(query.getBusinessCode()), OrderDetailEntity::getBusinessCode, query.getBusinessCode())
                 .eq(OrderDetailEntity::getOrderStatus, OrderStatusEnum.SETTLED.getCode())
-                .between(date != null && date.length >= 2 && date[0] != null && date[1] != null, 
-                        OrderDetailEntity::getCreateTime, date != null && date.length >= 2 ? date[0] : null,
+                .between(date != null && date.length >= 2 && date[0] != null && date[1] != null,
+                        OrderDetailEntity::getCreateTime,
+                        date != null && date.length >= 1 ? date[0] : null,
                         date != null && date.length >= 2 ? date[1] : null)
-                .eq(OrderDetailEntity::getOrgId, auth.getOrgId())
+                .in(OrderDetailEntity::getOrgId, orgIds)
                 .orderByDesc(OrderDetailEntity::getSettledTime)
                 .page(page);
-        return PageDTO.create(page, OrderDetailVO.class);
+
+        PageDTO<OrderDetailVO> result = PageDTO.create(page, OrderDetailVO.class);
+
+        // 批量填充门店信息
+        List<OrderDetailVO> rows = result.getRows();
+        if (rows != null && !rows.isEmpty()) {
+            Map<Long, OrgSimpleVO> orgMap = sysOrgService.getOrgSimpleMapByIds(
+                    page.getRecords().stream()
+                            .map(OrderDetailEntity::getOrgId)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toSet()));
+            Map<Long, Long> entityIdToOrgId = page.getRecords().stream()
+                    .collect(Collectors.toMap(OrderDetailEntity::getId, OrderDetailEntity::getOrgId));
+            rows.forEach(vo -> {
+                Long orgId = entityIdToOrgId.get(vo.getId());
+                if (orgId != null) {
+                    OrgSimpleVO org = orgMap.get(orgId);
+                    if (org != null) {
+                        vo.setOrgId(orgId);
+                        vo.setOrgName(org.getOrgName());
+                        vo.setOrgCode(org.getOrgCode());
+                    }
+                }
+            });
+
+            // 填充技师列表
+            fillTechnicians(page.getRecords(), rows);
+        }
+        return result;
     }
     
     @Override
@@ -360,7 +396,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     /**
      * 填充订单明细VO的技师列表
      */
-    private void fillTechnicians(List<OrderDetailEntity> entities, List<OrderDetailVO> vos) {
+    @Override
+    public void fillTechnicians(List<OrderDetailEntity> entities, List<OrderDetailVO> vos) {
         if (entities == null || entities.isEmpty()) {
             return;
         }
@@ -375,7 +412,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                         Collectors.mapping(
                                 e -> new OrderDetailTechnicianDTO()
                                         .setUserId(e.getUserId())
-                                        .setUserName(e.getUserName()),
+                                        .setUserName(e.getUserName())
+                                        .setUserCode(e.getUserCode()),
                                 Collectors.toList()
                         )
                 ));
@@ -399,21 +437,21 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                 ServerItem item = serverItemService.getById(dto.getBid());
                 detail.setBusinessName(item.getItemName()) // 业务名称
                         .setStdPrice(dto.getStdPrice()) // 标准价格
-                        .setTruePrice(dto.getTruePrice()) // 实际单价，这里先使用标准价格，后续会根据折扣规则计算
+                        .setTruePrice(dto.getTruePrice()) // 实收总价
                         .setVipPrice(item.getVipItemPrice()); // VIP价格
             }
             case PRODUCT -> {
                 ServerProduct product = serverProductService.getById(dto.getBid());
                 detail.setBusinessName(product.getProductName()) // 业务名称
                         .setStdPrice(dto.getStdPrice()) // 标准价格
-                        .setTruePrice(dto.getTruePrice()) // 实际单价
+                        .setTruePrice(dto.getTruePrice()) // 实收总价
                         .setVipPrice(product.getVipProductPrice()); // VIP价格
             }
             case CURE_TICKET -> {
                 ServerCureTicket ticket = serverCureTicketService.getById(dto.getBid());
                 detail.setBusinessName(ticket.getName()) // 业务名称
                         .setStdPrice(dto.getStdPrice())// 标准价格
-                        .setTruePrice(dto.getTruePrice()) // 实际单价
+                        .setTruePrice(dto.getTruePrice()) // 实收总价
                         .setVipPrice(dto.getStdPrice()); // 疗程券VIP价格与标准价一致
             }
             default -> throw new BusinessException("未知的业务类型");

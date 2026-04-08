@@ -75,7 +75,7 @@ public class OrderController {
     @PostMapping("/add-detail/{orderId}")
     @Operation(summary = "添加订单明细", description = "为指定订单添加订单明细的方法")
     @OperLog(module = OperLogModule.ORDER, description = "添加订单明细")
-    public JsonVO<String> addDetail(
+    public JsonVO<Long> addDetail(
             @Validated @RequestBody OrderDetailCreateDTO dto,
             @PathVariable Long orderId){
         log.info("添加订单明细请求：{}", dto);

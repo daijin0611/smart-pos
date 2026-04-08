@@ -173,7 +173,7 @@ public class VipAssetServiceImpl extends ServiceImpl<VipAssetMapper, VipAsset>
         // 2. 更新余额
         // 建立 assetCode → paymentAmount 的映射
         Map<String, BigDecimal> assetPayMap = dto.getPaymentInfoList().stream()
-                .filter(p -> p.getPaymentType().toString().equals(PaymentTypeEnum.ASSET.getCode()))
+                .filter(p -> p.getPaymentType().toString().equals(PaymentTypeEnum.MEMBER_CARD.getCode()))
                 .collect(Collectors.toMap(PaymentInfoDTO::getAssetCode, PaymentInfoDTO::getPaymentAmount));
         // 校验 assetIds 对应的资产与支付信息一一匹配
         for (VipAsset vipAsset : vipAssets) {

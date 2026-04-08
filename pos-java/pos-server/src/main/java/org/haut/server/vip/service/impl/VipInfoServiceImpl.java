@@ -32,6 +32,7 @@ import org.haut.server.server.entity.ServerRechargeRole;
 import org.haut.server.server.mapper.ServerRechargeRoleMapper;
 import org.haut.server.system.entity.SysOrg;
 import org.haut.server.system.service.SysOrgService;
+import org.haut.server.system.service.SysOrgUserService;
 import org.haut.server.vip.entity.*;
 import org.haut.server.vip.mapper.VipAssetMapper;
 import org.haut.server.vip.mapper.VipRechargeActiveMapper;
@@ -46,6 +47,10 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.haut.common.domain.vo.system.OrgSimpleVO;;
 
 @Mapper(componentModel = "spring")
 interface VipInfoConvert{
@@ -81,6 +86,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     private final VipInfoTicketService vipInfoTicketService;
     private final VipTicketService vipTicketService;
     private final SysOrgService sysOrgService;
+    private final SysOrgUserService sysOrgUserService;
 
     /**
      * 获取会员列表,条件查询
@@ -92,8 +98,9 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
     @Override
     public PageDTO<VipInfoVO> getList(VipListQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
+        List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), query.getOrgIds());
         LambdaQueryWrapper<VipInfo> queryWrapper = Wrappers.lambdaQuery(VipInfo.class)
-                .eq(VipInfo::getOrgId,auth.getOrgId());
+                .in(VipInfo::getOrgId, orgIds);
         // 条件查询
         if (query.getQueryField() != null && StringUtils.isNotBlank(query.getQueryField())) {
             queryWrapper
@@ -106,8 +113,25 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         //查询数据库
         Page<VipInfo> page = new Page<>(query.getPageNum(), query.getPageSize());
         vipInfoMapper.selectPage(page, queryWrapper);
-        //转化为DTO
-        return PageDTO.create(page, VipInfoVO.class);
+
+        PageDTO<VipInfoVO> result = PageDTO.create(page, VipInfoVO.class);
+
+        // 批量填充门店信息
+        List<VipInfoVO> rows = result.getRows();
+        if (rows != null && !rows.isEmpty()) {
+            Set<Long> allOrgIds = page.getRecords().stream()
+                    .map(VipInfo::getOrgId).collect(Collectors.toSet());
+            Map<Long, OrgSimpleVO> orgMap = sysOrgService.getOrgSimpleMapByIds(allOrgIds);
+            rows.forEach(vo -> {
+                OrgSimpleVO org = orgMap.get(vo.getOrgId());
+                if (org != null) {
+                    vo.setOrgName(org.getOrgName());
+                    vo.setOrgCode(org.getOrgCode());
+                }
+            });
+        }
+
+        return result;
     }
 
     /*
@@ -140,6 +164,15 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         }
         List<VipAsset> vipAssets = vipAssetMapper.selectList(Wrappers.lambdaQuery(VipAsset.class)
                 .eq(VipAsset::getVipId, vipId));
+        // 老系统导入的会员可能通过卡号关联，用vipId查不到时尝试用卡号查
+        if (CollectionUtil.isEmpty(vipAssets)){
+            VipInfo vipInfo = vipInfoMapper.selectById(vipId);
+            if (vipInfo != null && StringUtils.isNotBlank(vipInfo.getCardNumber())){
+                log.info("通过vipId未查到资产，尝试用卡号{}关联查询", vipInfo.getCardNumber());
+                vipAssets = vipAssetMapper.selectList(Wrappers.lambdaQuery(VipAsset.class)
+                        .eq(VipAsset::getVipCardNumber, vipInfo.getCardNumber()));
+            }
+        }
         if (CollectionUtil.isEmpty(vipAssets)){
             log.info("会员没有资产");
             return BigDecimal.ZERO;

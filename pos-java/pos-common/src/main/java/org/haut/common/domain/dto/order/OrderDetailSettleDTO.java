@@ -36,12 +36,18 @@ public class OrderDetailSettleDTO {
     @Schema(description = "标准单价",example = "100.00")
     private BigDecimal stdPrice;
 
-    @Schema(description = "实际单价(结算前和实收价保持一致；结算时更新实际单价)",example = "100.00")
+    @Schema(description = "实收总价")
     private BigDecimal truePrice;
+
+    @Schema(description = "实收单价")
+    private BigDecimal trueUnitPrice;
 
     @NotNull(message = "销售数量不能为空")
     @Schema(description = "销售数量")
     private Integer quantity;
+
+    @Schema(description = "是否已计算折扣（0 未计算，1 已计算）")
+    private Integer isDiscount;
 
     @Schema(description = "上钟类型（0 点钟，1 加钟，2 轮牌）")
     private Integer serverType;

@@ -33,9 +33,9 @@ public class UserListQuery {
     private Long roleId;
 
     /**
-     * 门店ID列表，为空查全部
+     * 门店ID列表，不传则查全部关联门店
      */
-    @Schema(description = "门店ID列表，为空查全部")
+    @Schema(description = "门店ID列表，不传则查全部关联门店")
     private List<Long> orgIds;
 
     /**

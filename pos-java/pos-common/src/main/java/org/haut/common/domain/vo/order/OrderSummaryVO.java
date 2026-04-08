@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 /**
  * @author 丁铭瀚
- * @version 1.0
+ * @version 2.0
  */
 @Data
 @Accessors(chain = true)
@@ -30,6 +30,16 @@ public class OrderSummaryVO {
      * 机构id
      */
     private Long orgId;
+
+    /**
+     * 门店名称
+     */
+    private String orgName;
+
+    /**
+     * 门店编码
+     */
+    private String orgCode;
 
     /**
      * 销售数据创建时间
@@ -68,52 +78,68 @@ public class OrderSummaryVO {
     private Integer totalProjectCount;
 
     /**
-     * 支付宝支付金额
+     * 扫码支付金额
      */
-    private BigDecimal alipayPayment;
-
-    /**
-     * 银行卡支付金额
-     */
-    private BigDecimal bankCardPayment;
+    @Schema(description = "扫码支付金额")
+    private BigDecimal qrPayment;
 
     /**
      * 现金支付金额
      */
+    @Schema(description = "现金支付金额")
     private BigDecimal cashPayment;
 
     /**
-     * 电子优惠券支付金额
+     * POS支付金额
      */
-    private BigDecimal electronicCouponPayment;
+    @Schema(description = "POS支付金额")
+    private BigDecimal posPayment;
+
+    /**
+     * 抖音支付金额
+     */
+    @Schema(description = "抖音支付金额")
+    private BigDecimal douyinPayment;
+
+    /**
+     * 美团支付金额
+     */
+    @Schema(description = "美团支付金额")
+    private BigDecimal meituanPayment;
 
     /**
      * 会员卡支付金额
      */
-    private BigDecimal membershipCardPayment;
+    @Schema(description = "会员卡支付金额")
+    private BigDecimal memberCardPayment;
 
     /**
-     * 其他方式支付金额
+     * 收款码充值金额
      */
-    private BigDecimal otherPayment;
-
-    /**
-     * 微信支付金额
-     */
-    private BigDecimal wechatPayment;
+    @Schema(description = "收款码充值金额")
+    private BigDecimal qrRecharge;
 
     /**
      * 现金充值金额
      */
+    @Schema(description = "现金充值金额")
     private BigDecimal cashRecharge;
 
     /**
-     * 微信充值金额
+     * POS充值金额
      */
-    private BigDecimal wechatRecharge;
+    @Schema(description = "POS充值金额")
+    private BigDecimal posRecharge;
 
     /**
-     * 其他方式充值
+     * 抖音充值金额
      */
-    private BigDecimal otherRecharge;
+    @Schema(description = "抖音充值金额")
+    private BigDecimal douyinRecharge;
+
+    /**
+     * 美团充值金额
+     */
+    @Schema(description = "美团充值金额")
+    private BigDecimal meituanRecharge;
 }

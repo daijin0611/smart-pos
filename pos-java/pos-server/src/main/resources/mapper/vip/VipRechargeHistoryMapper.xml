@@ -56,6 +56,8 @@
         <result property="userName" column="user_name" />
         <result property="userId" column="user_id" />
         <result property="orgId" column="org_id" />
+        <result property="orgName" column="org_name" />
+        <result property="orgCode" column="org_code" />
         <collection property="paymentInfoList"  ofType="org.haut.common.domain.dto.vip.PaymentInfoDTO">
             <result property="paymentType" column="payment_type" />
             <result property="paymentName" column="payment_name" />
@@ -90,6 +92,8 @@
             vrh.user_name,
             vrh.user_id,
             vrh.org_id,
+            so.org_name,
+            so.org_code,
             pd.payment_type,
             pd.payment_name,
             pd.total_amount,
@@ -97,11 +101,17 @@
             kd.user_name as kpi_user_name,
             kd.performance
         FROM vip_recharge_history vrh
+        LEFT JOIN sys_org so ON so.id = vrh.org_id
         LEFT JOIN payment_detail pd ON vrh.history_code = pd.active_code
         LEFT JOIN kpi_detail kd ON vrh.history_code = kd.order_code
         <where>
             vrh.is_delete = 0
-            AND vrh.org_id = #{orgId}
+            <if test="orgIds != null and !orgIds.isEmpty()">
+                AND vrh.org_id IN
+                <foreach collection="orgIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
             <if test="query.startDate != null">
                 AND DATE(vrh.recharge_time) &gt;= #{query.startDate}
             </if>

@@ -18,6 +18,12 @@ public class KpiListVO {
     @Schema(description = "所属机构")
     private String orgName;
 
+    @Schema(description = "门店ID")
+    private Long orgId;
+
+    @Schema(description = "门店编码")
+    private String orgCode;
+
     @Schema(description = "提成")
     private BigDecimal Commission;
 

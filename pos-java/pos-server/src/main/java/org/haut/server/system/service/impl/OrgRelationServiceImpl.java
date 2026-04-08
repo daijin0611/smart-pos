@@ -2,9 +2,11 @@ package org.haut.server.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.haut.server.system.entity.OrgRelationEntity;
 import org.haut.server.system.mapper.OrgRelationMapper;
 import org.haut.server.system.service.OrgRelationService;
+import org.haut.server.system.service.SysOrgService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +19,11 @@ import java.util.stream.Collectors;
  * 设定与门店关联 ServiceImpl
  */
 @Service
+@RequiredArgsConstructor
 public class OrgRelationServiceImpl extends ServiceImpl<OrgRelationMapper, OrgRelationEntity>
         implements OrgRelationService {
+
+    private final SysOrgService sysOrgService;
 
     @Override
     @Transactional
@@ -26,6 +31,7 @@ public class OrgRelationServiceImpl extends ServiceImpl<OrgRelationMapper, OrgRe
         if (orgIds == null || orgIds.isEmpty()) {
             return;
         }
+        sysOrgService.validateOrgIdsExist(orgIds);
         List<OrgRelationEntity> entities = orgIds.stream().map(orgId -> {
             OrgRelationEntity entity = new OrgRelationEntity();
             entity.setItemType(itemType);

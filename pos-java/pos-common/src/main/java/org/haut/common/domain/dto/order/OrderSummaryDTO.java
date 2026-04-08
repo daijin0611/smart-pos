@@ -9,9 +9,8 @@ import java.time.LocalDateTime;
 
 /**
  * @author 丁铭瀚
- * @version 1.0
+ * @version 2.0
  */
-
 public class OrderSummaryDTO {
 
     /**
@@ -61,14 +60,9 @@ public class OrderSummaryDTO {
     private Integer totalProjectCount;
 
     /**
-     * 支付宝支付金额
+     * 扫码支付金额
      */
-    private BigDecimal alipayPayment;
-
-    /**
-     * 银行卡支付金额
-     */
-    private BigDecimal bankCardPayment;
+    private BigDecimal qrPayment;
 
     /**
      * 现金支付金额
@@ -76,24 +70,24 @@ public class OrderSummaryDTO {
     private BigDecimal cashPayment;
 
     /**
-     * 电子优惠券支付金额
+     * POS支付金额
      */
-    private BigDecimal electronicCouponPayment;
+    private BigDecimal posPayment;
+
+    /**
+     * 抖音支付金额
+     */
+    private BigDecimal douyinPayment;
+
+    /**
+     * 美团支付金额
+     */
+    private BigDecimal meituanPayment;
 
     /**
      * 会员卡支付金额
      */
-    private BigDecimal membershipCardPayment;
-
-    /**
-     * 其他方式支付金额
-     */
-    private BigDecimal otherPayment;
-
-    /**
-     * 微信支付金额
-     */
-    private BigDecimal wechatPayment;
+    private BigDecimal memberCardPayment;
 
     /**
      * 现金充值金额

@@ -106,10 +106,16 @@ public class OrderDetailVO {
     private BigDecimal stdPrice;
     
     /**
-     * 实际单价
+     * 实收总价
      */
-    @Schema(description = "实际单价")
+    @Schema(description = "实收总价")
     private BigDecimal truePrice;
+
+    /**
+     * 实收单价
+     */
+    @Schema(description = "实收单价")
+    private BigDecimal trueUnitPrice;
 
     /**
      * VIP价格
@@ -122,6 +128,9 @@ public class OrderDetailVO {
      */
     @Schema(description = "销售数量")
     private Integer quantity;
+
+    @Schema(description = "是否已计算折扣（0 未计算，1 已计算）")
+    private Integer isDiscount;
 
     /**
      * 上钟类型（0 点钟，1 加钟，2 轮牌）
@@ -143,5 +152,14 @@ public class OrderDetailVO {
 
     @Schema(description = "技师列表")
     private List<OrderDetailTechnicianDTO> technicians;
+
+    @Schema(description = "门店ID")
+    private Long orgId;
+
+    @Schema(description = "门店名称")
+    private String orgName;
+
+    @Schema(description = "门店编码")
+    private String orgCode;
 
 }
