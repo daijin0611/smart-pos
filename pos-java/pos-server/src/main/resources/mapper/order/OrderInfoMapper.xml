@@ -238,8 +238,9 @@
     <sql id="pageQueryCondition">
         <where>
             AND oi.is_delete = 0
-            <if test="query.date != null">
-                AND oi.order_time BETWEEN #{query.date[0]} AND #{query.date[1]}
+            <if test="query.date != null and query.date.length >= 2 and query.date[0] != null and query.date[1] != null">
+                AND oi.order_time >= #{query.date[0]}
+                AND oi.order_time &lt; #{query.date[1]} + INTERVAL 1 DAY
             </if>
             <if test="query.userId != null">
                 AND oi.user_id = #{query.userId}

@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -147,7 +148,7 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails, List<OrderDetailEntity> savedDetails) {
-        List<KpiDetail> kpis = new java.util.ArrayList<>();
+        List<KpiDetail> kpis = new ArrayList<>();
         for (int i = 0; i < orderDetails.size(); i++) {
             OrderDetailSettleDTO dto = orderDetails.get(i);
             OrderDetailEntity savedDetail = savedDetails.get(i);

@@ -275,10 +275,12 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
                 .eq(query.getUserId() != null, OrderDetailEntity::getUserId, query.getUserId())
                 .eq(StringUtils.isNotBlank(query.getBusinessCode()), OrderDetailEntity::getBusinessCode, query.getBusinessCode())
                 .eq(OrderDetailEntity::getOrderStatus, OrderStatusEnum.SETTLED.getCode())
-                .between(date != null && date.length >= 2 && date[0] != null && date[1] != null,
+                .ge(date != null && date.length >= 2 && date[0] != null,
                         OrderDetailEntity::getCreateTime,
-                        date != null && date.length >= 1 ? date[0] : null,
-                        date != null && date.length >= 2 ? date[1] : null)
+                        date[0])
+                .lt(date != null && date.length >= 2 && date[1] != null,
+                        OrderDetailEntity::getCreateTime,
+                        date[1].plusDays(1))
                 .in(OrderDetailEntity::getOrgId, orgIds)
                 .orderByDesc(OrderDetailEntity::getSettledTime)
                 .page(page);
