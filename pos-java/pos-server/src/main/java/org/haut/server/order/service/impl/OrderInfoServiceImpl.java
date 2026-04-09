@@ -452,7 +452,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<String> orderCodes = records.stream().map(OrderInfoVO::getOrderCode).collect(Collectors.toList());
         List<PaymentDetail> allPayments = paymentDetailService.lambdaQuery()
                 .in(PaymentDetail::getActiveCode, orderCodes)
-                .eq(PaymentDetail::getOrgId, auth.getOrgId())
+//                .eq(PaymentDetail::getOrgId, auth.getOrgId())
                 .list();
         List<PaymentVO> paymentVOs = BeanUtil.copyToList(allPayments, PaymentVO.class);
 
