@@ -10,6 +10,8 @@ import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.dto.order.OrderDetailTechnicianDTO;
+import org.haut.common.domain.dto.order.OrderSettleDTO;
+import org.haut.common.domain.dto.order.OrderTicketUseDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.kpi.KpiListQuery;
 import org.haut.common.domain.query.kpi.KpiSummaryQuery;
@@ -106,75 +108,76 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
      * @param order 订单信息
      * @param orderDetails 订单明细
      */
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails) {
-        List<KpiDetail> kpis = orderDetails.stream()
-                .flatMap(detail -> {
-                    List<OrderDetailTechnicianDTO> technicians = detail.getTechnicians();
-                    if (technicians == null || technicians.isEmpty()) {
-                        return Stream.empty();
-                    }
-                    int count = technicians.size();
-                    BigDecimal totalCommission = handelCommission(detail);
-                    BigDecimal perCommission = totalCommission.divide(
-                            BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
-                    // truePrice 已是实收总价，直接按技师人数平分
-                    BigDecimal performance = detail.getTruePrice()
-                            .divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
-                    return technicians.stream()
-                            .map(t -> new KpiDetail()
-                                    .setOrderCode(order.getOrderCode())
-                                    .setServiceCode(detail.getBusinessCode())
-                                    .setServiceName(detail.getBusinessName())
-                                    .setServiceType(detail.getDetailType())
-                                    .setItemType(detail.getServerType())
-                                    .setUserId(t.getUserId())
-                                    .setUserName(t.getUserName())
-                                    .setPerformance(performance)
-                                    .setCommission(perCommission)
-                                    .setQuantity(detail.getQuantity())
-                                    .setDetailId(detail.getId())
-                                    .setDetailCode(detail.getDetailCode())
-                                    .setOrgId(order.getOrgId()));
-                })
-                .toList();
-        saveBatch(kpis);
-    }
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails) {
+//        List<KpiDetail> kpis = orderDetails.stream()
+//                .flatMap(detail -> {
+//                    List<OrderDetailTechnicianDTO> technicians = detail.getTechnicians();
+//                    if (technicians == null || technicians.isEmpty()) {
+//                        return Stream.empty();
+//                    }
+//                    int count = technicians.size();
+//                    BigDecimal totalCommission = handelCommission(detail);
+//                    BigDecimal perCommission = totalCommission.divide(
+//                            BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
+//                    // truePrice 已是实收总价，直接按技师人数平分
+//                    BigDecimal performance = detail.getTruePrice()
+//                            .divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
+//                    return technicians.stream()
+//                            .map(t -> new KpiDetail()
+//                                    .setOrderCode(order.getOrderCode())
+//                                    .setServiceCode(detail.getBusinessCode())
+//                                    .setServiceName(detail.getBusinessName())
+//                                    .setServiceType(detail.getDetailType())
+//                                    .setItemType(detail.getServerType())
+//                                    .setUserId(t.getUserId())
+//                                    .setUserName(t.getUserName())
+//                                    .setPerformance(performance)
+//                                    .setCommission(perCommission)
+//                                    .setQuantity(detail.getQuantity())
+//                                    .setDetailId(detail.getId())
+//                                    .setDetailCode(detail.getDetailCode())
+//                                    .setOrgId(order.getOrgId()));
+//                })
+//                .toList();
+//        saveBatch(kpis);
+//    }
 
     /**
      * 处理订单业绩（使用已保存的明细实体，包含正确的ID和detailCode）
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails, List<OrderDetailEntity> savedDetails) {
+    public void handelOrder(OrderInfoEntity order, OrderSettleDTO orderSettleDTO, List<OrderDetailEntity> savedDetails) {
         List<KpiDetail> kpis = new ArrayList<>();
+        List<OrderDetailSettleDTO> orderDetails = orderSettleDTO.getOrderDetails();
         for (int i = 0; i < orderDetails.size(); i++) {
-            OrderDetailSettleDTO dto = orderDetails.get(i);
+            OrderDetailSettleDTO orderDetailSettleDTO = orderDetails.get(i);
             OrderDetailEntity savedDetail = savedDetails.get(i);
-            List<OrderDetailTechnicianDTO> technicians = dto.getTechnicians();
+            List<OrderDetailTechnicianDTO> technicians = orderDetailSettleDTO.getTechnicians();
             if (technicians == null || technicians.isEmpty()) {
                 continue;
             }
             int count = technicians.size();
-            BigDecimal totalCommission = handelCommission(dto);
+            BigDecimal totalCommission = handelCommission(orderDetailSettleDTO);
             BigDecimal perCommission = totalCommission.divide(
                     BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
-            // truePrice 已是实收总价，直接按技师人数平分
-            BigDecimal performance = dto.getTruePrice()
+            BigDecimal totalPerformance = handelPerformance(orderDetailSettleDTO, orderSettleDTO.getTicketUseList());
+            BigDecimal performance = totalPerformance
                     .divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
             for (OrderDetailTechnicianDTO t : technicians) {
                 kpis.add(new KpiDetail()
                         .setOrderCode(order.getOrderCode())
-                        .setServiceCode(dto.getBusinessCode())
-                        .setServiceName(dto.getBusinessName())
-                        .setServiceType(dto.getDetailType())
-                        .setItemType(dto.getServerType())
+                        .setServiceCode(orderDetailSettleDTO.getBusinessCode())
+                        .setServiceName(orderDetailSettleDTO.getBusinessName())
+                        .setServiceType(orderDetailSettleDTO.getDetailType())
+                        .setItemType(orderDetailSettleDTO.getServerType())
                         .setUserId(t.getUserId())
                         .setUserName(t.getUserName())
                         .setPerformance(performance)
                         .setCommission(perCommission)
-                        .setQuantity(dto.getQuantity())
+                        .setQuantity(orderDetailSettleDTO.getQuantity())
                         .setDetailId(savedDetail.getId())
                         .setDetailCode(savedDetail.getDetailCode())
                         .setOrgId(order.getOrgId()));
@@ -182,6 +185,7 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
         }
         saveBatch(kpis);
     }
+
 
     /**
      * 获取绩效总结
@@ -356,4 +360,9 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
         }
         return BigDecimal.ZERO;
     }
+
+    public BigDecimal handelPerformance(OrderDetailSettleDTO detailSettleDTO, List<OrderTicketUseDTO> ticketUseDTOS){
+        return null;
+    }
+
 }

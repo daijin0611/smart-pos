@@ -17,6 +17,8 @@ public enum PaymentTypeEnum {
     DOUYIN("3", "抖音"),
     MEITUAN("4", "美团"),
     MEMBER_CARD("5", "会员卡"),
+    TICKET_ITEM("6", "项目券"),
+    TICKET_CONSUMER("7", "代金券")
     ;
 
     private final String code;

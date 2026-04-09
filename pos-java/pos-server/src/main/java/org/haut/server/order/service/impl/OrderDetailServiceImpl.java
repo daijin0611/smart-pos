@@ -12,6 +12,7 @@ import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.dto.order.OrderDetailTechnicianDTO;
+import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.dto.system.AuthInfoDTO;
 import org.haut.common.domain.query.order.OrderDetailPageQuery;
 import org.haut.common.domain.query.server.ServerItemQuery;
@@ -201,34 +202,27 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         return detailEntity.getId();
     }
 
-    /**
-     * 结算订单明细
-     * @param order 订单信息
-     * @param orderDetails 待结算订单明细
-     */
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void settleOrderDetail(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails) {
-        settleOrderDetailAndReturn(order, orderDetails);
-    }
 
     /**
      * 结算订单明细（返回保存后的实体列表）
      * @param order 订单信息
-     * @param orderDetails 待结算订单明细
+     * @param orderSettleDTO 订单结算信息
      * @return 保存后的订单明细实体列表
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<OrderDetailEntity> settleOrderDetailAndReturn(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails) {
+    public List<OrderDetailEntity> settleOrderDetailAndReturn(OrderInfoEntity order, OrderSettleDTO orderSettleDTO) {
         log.info("orderCode:{} 开始结算订单明细", order.getOrderCode());
-        // 处理库存明细
+        // 1. 处理库存明细
+        List<OrderDetailSettleDTO> orderDetails = orderSettleDTO.getOrderDetails();
         stockOutOrderService.handelOrder(orderDetails);
         log.info("orderCode:{} 处理库存成功订单号", order.getOrderCode());
-        // 处理疗程券
+
+        // 2. 处理疗程券
         serverCureTicketService.handelOrder(orderDetails, order);
         log.info("orderCode:{} 处理疗程券成功", order.getOrderCode());
-        // 保存订单明细（先保存，以便KPI能获取正确的detailId）
+
+        // 3. 保存订单明细（先保存，以便KPI能获取正确的detailId）
         List<OrderDetailEntity> details = orderDetails.stream()
                 .map(e -> orderDetailConvert.toEntity(e)
                         .setOrderCode(order.getOrderCode())
@@ -245,7 +239,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         log.info("orderCode:{} 订单明细保存成功", order.getOrderCode());
 
         // 处理业绩提成（使用已保存的明细实体，包含正确的ID）
-        kpiDetailService.handelOrder(order, orderDetails, details);
+        kpiDetailService.handelOrder(order, orderSettleDTO, details);
         log.info("orderCode:{} 处理业绩提成成功", order.getOrderCode());
 
         // 保存/更新技师关联

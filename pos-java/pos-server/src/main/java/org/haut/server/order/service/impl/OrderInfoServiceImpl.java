@@ -174,7 +174,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .update();
         log.info("床位{}状态已更新为空闲", order.getBedName());
         // 结算订单明细（返回保存后的明细列表）
-        List<OrderDetailEntity> savedDetails = orderDetailService.settleOrderDetailAndReturn(order, settleOrderDTO.getOrderDetails());
+        List<OrderDetailEntity> savedDetails = orderDetailService.settleOrderDetailAndReturn(order, settleOrderDTO);
         log.info("订单明细结算完成");
         // 结算支付信息
         paymentDetailService.handelOrder(settleOrderDTO, order.getOrderCode());

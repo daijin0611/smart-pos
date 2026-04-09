@@ -5,6 +5,7 @@ import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.order.OrderDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
 import org.haut.common.domain.dto.order.OrderDetailTechnicianDTO;
+import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.query.order.OrderDetailPageQuery;
 import org.haut.common.domain.vo.order.OrderDetailVO;
 import org.haut.server.order.entity.OrderDetailEntity;
@@ -51,20 +52,14 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
      */
     Long addDetails(OrderDetailCreateDTO dto, Long orderId);
 
-    /**
-     * 结算订单明细
-     * @param orderInfoEntity 订单信息
-     * @param orderDetails 待结算订单明细
-     */
-    void settleOrderDetail(OrderInfoEntity orderInfoEntity, List<OrderDetailSettleDTO> orderDetails);
 
     /**
      * 结算订单明细（返回保存后的实体列表）
      * @param orderInfoEntity 订单信息
-     * @param orderDetails 待结算订单明细
+     * @param orderSettleDTO 订单结算信息
      * @return 保存后的订单明细实体列表
      */
-    List<OrderDetailEntity> settleOrderDetailAndReturn(OrderInfoEntity orderInfoEntity, List<OrderDetailSettleDTO> orderDetails);
+    List<OrderDetailEntity> settleOrderDetailAndReturn(OrderInfoEntity orderInfoEntity, OrderSettleDTO orderSettleDTO);
 
     /**
      * 订单明细分页查询

@@ -24,10 +24,8 @@ public class OrderTicketUseDTO {
     @Schema(description = "订单详情ID，用于项目券抵扣项目")
     private Long detailId;
 
-    private String businessName;
-
-    @Schema(description = "业务编码")
-    private String businessCode;
+    @Schema(description = "订单详情名称，用于项目券抵扣项目")
+    private String detailName;
 
     @Schema(description = "暂时弃用，计算时订单明细已经保存过")
     @Deprecated

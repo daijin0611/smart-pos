@@ -2,6 +2,7 @@ package org.haut.server.vip.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;
@@ -64,9 +65,14 @@ public class VipInfoTicket {
     private Integer ticketType;
 
     /**
-     * 代金券名称
+     * 优惠券
      */
     private String ticketName;
+
+    /**
+     * 优惠券面额
+     */
+    private BigDecimal amount;
 
     /**
      * 领取人名称
