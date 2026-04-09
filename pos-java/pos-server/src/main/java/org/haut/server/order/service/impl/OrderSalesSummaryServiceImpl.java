@@ -166,8 +166,8 @@ public class OrderSalesSummaryServiceImpl implements OrderSalesSummaryService {
             result.add(vo);
         }
 
-        // 5. 按日期排序
-        result.sort(Comparator.comparing(OrderSummaryVO::getStatsDate));
+        // 5. 按日期降序排序
+        result.sort(Comparator.comparing(OrderSummaryVO::getStatsDate).reversed());
 
         // 6. 批量填充门店信息
         if (!result.isEmpty()) {
