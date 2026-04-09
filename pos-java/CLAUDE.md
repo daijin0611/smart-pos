@@ -119,16 +119,16 @@ mvn docker:push
 
 ## Superpowers 文档规范
 
-所有 superpowers 产出的设计文档和计划文档统一放在 `docs/superpowers/<需求名称>/` 目录下，按需求分类组织，不使用 `plans/` 或 `specs/` 等平面目录。
+所有 superpowers 产出的设计文档和计划文档统一放在 `docs/superpowers/<日期>-<需求名称>/` 目录下，按需求分类组织，不使用 `plans/` 或 `specs/` 等平面目录。
 
 ### 目录结构
 ```
 docs/superpowers/
-├── 组织关系/                          # 需求名称（中文）
+├── 2026-04-01-组织关系/                          # 需求名称（中文）
 │   ├── 2026-04-01-org-relation-design.md    # 设计文档
 │   ├── 2026-04-01-org-relation.md           # 实现计划
 │   └── 门店关联关系重构-前端对接文档.md      # 附加文档
-├── 券作为支付方式/
+├── 2026-04-09-券作为支付方式/
 │   ├── 2026-04-09-ticket-as-payment-design.md
 │   └── 2026-04-09-ticket-as-payment.md
 └── ...
