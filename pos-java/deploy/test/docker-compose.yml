@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  pos-app:
+    build:
+      context: ../..
+      dockerfile: deploy/shared/Dockerfile.multistage
+    image: pos-java:test
+    container_name: pos-app-test
+    restart: always
+    ports:
+      - "8081:8080"
+    env_file:
+      - .env
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+      - SPRING_PROFILES_ACTIVE=test
+    volumes:
+      - app_logs:/tmp/logs
+      - /etc/localtime:/etc/localtime:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+volumes:
+  app_logs:
+    driver: local
