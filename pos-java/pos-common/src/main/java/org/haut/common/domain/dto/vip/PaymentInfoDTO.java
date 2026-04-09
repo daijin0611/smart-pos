@@ -18,6 +18,8 @@ public class PaymentInfoDTO {
     @NotNull(message = "支付金额不能为空")
     @Schema(description = "支付金额")
     private BigDecimal paymentAmount;
-    @Schema(description = "资产编号")
+    @Schema(description = "资产/优惠券编号")
     private String assetCode;
+    @Schema(description = "资产/优惠券名称")
+    private String assetName;
 }

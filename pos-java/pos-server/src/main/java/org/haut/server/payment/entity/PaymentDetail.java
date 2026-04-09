@@ -84,6 +84,11 @@ public class PaymentDetail {
     private String assetCode;
 
     /**
+     * 资产名称
+     */
+    private String assetName;
+
+    /**
      * 门店id
      */
     private Long orgId;
