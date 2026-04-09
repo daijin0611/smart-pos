@@ -117,6 +117,35 @@ mvn docker:push
 - 使用 docker-compose.yml 进行编排
 - 应用运行在 8080 端口，上下文路径为 `/api`
 
+## Superpowers 文档规范
+
+所有 superpowers 产出的设计文档和计划文档统一放在 `docs/superpowers/<需求名称>/` 目录下，按需求分类组织，不使用 `plans/` 或 `specs/` 等平面目录。
+
+### 目录结构
+```
+docs/superpowers/
+├── 组织关系/                          # 需求名称（中文）
+│   ├── 2026-04-01-org-relation-design.md    # 设计文档
+│   ├── 2026-04-01-org-relation.md           # 实现计划
+│   └── 门店关联关系重构-前端对接文档.md      # 附加文档
+├── 券作为支付方式/
+│   ├── 2026-04-09-ticket-as-payment-design.md
+│   └── 2026-04-09-ticket-as-payment.md
+└── ...
+```
+
+### 文件命名规则
+- **设计文档**：`YYYY-MM-DD-<英文短名>-design.md`
+- **实现计划**：`YYYY-MM-DD-<英文短名>.md`
+- **附加文档**：使用中文名称（如前端对接文档）
+- 日期使用文档创建日期
+
+### 创建流程
+1. 新需求启动时，先在 `docs/superpowers/` 下创建中文命名的需求文件夹
+2. brainstorming/设计阶段产出的文档直接写入该文件夹
+3. 实现计划也写入同一文件夹
+4. 如果需求迭代产生新版本，使用新日期前缀创建新文件，保留旧文件
+
 ## 注意事项
 - 连接测试环境 MySQL 需加 `--default-character-set=utf8mb4` 参数，避免中文注释乱码
 - 测试环境登录账号为手机号格式（如 `N15287842664`），密码 `123456`
