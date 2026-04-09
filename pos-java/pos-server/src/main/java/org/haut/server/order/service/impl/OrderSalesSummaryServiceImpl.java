@@ -109,7 +109,8 @@ public class OrderSalesSummaryServiceImpl implements OrderSalesSummaryService {
             int totalPeopleTime = groupDetails.size();
             int totalProjectCount = 0;
             for (OrderDetailEntity detail : groupDetails) {
-                if (detail.getQuantity() != null) {
+                // 只统计服务类型（detailType=1）的数量
+                if (Integer.valueOf(1).equals(detail.getDetailType()) && detail.getQuantity() != null) {
                     totalProjectCount += detail.getQuantity();
                 }
             }
