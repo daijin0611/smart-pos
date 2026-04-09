@@ -160,11 +160,13 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
                 continue;
             }
             int count = technicians.size();
+            // 计算提成
             BigDecimal totalCommission = handelCommission(orderDetailSettleDTO);
             BigDecimal perCommission = totalCommission.divide(
                     BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
-            BigDecimal totalPerformance = handelPerformance(orderDetailSettleDTO, orderSettleDTO.getTicketUseList());
-            BigDecimal performance = totalPerformance
+
+            // 实收金额作为业绩金额
+            BigDecimal performance = orderDetailSettleDTO.getTruePrice()
                     .divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
             for (OrderDetailTechnicianDTO t : technicians) {
                 kpis.add(new KpiDetail()
