@@ -25,6 +25,7 @@ import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.common.enums.OrderStatusEnum;
 import org.haut.common.enums.ServiceTypeEnum;
 import org.haut.common.enums.Status;
+import org.haut.common.enums.TimerStatusEnum;
 import org.haut.common.exception.BusinessException;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.common.utils.CodeUtils;
@@ -50,6 +51,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -458,6 +460,132 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
             default -> throw new BusinessException("未知的业务类型");
         };
         return detail;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void startTimer(Long detailId) {
+        OrderDetailEntity detail = this.getById(detailId);
+        if (detail == null) {
+            throw new BusinessException("订单明细不存在");
+        }
+        if (detail.getTimerStatus() != null && !TimerStatusEnum.NOT_STARTED.getCode().equals(detail.getTimerStatus())) {
+            throw new BusinessException("当前状态不允许开始计时");
+        }
+        OrderInfoEntity order = orderInfoMapper.selectById(detail.getOrderId());
+        if (order == null || !OrderStatusEnum.UNSETTLED.getCode().equals(order.getOrderStatus())) {
+            throw new BusinessException("订单已结算或已取消，无法开始计时");
+        }
+        if (!ServiceTypeEnum.SERVER.getValue().equals(detail.getDetailType())) {
+            throw new BusinessException("仅服务项目支持计时");
+        }
+        ServerItem serverItem = serverItemService.getById(detail.getBid());
+        if (serverItem == null || serverItem.getServerTime() == null || serverItem.getServerTime() <= 0) {
+            throw new BusinessException("服务项目未配置服务时长");
+        }
+        Date now = new Date();
+        long endTimeMs = now.getTime() + (long) serverItem.getServerTime() * 60 * 1000;
+        detail.setTimerStatus(TimerStatusEnum.RUNNING.getCode());
+        detail.setTimerStartTime(now);
+        detail.setTimerEndTime(new Date(endTimeMs));
+        detail.setTimerPausedDuration(0);
+        detail.setTimerWarned(0);
+        this.updateById(detail);
+        log.info("开始计时，明细ID：{}，服务时长：{}分钟，预计结束：{}", detailId, serverItem.getServerTime(), new Date(endTimeMs));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void pauseTimer(Long detailId) {
+        OrderDetailEntity detail = this.getById(detailId);
+        if (detail == null) {
+            throw new BusinessException("订单明细不存在");
+        }
+        if (!TimerStatusEnum.RUNNING.getCode().equals(detail.getTimerStatus())) {
+            throw new BusinessException("当前状态不允许暂停");
+        }
+        detail.setTimerStatus(TimerStatusEnum.PAUSED.getCode());
+        detail.setTimerLastPauseTime(new Date());
+        this.updateById(detail);
+        log.info("暂停计时，明细ID：{}", detailId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void resumeTimer(Long detailId) {
+        OrderDetailEntity detail = this.getById(detailId);
+        if (detail == null) {
+            throw new BusinessException("订单明细不存在");
+        }
+        if (!TimerStatusEnum.PAUSED.getCode().equals(detail.getTimerStatus())) {
+            throw new BusinessException("当前状态不允许恢复");
+        }
+        Date now = new Date();
+        long pauseDurationSec = (now.getTime() - detail.getTimerLastPauseTime().getTime()) / 1000;
+        int totalPaused = (detail.getTimerPausedDuration() != null ? detail.getTimerPausedDuration() : 0) + (int) pauseDurationSec;
+        long newEndTimeMs = detail.getTimerEndTime().getTime() + pauseDurationSec * 1000;
+        detail.setTimerStatus(TimerStatusEnum.RUNNING.getCode());
+        detail.setTimerPausedDuration(totalPaused);
+        detail.setTimerLastPauseTime(null);
+        detail.setTimerEndTime(new Date(newEndTimeMs));
+        this.updateById(detail);
+        log.info("恢复计时，明细ID：{}，本次暂停{}秒，累计暂停{}秒", detailId, pauseDurationSec, totalPaused);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void stopTimer(Long detailId) {
+        OrderDetailEntity detail = this.getById(detailId);
+        if (detail == null) {
+            throw new BusinessException("订单明细不存在");
+        }
+        if (!TimerStatusEnum.RUNNING.getCode().equals(detail.getTimerStatus())
+                && !TimerStatusEnum.PAUSED.getCode().equals(detail.getTimerStatus())) {
+            throw new BusinessException("当前状态不允许停止");
+        }
+        Date now = new Date();
+        int totalPaused = detail.getTimerPausedDuration() != null ? detail.getTimerPausedDuration() : 0;
+        if (TimerStatusEnum.PAUSED.getCode().equals(detail.getTimerStatus()) && detail.getTimerLastPauseTime() != null) {
+            totalPaused += (int) ((now.getTime() - detail.getTimerLastPauseTime().getTime()) / 1000);
+        }
+        int actualDuration = (int) ((now.getTime() - detail.getTimerStartTime().getTime()) / 1000) - totalPaused;
+        detail.setTimerStatus(TimerStatusEnum.FINISHED.getCode());
+        detail.setTimerPausedDuration(totalPaused);
+        detail.setTimerLastPauseTime(null);
+        detail.setActualDuration(Math.max(actualDuration, 0));
+        detail.setTimerEndTime(now);
+        this.updateById(detail);
+        log.info("停止计时，明细ID：{}，实际服务时长：{}秒", detailId, actualDuration);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void stopAllTimersByOrderId(Long orderId) {
+        List<OrderDetailEntity> details = this.lambdaQuery()
+                .eq(OrderDetailEntity::getOrderId, orderId)
+                .in(OrderDetailEntity::getTimerStatus,
+                        TimerStatusEnum.RUNNING.getCode(), TimerStatusEnum.PAUSED.getCode())
+                .list();
+        if (details.isEmpty()) {
+            return;
+        }
+        Date now = new Date();
+        for (OrderDetailEntity detail : details) {
+            int totalPaused = detail.getTimerPausedDuration() != null ? detail.getTimerPausedDuration() : 0;
+            if (TimerStatusEnum.PAUSED.getCode().equals(detail.getTimerStatus()) && detail.getTimerLastPauseTime() != null) {
+                totalPaused += (int) ((now.getTime() - detail.getTimerLastPauseTime().getTime()) / 1000);
+            }
+            int actualDuration = detail.getTimerStartTime() != null
+                    ? (int) ((now.getTime() - detail.getTimerStartTime().getTime()) / 1000) - totalPaused
+                    : 0;
+            detail.setTimerStatus(TimerStatusEnum.FINISHED.getCode());
+            detail.setTimerPausedDuration(totalPaused);
+            detail.setTimerLastPauseTime(null);
+            detail.setActualDuration(Math.max(actualDuration, 0));
+            detail.setTimerEndTime(now);
+        }
+        this.updateBatchById(details);
+        log.info("批量停止计时，订单ID：{}，停止{}个计时", orderId, details.size());
     }
 }
 

@@ -94,4 +94,34 @@ public interface OrderDetailService extends IService<OrderDetailEntity> {
      * @param vos 订单明细VO列表
      */
     void fillTechnicians(List<OrderDetailEntity> entities, List<OrderDetailVO> vos);
+
+    /**
+     * 开始计时
+     * @param detailId 订单明细ID
+     */
+    void startTimer(Long detailId);
+
+    /**
+     * 暂停计时
+     * @param detailId 订单明细ID
+     */
+    void pauseTimer(Long detailId);
+
+    /**
+     * 恢复计时
+     * @param detailId 订单明细ID
+     */
+    void resumeTimer(Long detailId);
+
+    /**
+     * 手动停止计时
+     * @param detailId 订单明细ID
+     */
+    void stopTimer(Long detailId);
+
+    /**
+     * 结束指定订单下所有未结束的计时
+     * @param orderId 订单ID
+     */
+    void stopAllTimersByOrderId(Long orderId);
 }
