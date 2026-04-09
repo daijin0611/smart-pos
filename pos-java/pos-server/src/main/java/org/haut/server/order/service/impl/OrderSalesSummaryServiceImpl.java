@@ -125,6 +125,8 @@ public class OrderSalesSummaryServiceImpl implements OrderSalesSummaryService {
             BigDecimal douyinPayment = BigDecimal.ZERO;
             BigDecimal meituanPayment = BigDecimal.ZERO;
             BigDecimal memberCardPayment = BigDecimal.ZERO;
+            BigDecimal ticketConsumerPayment = BigDecimal.ZERO;
+            BigDecimal ticketItemPayment = BigDecimal.ZERO;
 
             for (PaymentDetail payment : groupPayments) {
                 if (payment.getTotalAmount() == null) {
@@ -141,18 +143,25 @@ public class OrderSalesSummaryServiceImpl implements OrderSalesSummaryService {
                     case 3 -> douyinPayment = douyinPayment.add(amount);
                     case 4 -> meituanPayment = meituanPayment.add(amount);
                     case 5 -> memberCardPayment = memberCardPayment.add(amount);
+                    case 6 -> ticketConsumerPayment = ticketConsumerPayment.add(amount);
+                    case 7 -> ticketItemPayment = ticketItemPayment.add(amount);
                     default -> log.warn("未知的支付类型: {}", paymentType);
                 }
             }
 
             vo.setTotalTurnover(totalTurnover);
-            vo.setTotalActualReceipt(totalTurnover.subtract(memberCardPayment));
+            vo.setTotalActualReceipt(totalTurnover
+                    .subtract(memberCardPayment)
+                    .subtract(ticketConsumerPayment)
+                    .subtract(ticketItemPayment));
             vo.setQrPayment(qrPayment);
             vo.setCashPayment(cashPayment);
             vo.setPosPayment(posPayment);
             vo.setDouyinPayment(douyinPayment);
             vo.setMeituanPayment(meituanPayment);
             vo.setMemberCardPayment(memberCardPayment);
+            vo.setTicketConsumerPayment(ticketConsumerPayment);
+            vo.setTicketItemPayment(ticketItemPayment);
 
             result.add(vo);
         }

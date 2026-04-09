@@ -113,4 +113,16 @@ public class OrderSummaryVO {
     @Schema(description = "会员卡支付金额")
     private BigDecimal memberCardPayment;
 
+    /**
+     * 代金券支付金额
+     */
+    @Schema(description = "代金券支付金额")
+    private BigDecimal ticketConsumerPayment;
+
+    /**
+     * 项目券支付金额
+     */
+    @Schema(description = "项目券支付金额")
+    private BigDecimal ticketItemPayment;
+
 }

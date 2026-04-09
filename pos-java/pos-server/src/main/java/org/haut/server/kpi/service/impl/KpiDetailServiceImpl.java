@@ -165,8 +165,9 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
             BigDecimal perCommission = totalCommission.divide(
                     BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
 
-            // 实收金额作为业绩金额
-            BigDecimal performance = orderDetailSettleDTO.getTruePrice()
+            // 业绩金额：项目券抵扣的项目取券面额，否则取实收金额
+            BigDecimal totalPerformance = handelPerformance(orderDetailSettleDTO, orderSettleDTO.getTicketUseList());
+            BigDecimal performance = totalPerformance
                     .divide(BigDecimal.valueOf(count), 2, RoundingMode.HALF_UP);
             for (OrderDetailTechnicianDTO t : technicians) {
                 kpis.add(new KpiDetail()
@@ -363,8 +364,30 @@ public class KpiDetailServiceImpl extends ServiceImpl<KpiDetailMapper, KpiDetail
         return BigDecimal.ZERO;
     }
 
-    public BigDecimal handelPerformance(OrderDetailSettleDTO detailSettleDTO, List<OrderTicketUseDTO> ticketUseDTOS){
-        return null;
+    /**
+     * 计算明细业绩金额
+     * 如果该明细被项目券抵扣，业绩 = 券的面额(amount)
+     * 否则业绩 = truePrice
+     */
+    public BigDecimal handelPerformance(OrderDetailSettleDTO detailSettleDTO, List<OrderTicketUseDTO> ticketUseDTOS) {
+        if (ticketUseDTOS == null || ticketUseDTOS.isEmpty()) {
+            return detailSettleDTO.getTruePrice();
+        }
+        // 查找项目券（ticketType=1）中关联当前明细的券
+        for (OrderTicketUseDTO ticket : ticketUseDTOS) {
+            if (Integer.valueOf(1).equals(ticket.getTicketType()) && ticket.getAmount() != null) {
+                boolean matched = false;
+                if (ticket.getDetailId() != null && ticket.getDetailId().equals(detailSettleDTO.getId())) {
+                    matched = true;
+                } else if (ticket.getDetailName() != null && ticket.getDetailName().equals(detailSettleDTO.getBusinessName())) {
+                    matched = true;
+                }
+                if (matched) {
+                    return ticket.getAmount();
+                }
+            }
+        }
+        return detailSettleDTO.getTruePrice();
     }
 
 }
