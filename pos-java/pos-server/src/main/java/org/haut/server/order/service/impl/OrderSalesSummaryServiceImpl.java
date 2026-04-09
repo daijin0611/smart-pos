@@ -8,9 +8,7 @@ import org.haut.common.domain.query.order.OrderSummaryQuery;
 import org.haut.common.domain.vo.order.OrderSummaryVO;
 import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.haut.common.enums.OrderStatusEnum;
-import org.haut.common.enums.PaymentActiveTypeEnum;
 import org.haut.common.enums.PaymentStatusEnum;
-import org.haut.common.enums.PaymentTypeEnum;
 import org.haut.common.utils.AuthContextHolder;
 import org.haut.server.order.entity.OrderDetailEntity;
 import org.haut.server.order.entity.OrderInfoEntity;
@@ -104,16 +102,6 @@ public class OrderSalesSummaryServiceImpl implements OrderSalesSummaryService {
 
             // 聚合订单数据
             List<OrderInfoEntity> groupOrders = ordersByGroup.getOrDefault(key, Collections.emptyList());
-            BigDecimal totalTurnover = BigDecimal.ZERO;
-            BigDecimal totalActualReceipt = BigDecimal.ZERO;
-            for (OrderInfoEntity order : groupOrders) {
-                if (order.getTotalAmount() != null) {
-                    totalTurnover = totalTurnover.add(order.getTotalAmount());
-                }
-                if (order.getActualAmount() != null) {
-                    totalActualReceipt = totalActualReceipt.add(order.getActualAmount());
-                }
-            }
             vo.setTotalSingleTime(groupOrders.size());
 
             // 聚合订单明细数据
@@ -130,68 +118,41 @@ public class OrderSalesSummaryServiceImpl implements OrderSalesSummaryService {
 
             // 聚合支付数据
             List<PaymentDetail> groupPayments = paymentsByGroup.getOrDefault(key, Collections.emptyList());
+            BigDecimal totalTurnover = BigDecimal.ZERO;
             BigDecimal qrPayment = BigDecimal.ZERO;
             BigDecimal cashPayment = BigDecimal.ZERO;
             BigDecimal posPayment = BigDecimal.ZERO;
             BigDecimal douyinPayment = BigDecimal.ZERO;
             BigDecimal meituanPayment = BigDecimal.ZERO;
             BigDecimal memberCardPayment = BigDecimal.ZERO;
-            BigDecimal qrRecharge = BigDecimal.ZERO;
-            BigDecimal cashRecharge = BigDecimal.ZERO;
-            BigDecimal posRecharge = BigDecimal.ZERO;
-            BigDecimal douyinRecharge = BigDecimal.ZERO;
-            BigDecimal meituanRecharge = BigDecimal.ZERO;
 
             for (PaymentDetail payment : groupPayments) {
                 if (payment.getTotalAmount() == null) {
                     continue;
                 }
                 BigDecimal amount = payment.getTotalAmount();
+                totalTurnover = totalTurnover.add(amount);
                 Integer paymentType = payment.getPaymentType();
 
-                if (PaymentActiveTypeEnum.CONSUMER.getValue().equals(payment.getActiveType())) {
-                    // 消费支付
-                    switch (paymentType) {
-                        case 0 -> qrPayment = qrPayment.add(amount);
-                        case 1 -> cashPayment = cashPayment.add(amount);
-                        case 2 -> posPayment = posPayment.add(amount);
-                        case 3 -> douyinPayment = douyinPayment.add(amount);
-                        case 4 -> meituanPayment = meituanPayment.add(amount);
-                        case 5 -> memberCardPayment = memberCardPayment.add(amount);
-                        default -> log.warn("未知的支付类型: {}", paymentType);
-                    }
-                } else if (PaymentActiveTypeEnum.RECHARGER.getValue().equals(payment.getActiveType())) {
-                    // 充值（排除会员卡）
-                    if (PaymentTypeEnum.MEMBER_CARD.getCode().equals(String.valueOf(paymentType))) {
-                        continue;
-                    }
-                    switch (paymentType) {
-                        case 0 -> qrRecharge = qrRecharge.add(amount);
-                        case 1 -> cashRecharge = cashRecharge.add(amount);
-                        case 2 -> posRecharge = posRecharge.add(amount);
-                        case 3 -> douyinRecharge = douyinRecharge.add(amount);
-                        case 4 -> meituanRecharge = meituanRecharge.add(amount);
-                        default -> log.warn("未知的充值支付类型: {}", paymentType);
-                    }
-                    // 充值金额计入营业额和实收
-                    totalTurnover = totalTurnover.add(amount);
-                    totalActualReceipt = totalActualReceipt.add(amount);
+                switch (paymentType) {
+                    case 0 -> qrPayment = qrPayment.add(amount);
+                    case 1 -> cashPayment = cashPayment.add(amount);
+                    case 2 -> posPayment = posPayment.add(amount);
+                    case 3 -> douyinPayment = douyinPayment.add(amount);
+                    case 4 -> meituanPayment = meituanPayment.add(amount);
+                    case 5 -> memberCardPayment = memberCardPayment.add(amount);
+                    default -> log.warn("未知的支付类型: {}", paymentType);
                 }
             }
 
             vo.setTotalTurnover(totalTurnover);
-            vo.setTotalActualReceipt(totalActualReceipt);
+            vo.setTotalActualReceipt(totalTurnover.subtract(memberCardPayment));
             vo.setQrPayment(qrPayment);
             vo.setCashPayment(cashPayment);
             vo.setPosPayment(posPayment);
             vo.setDouyinPayment(douyinPayment);
             vo.setMeituanPayment(meituanPayment);
             vo.setMemberCardPayment(memberCardPayment);
-            vo.setQrRecharge(qrRecharge);
-            vo.setCashRecharge(cashRecharge);
-            vo.setPosRecharge(posRecharge);
-            vo.setDouyinRecharge(douyinRecharge);
-            vo.setMeituanRecharge(meituanRecharge);
 
             result.add(vo);
         }
