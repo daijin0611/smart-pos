@@ -210,27 +210,26 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
                     cureTicketVO.getTicketDetails()
                             .forEach(detail -> {
                                 VipTicketVO ticketInfo = vipTicketMapper.getOneById(detail.getVipTicketId());
-                                VipInfoTicket ticket = new VipInfoTicket()
-                                        .setTicketType(ticketInfo.getTicketType())
-                                        .setTicketName(ticketInfo.getTicketName())
-                                        .setAmount(faceValue)
-                                        .setTicketCode(CodeUtils.generateByTime(PrefixConst.TICKET))
-                                        .setVipInfoId(order.getVipId())
-                                        .setVipTicketId(detail.getVipTicketId())
-                                        .setVipName(order.getVipName())
-                                        .setVipPhoneNumber(order.getVipPhoneNumber())
-                                        .setVipCardNumber(order.getVipCardNumber())
-                                        .setStatus(TicketStatusEnum.UNUSED.getValue())
-                                        .setClaimTime(LocalDate.now())
-                                        .setExpiryDate(ticketInfo.getTicketEffectiveTime() == -1 ?
-                                                null : LocalDate.now().plusDays(ticketInfo.getTicketEffectiveTime()))
-                                        .setActiveId(null)
-                                        .setOrgId(order.getOrgId())
-                                        .setRemark("疗程券获取[订单：" + order.getOrderCode() + "]")
-                                        .setSourceType(TicketSourceType.ORDER.getCode())
-                                        .setSourceCode(order.getOrderCode());
-                                for (int i=0; i<detail.getVipTicketNum(); i++){
-                                    ticketInfoList.add(ticket);
+                                for (int i = 0; i < detail.getVipTicketNum(); i++) {
+                                    ticketInfoList.add(new VipInfoTicket()
+                                            .setTicketType(ticketInfo.getTicketType())
+                                            .setTicketName(ticketInfo.getTicketName())
+                                            .setAmount(faceValue)
+                                            .setTicketCode(CodeUtils.generateByTime(PrefixConst.TICKET))
+                                            .setVipInfoId(order.getVipId())
+                                            .setVipTicketId(detail.getVipTicketId())
+                                            .setVipName(order.getVipName())
+                                            .setVipPhoneNumber(order.getVipPhoneNumber())
+                                            .setVipCardNumber(order.getVipCardNumber())
+                                            .setStatus(TicketStatusEnum.UNUSED.getValue())
+                                            .setClaimTime(LocalDate.now())
+                                            .setExpiryDate(ticketInfo.getTicketEffectiveTime() == -1 ?
+                                                    null : LocalDate.now().plusDays(ticketInfo.getTicketEffectiveTime()))
+                                            .setActiveId(null)
+                                            .setOrgId(order.getOrgId())
+                                            .setRemark("疗程券获取[订单：" + order.getOrderCode() + "]")
+                                            .setSourceType(TicketSourceType.ORDER.getCode())
+                                            .setSourceCode(order.getOrderCode()));
                                 }
                             });
                     insertTicket.addAll(ticketInfoList);
