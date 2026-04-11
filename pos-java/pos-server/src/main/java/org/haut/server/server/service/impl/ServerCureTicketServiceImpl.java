@@ -82,11 +82,6 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
 
         // 插入关联表
         Long ticketId = entity.getId();
-
-        // 暂时取消关联多个优惠券
-        if(cureTicket.getVipTicketList().size() > 1){
-            throw new BusinessException("暂不支持关联多种优惠券");
-        }
         List<ServerCureTicketDetail> details = cureTicket.getVipTicketList().stream()
                 .map(detailDTO -> {
                     ServerCureTicketDetail detail = cureTicketDetailConvert.toEntity(detailDTO);
@@ -191,12 +186,12 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
         this.updateById(updateEntity);
     }
 
+
     /**
      * 处理订单中的疗程券
      * @param dto
      */
     @Override
-    @Transactional
     public void handelOrder(List<OrderDetailSettleDTO> dto, OrderInfoEntity order) {
         List<VipInfoTicket> insertTicket = new ArrayList<>();
         dto.stream()
@@ -205,47 +200,43 @@ public class ServerCureTicketServiceImpl extends ServiceImpl<ServerCureTicketMap
                     if (order.getVipId()==null)
                         throw new BusinessException("购买疗程券必须选择会员");
                     ServerCureTicketVO cureTicketVO = baseMapper.getOneById(e.getBid());
+                    // 计算总券数和每张券面额
+                    int totalTicketCount = cureTicketVO.getTicketDetails().stream()
+                            .mapToInt(ServerCureTicketVO.TicketDetailVO::getVipTicketNum)
+                            .sum();
+                    BigDecimal faceValue = cureTicketVO.getPrice().divide(
+                            BigDecimal.valueOf(totalTicketCount), 2, RoundingMode.HALF_UP);
                     List<VipInfoTicket> ticketInfoList = new ArrayList<>();
-                    BigDecimal price = cureTicketVO.getPrice();
-                    if(cureTicketVO.getTicketDetails() == null){
-                        throw new BusinessException(String.format("疗程券：%s，未设置关联项目券", cureTicketVO.getName()));
-                    }
-                    if(cureTicketVO.getTicketDetails().size() > 1){
-                        log.warn("疗程券：{}，未设置关联项目券", cureTicketVO.getName());
-                        throw new BusinessException("疗程券结算失败，请联系管理员！");
-                    }
-                    ServerCureTicketVO.TicketDetailVO detail = cureTicketVO.getTicketDetails().get(0);
-                    // 计算单个项目券面值
-                    BigDecimal amount = cureTicketVO.getPrice()
-                            .divide(BigDecimal.valueOf(detail.getVipTicketNum()), 2, RoundingMode.HALF_UP);
-                    VipTicketVO ticketInfo = vipTicketMapper.getOneById(detail.getVipTicketId());
-                    VipInfoTicket ticket = new VipInfoTicket()
-                            .setTicketType(ticketInfo.getTicketType())
-                            .setTicketName(ticketInfo.getTicketName())
-                            .setTicketCode(CodeUtils.generateByTime(PrefixConst.TICKET))
-                            .setVipInfoId(order.getVipId())
-                            .setVipTicketId(detail.getVipTicketId())
-                            .setVipName(order.getVipName())
-                            .setVipPhoneNumber(order.getVipPhoneNumber())
-                            .setVipCardNumber(order.getVipCardNumber())
-                            .setStatus(TicketStatusEnum.UNUSED.getValue())
-                            .setClaimTime(LocalDate.now())
-                            .setExpiryDate(ticketInfo.getTicketEffectiveTime() == -1 ?
-                                    null : LocalDate.now().plusDays(ticketInfo.getTicketEffectiveTime()))
-                            .setActiveId(null)
-                            .setOrgId(order.getOrgId())
-                            .setRemark("疗程券获取[订单：" + order.getOrderCode() + "]")
-                            .setSourceType(TicketSourceType.ORDER.getCode())
-                            .setAmount(amount)
-                            .setSourceCode(order.getOrderCode());
-                    for (int i=0; i<detail.getVipTicketNum(); i++){
-                        ticketInfoList.add(ticket);
-                    }
+                    cureTicketVO.getTicketDetails()
+                            .forEach(detail -> {
+                                VipTicketVO ticketInfo = vipTicketMapper.getOneById(detail.getVipTicketId());
+                                VipInfoTicket ticket = new VipInfoTicket()
+                                        .setTicketType(ticketInfo.getTicketType())
+                                        .setTicketName(ticketInfo.getTicketName())
+                                        .setAmount(faceValue)
+                                        .setTicketCode(CodeUtils.generateByTime(PrefixConst.TICKET))
+                                        .setVipInfoId(order.getVipId())
+                                        .setVipTicketId(detail.getVipTicketId())
+                                        .setVipName(order.getVipName())
+                                        .setVipPhoneNumber(order.getVipPhoneNumber())
+                                        .setVipCardNumber(order.getVipCardNumber())
+                                        .setStatus(TicketStatusEnum.UNUSED.getValue())
+                                        .setClaimTime(LocalDate.now())
+                                        .setExpiryDate(ticketInfo.getTicketEffectiveTime() == -1 ?
+                                                null : LocalDate.now().plusDays(ticketInfo.getTicketEffectiveTime()))
+                                        .setActiveId(null)
+                                        .setOrgId(order.getOrgId())
+                                        .setRemark("疗程券获取[订单：" + order.getOrderCode() + "]")
+                                        .setSourceType(TicketSourceType.ORDER.getCode())
+                                        .setSourceCode(order.getOrderCode());
+                                for (int i=0; i<detail.getVipTicketNum(); i++){
+                                    ticketInfoList.add(ticket);
+                                }
+                            });
                     insertTicket.addAll(ticketInfoList);
                 });
         vipInfoTicketService.saveBatch(insertTicket);
     }
-
 }
 
 @Mapper(componentModel = "spring")
