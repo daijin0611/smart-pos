@@ -1,13 +1,13 @@
 """
-老系统次卡数据导入脚本
+美管家系统次卡数据导入脚本
 
-将老系统导出的次卡 JSON 数据转换为 SQL INSERT 语句，用于导入 POS 系统。
+将美管家系统导出的次卡 JSON 数据转换为 SQL INSERT 语句，用于导入 POS 系统。
 采用方案三：迁移剩余权益 + 快照历史。
 
 生成内容：
 1. 通用次卡模板优惠券（vip_ticket）+ 门店关联（sys_org_relation）
 2. 缺失会员自动创建（vip_info）
-3. 会员券实例（vip_info_ticket）：按 leaveTimes 生成对应数量的券
+3. 会员券实例（vip_info_ticket）：按 leaveTimes 生成对应数量的券，amount 为老系统单次金额
 4. 快照记录（vip_migrate_card_snapshot）：保存老数据完整信息
 """
 
@@ -18,7 +18,7 @@ from collections import OrderedDict
 from datetime import datetime
 from tkinter import Tk, filedialog
 
-TEMPLATE_TICKET_NAME = "老系统次卡迁移模板"
+TEMPLATE_TICKET_NAME = "美管家次卡迁移模板"
 
 
 def select_json_file():
@@ -26,7 +26,7 @@ def select_json_file():
     root = Tk()
     root.withdraw()
     file_path = filedialog.askopenfilename(
-        title="选择老系统次卡 JSON 数据文件",
+        title="选择美管家次卡 JSON 数据文件",
         filetypes=[("JSON 文件", "*.json"), ("所有文件", "*.*")]
     )
     root.destroy()
@@ -147,7 +147,7 @@ def generate_vip_info_sql(members, org_id):
 
         sql_lines.append(
             f"INSERT INTO vip_info ({columns})\n"
-            f"SELECT '{name}', {gender}, '{mid_str}', '{phone}', 0.00, {org_id}, 0, '老系统次卡迁移导入', "
+            f"SELECT '{name}', {gender}, '{mid_str}', '{phone}', 0.00, {org_id}, 0, '美管家次卡迁移导入', "
             + (f"'{buy_date}'" if buy_date else "NOW()") + ", NOW()\n"
             f"WHERE NOT EXISTS (SELECT 1 FROM vip_info WHERE card_number = '{mid_str}' AND is_delete = 0);"
         )
@@ -182,7 +182,7 @@ def generate_vip_info_ticket_sql(cards, org_id):
         "vip_info_id", "vip_ticket_id", "ticket_name", "ticket_type",
         "vip_name", "vip_phone_number", "status", "claim_time",
         "expiry_date", "ticket_code", "org_id", "source_type", "remark",
-        "is_delete", "create_time", "update_time"
+        "is_delete", "create_time", "update_time", "amount"
     ]
     col_str = ", ".join(columns)
 
@@ -196,16 +196,14 @@ def generate_vip_info_ticket_sql(cards, org_id):
         member_id = escape_sql(str(card.get("memberId", "")))
         member_name = escape_sql(card.get("memberName", ""))
         mobile = escape_sql(str(card.get("mobile", ""))[:11])
+        shop_name = escape_sql(card.get("shopName", ""))
         item_name = escape_sql(card.get("itemName", ""))
         buy_date_ts = card.get("buyDate")
         claim_time = f"'{ts_to_sql_date(buy_date_ts)}'" if ts_to_sql_date(buy_date_ts) else "NULL"
         once_money = card.get("onceMoney", 0) or 0
         leave_money = card.get("leaveMoney", 0) or 0
-        emp_saler_names = escape_sql(card.get("empSalerNames", ""))
 
-        remark = f"老系统导入;单次金额:{once_money};剩余金额:{leave_money}"
-        if emp_saler_names:
-            remark += f";销售:{emp_saler_names}"
+        remark = f"美管家系统迁移-{shop_name}-{item_name}-{once_money}"
 
         nums_cte = generate_numbers_cte(leave_times)
 
@@ -215,7 +213,7 @@ def generate_vip_info_ticket_sql(cards, org_id):
             f"'{member_name}', '{mobile}', 0, "
             f"{claim_time}, NULL, "
             f"CONCAT('MG{old_card_id}_', nums.n), "
-            f"{org_id}, 3, '{escape_sql(remark)}', 0, NOW(), NOW()\n"
+            f"{org_id}, 3, '{escape_sql(remark)}', 0, NOW(), NOW(), {once_money:.2f}\n"
             f"FROM vip_info vi\n"
             f"CROSS JOIN vip_ticket vt\n"
             f"CROSS JOIN {nums_cte}\n"
@@ -283,7 +281,7 @@ def generate_snapshot_sql(cards, org_id):
 
 def main():
     print("=" * 60)
-    print("老系统次卡数据导入工具")
+    print("美管家系统次卡数据导入工具")
     print("=" * 60)
 
     # 1. 选择文件
@@ -319,7 +317,7 @@ def main():
     # 7. 组装 SQL 文件
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     sql_lines = [
-        f"-- 老系统次卡数据导入 SQL",
+        f"-- 美管家系统次卡数据导入 SQL",
         f"-- 生成时间: {now_str}",
         f"-- 源文件: {os.path.basename(json_file)}",
         f"-- 门店 org_id: {org_id}",

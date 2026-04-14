@@ -1,7 +1,7 @@
 """
-老系统会员卡数据导入脚本
+美管家系统会员卡数据导入脚本
 
-将老系统导出的会员卡 JSON 数据转换为 SQL INSERT 语句，用于导入 POS 系统数据库。
+将美管家系统导出的会员卡 JSON 数据转换为 SQL INSERT 语句，用于导入 POS 系统数据库。
 生成 vip_info（会员信息）和 vip_asset（会员卡资产）两张表的 INSERT 语句。
 """
 
@@ -18,7 +18,7 @@ def select_json_file():
     root = Tk()
     root.withdraw()
     file_path = filedialog.askopenfilename(
-        title="选择老系统会员卡 JSON 数据文件",
+        title="选择美管家会员卡 JSON 数据文件",
         filetypes=[("JSON 文件", "*.json"), ("所有文件", "*.*")]
     )
     root.destroy()
@@ -129,7 +129,7 @@ def generate_vip_info_sql(member_groups, org_id):
             cr = c.get("cardRemark")
             if cr and cr.strip():
                 remarks.append(cr.strip())
-        remark_str = "老系统导入"
+        remark_str = "美管家导入"
         if remarks:
             unique_remarks = list(dict.fromkeys(remarks))  # 去重保持顺序
             remark_str += " " + "; ".join(unique_remarks)
@@ -177,6 +177,7 @@ def generate_vip_asset_sql(cards, org_id):
     for card in cards:
         card_id = escape_sql(card.get("cardid", ""))
         card_type_name = escape_sql(card.get("cardtypename", ""))
+        shop_name = escape_sql(card.get("shopname", ""))
         card_fee = float(card.get("cardfee", 0) or 0)
         present_fee = float(card.get("presentfee", 0) or 0)
         discount = float(card.get("discount", 0) or 0)
@@ -184,17 +185,12 @@ def generate_vip_asset_sql(cards, org_id):
         member_id = escape_sql(str(card.get("memberid", "")))
         open_ts = card.get("opendate")
         create_time = ts_to_sql_datetime(open_ts)
-        card_remark = card.get("cardRemark")
 
-        # 折扣率转换：老系统 * 10（如 6.9 -> 69），0 视为无折扣即 100
+        # 折扣率转换：美管家 * 10（如 6.9 -> 69），0 视为无折扣即 100
         discount_rate = discount * 10 if discount > 0 else 100
 
         # 充值金记录
-        remark = ""
-        if card_remark and card_remark.strip():
-            remark = f"老系统导入 充值金 {card_remark.strip()}"
-        else:
-            remark = "老系统导入 充值金"
+        remark = f"美管家系统迁移-{shop_name}-{card_type_name}-{discount_rate:.0f}-否"
 
         recharge_vals = [
             f"'{card_id}'",
@@ -219,9 +215,7 @@ def generate_vip_asset_sql(cards, org_id):
 
         # 赠送金记录（仅 presentfee > 0 时）
         if present_fee > 0:
-            gift_remark = "老系统导入 赠送金"
-            if card_remark and card_remark.strip():
-                gift_remark += f" {card_remark.strip()}"
+            gift_remark = f"美管家系统迁移-{shop_name}-{card_type_name}-{discount_rate:.0f}-是"
 
             gift_vals = [
                 f"'{card_id}_gift'",
@@ -263,7 +257,7 @@ def batch_insert_sql(table, columns, values_list, batch_size=500):
 
 def main():
     print("=" * 60)
-    print("老系统会员卡数据导入工具")
+    print("美管家系统会员卡数据导入工具")
     print("=" * 60)
 
     # 1. 选择文件
@@ -300,7 +294,7 @@ def main():
     # 8. 组装 SQL 文件
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     sql_lines = [
-        f"-- 老系统会员卡数据导入 SQL",
+        f"-- 美管家系统会员卡数据导入 SQL",
         f"-- 生成时间: {now_str}",
         f"-- 源文件: {os.path.basename(json_file)}",
         f"-- 门店 org_id: {org_id}",
