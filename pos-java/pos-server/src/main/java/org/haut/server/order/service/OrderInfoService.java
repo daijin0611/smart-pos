@@ -104,4 +104,11 @@ public interface OrderInfoService extends IService<OrderInfoEntity> {
       * @param dto 订单冲正请求对象
       */
     void rollBackOrder(OrderRollBackDTO dto);
+
+    /**
+     * 修改手写单号
+     * @param orderId 订单ID
+     * @param manualOrderNo 新的手写单号
+     */
+    void updateManualOrderNo(Long orderId, String manualOrderNo);
 }

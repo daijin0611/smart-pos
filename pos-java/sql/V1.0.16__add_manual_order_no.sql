@@ -1,0 +1,1 @@
+ALTER TABLE order_info ADD COLUMN manual_order_no VARCHAR(100) DEFAULT NULL COMMENT '手写单号';

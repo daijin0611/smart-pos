@@ -187,4 +187,10 @@ public class OrderInfoVO {
      */
     @Schema(description = "支付信息列表")
     private List<PaymentVO> payments;
+
+    /**
+     * 手写单号
+     */
+    @Schema(description = "手写单号")
+    private String manualOrderNo;
 }

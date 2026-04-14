@@ -756,7 +756,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .setBedName(dto.getBedName())
                 .setUserId(auth.getUserId())
                 .setUserName(auth.getUserName())
-                .setOrgId(auth.getOrgId());
+                .setOrgId(auth.getOrgId())
+                .setManualOrderNo(dto.getManualOrderNo());
     }
 
     /**
@@ -865,6 +866,28 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String base = original == null ? "" : original;
         String extra = append == null ? "" : (" " + append.trim());
         return base + extra + " [已对单]";
+    }
+
+    /**
+     * 修改手写单号
+     * @param orderId 订单ID
+     * @param manualOrderNo 新的手写单号
+     */
+    @Override
+    public void updateManualOrderNo(Long orderId, String manualOrderNo) {
+        OrderInfoEntity order = this.getById(orderId);
+        if (order == null) {
+            throw new BusinessException("订单不存在");
+        }
+        if (!OrderStatusEnum.SETTLED.getCode().equals(order.getOrderStatus())
+                && !OrderStatusEnum.RECONCILED.getCode().equals(order.getOrderStatus())) {
+            throw new BusinessException("仅已结算或已对单的订单可修改手写单号");
+        }
+        lambdaUpdate()
+                .eq(OrderInfoEntity::getId, orderId)
+                .set(OrderInfoEntity::getManualOrderNo, manualOrderNo)
+                .update();
+        log.info("订单手写单号修改成功，订单ID：{}，新手写单号：{}", orderId, manualOrderNo);
     }
 }
 

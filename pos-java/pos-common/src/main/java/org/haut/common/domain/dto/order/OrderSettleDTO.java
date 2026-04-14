@@ -1,6 +1,7 @@
 package org.haut.common.domain.dto.order;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -114,5 +115,11 @@ public class OrderSettleDTO{
     @Schema(description = "支付信息")
     private List<PaymentInfoDTO> paymentInfoList;
 
+    /**
+     * 手写单号
+     */
+    @NotBlank(message = "手写单号不能为空")
+    @Schema(description = "手写单号")
+    private String manualOrderNo;
 
 }

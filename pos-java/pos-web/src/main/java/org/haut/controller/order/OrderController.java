@@ -9,6 +9,8 @@ import org.haut.common.annotation.OperLog;
 import org.haut.common.domain.dto.order.*;
 import org.haut.common.enums.OperLogModule;
 import org.haut.common.domain.dto.order.OrderDetailTechnicianDTO;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.haut.common.domain.vo.JsonVO;
 import org.haut.common.domain.vo.order.OrderCreateVO;
@@ -165,5 +167,22 @@ public class OrderController {
         log.info("订单对单请求：{}", dto);
         orderInfoService.reconcileOrder(dto);
         return JsonVO.success();
+    }
+
+    /**
+     * 修改手写单号
+     * @param orderId 订单ID
+     * @param manualOrderNo 新的手写单号
+     * @return 处理结果
+     */
+    @PutMapping("/update-manual-order-no")
+    @Operation(summary = "修改手写单号", description = "修改已结算或已对单订单的手写单号")
+    @OperLog(module = OperLogModule.ORDER, description = "修改手写单号")
+    public JsonVO<String> updateManualOrderNo(
+            @RequestParam @NotNull Long orderId,
+            @RequestParam @NotBlank String manualOrderNo) {
+        log.info("修改手写单号请求：orderId={}, manualOrderNo={}", orderId, manualOrderNo);
+        orderInfoService.updateManualOrderNo(orderId, manualOrderNo);
+        return JsonVO.success("手写单号修改成功");
     }
 }
