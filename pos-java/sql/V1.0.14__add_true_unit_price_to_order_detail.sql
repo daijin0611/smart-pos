@@ -9,3 +9,5 @@ ALTER TABLE order_detail ADD COLUMN is_discount TINYINT DEFAULT 0 NOT NULL COMME
 
 -- 订单明细技师关联表增加员工编号字段
 ALTER TABLE order_detail_technician ADD COLUMN user_code VARCHAR(50) DEFAULT NULL COMMENT '员工编号' AFTER user_name;
+-- 已在测试环境执行：2026-04-07
+-- 已在生产环境执行：2026-04-07

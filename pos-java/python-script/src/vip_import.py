@@ -157,11 +157,15 @@ def generate_vip_info_sql(member_groups, org_id):
     return columns, all_values
 
 
-def generate_vip_asset_sql(cards, org_id):
+def generate_vip_asset_sql(cards, org_id, card_discount_map=None):
     """
     生成 vip_asset INSERT 语句
     每条卡生成 1 条充值金记录，presentfee > 0 时额外生成 1 条赠送金记录
+
+    card_discount_map: 储值卡类型名称 → 折扣配置映射，优先于原始 discount 字段
     """
+    if card_discount_map is None:
+        card_discount_map = {}
     columns = [
         "asset_num", "asset_name", "asset_balance", "asset_type",
         "asset_discount_base", "asset_discount_rate", "asset_is_cross_store",
@@ -186,8 +190,15 @@ def generate_vip_asset_sql(cards, org_id):
         open_ts = card.get("opendate")
         create_time = ts_to_sql_datetime(open_ts)
 
-        # 折扣率转换：美管家 * 10（如 6.9 -> 69），0 视为无折扣即 100
-        discount_rate = discount * 10 if discount > 0 else 100
+        # 折扣率：优先按卡类型名称从配置匹配，否则按原始折扣字段计算
+        raw_card_type_name = card.get("cardtypename", "")
+        if raw_card_type_name in card_discount_map:
+            discount_rate = card_discount_map[raw_card_type_name]["discount_rate"]
+            discount_base = card_discount_map[raw_card_type_name].get("discount_base", 0)
+        else:
+            # 兜底：美管家 * 10（如 6.9 -> 69），0 视为无折扣即 100
+            discount_rate = discount * 10 if discount > 0 else 100
+            discount_base = 0
 
         # 充值金记录
         remark = f"美管家系统迁移-{shop_name}-{card_type_name}-{discount_rate:.0f}-否"
@@ -197,7 +208,7 @@ def generate_vip_asset_sql(cards, org_id):
             f"'{card_type_name}'",
             f"{card_fee:.2f}",
             "0",  # asset_type: 充值金
-            "0",  # asset_discount_base: 标准价
+            str(discount_base),  # asset_discount_base
             f"{discount_rate:.0f}",
             "1",  # asset_is_cross_store: 允许
             "''",
@@ -222,7 +233,7 @@ def generate_vip_asset_sql(cards, org_id):
                 f"'{card_type_name}'",
                 f"{present_fee:.2f}",
                 "1",  # asset_type: 赠送金
-                "0",  # asset_discount_base: 标准价
+                str(discount_base),  # asset_discount_base
                 f"{discount_rate:.0f}",  # 赠送金折扣率与充值金一致
                 "1",  # asset_is_cross_store: 允许
                 "''",
@@ -255,6 +266,26 @@ def batch_insert_sql(table, columns, values_list, batch_size=500):
     return sql_parts
 
 
+def load_card_type_discount():
+    """加载储值卡类型折扣映射"""
+    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "card_type_discount.json")
+    if not os.path.exists(config_path):
+        print(f"警告: 储值卡折扣配置文件不存在: {config_path}")
+        print("将使用美管家原始折扣字段计算折扣率。")
+        return {}
+    with open(config_path, "r", encoding="utf-8") as f:
+        config = json.load(f)
+    # 构建 {卡类型名称: {discount_rate, discount_base}} 映射
+    mapping = {}
+    for ct in config.get("card_types", []):
+        mapping[ct["name"]] = {
+            "discount_rate": ct["discount_rate"],
+            "discount_base": ct.get("discount_base", 0),
+        }
+    print(f"已加载 {len(mapping)} 种储值卡类型折扣配置")
+    return mapping
+
+
 def main():
     print("=" * 60)
     print("美管家系统会员卡数据导入工具")
@@ -264,7 +295,10 @@ def main():
     json_file = select_json_file()
     print(f"已选择文件: {json_file}")
 
-    # 2. 输入门店 ID
+    # 2. 加载储值卡折扣配置
+    card_discount_map = load_card_type_discount()
+
+    # 3. 输入门店 ID
     org_id = input("请输入门店 org_id: ").strip()
     if not org_id:
         print("org_id 不能为空，退出。")
@@ -289,7 +323,7 @@ def main():
     info_columns, info_values = generate_vip_info_sql(member_groups, org_id)
 
     # 7. 生成 VIP 资产 SQL
-    asset_columns, recharge_values, gift_values = generate_vip_asset_sql(cards, org_id)
+    asset_columns, recharge_values, gift_values = generate_vip_asset_sql(cards, org_id, card_discount_map)
 
     # 8. 组装 SQL 文件
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
