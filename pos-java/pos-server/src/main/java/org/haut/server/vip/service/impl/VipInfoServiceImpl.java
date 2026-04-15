@@ -469,8 +469,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         // 1. 验证充值记录
         VipRechargeHistory history = vipRechargeHistoryService.getOne(Wrappers.lambdaQuery(VipRechargeHistory.class)
-                .eq(VipRechargeHistory::getHistoryCode, dto.getHistoryCode())
-                .eq(VipRechargeHistory::getOrgId, auth.getOrgId()));
+                .eq(VipRechargeHistory::getHistoryCode, dto.getHistoryCode()));
         if (history == null) {
             throw new BusinessException("充值记录不存在");
         }
@@ -489,8 +488,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         // 3.1 本金资产
         if (StringUtils.isNotBlank(history.getAssetCode())) {
             VipAsset asset = vipAssetService.getOne(Wrappers.lambdaQuery(VipAsset.class)
-                    .eq(VipAsset::getAssetNum, history.getAssetCode())
-                    .eq(VipAsset::getOrgId, auth.getOrgId()));
+                    .eq(VipAsset::getAssetNum, history.getAssetCode()));
             if (asset != null) {
                 vipAssetService.removeById(asset.getId());
             }
@@ -498,8 +496,7 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
         // 3.2 赠送资产
         if (StringUtils.isNotBlank(history.getPresentAssetCode())) {
             VipAsset presentAsset = vipAssetService.getOne(Wrappers.lambdaQuery(VipAsset.class)
-                    .eq(VipAsset::getAssetNum, history.getPresentAssetCode())
-                    .eq(VipAsset::getOrgId, auth.getOrgId()));
+                    .eq(VipAsset::getAssetNum, history.getPresentAssetCode()));
             if (presentAsset != null) {
                 vipAssetService.removeById(presentAsset.getId());
             }
@@ -510,14 +507,11 @@ public class VipInfoServiceImpl extends ServiceImpl<VipInfoMapper, VipInfo>
                 .eq(VipInfoTicket::getSourceCode, history.getHistoryCode())
                 .eq(VipInfoTicket::getSourceType, 1)); // 1: 充值
         if (!tickets.isEmpty()) {
-            // 检查是否已使用
-            for (VipInfoTicket ticket : tickets) {
-                if (TicketStatusEnum.USED.getValue().equals(ticket.getStatus())) {
-                    throw new BusinessException("充值赠送的优惠券已被使用，无法冲正");
-                }
-            }
             List<Long> ticketIds = tickets.stream().map(VipInfoTicket::getId).toList();
-            vipInfoTicketService.removeByIds(ticketIds);
+            vipInfoTicketService.lambdaUpdate().set(VipInfoTicket::getRemark, "充值冲正：" + dto.getReverseReason())
+                    .set(VipInfoTicket::getIsDelete, 1)
+                    .in(VipInfoTicket::getId, ticketIds)
+                            .update();
         }
 
         // 5. 回退业绩
