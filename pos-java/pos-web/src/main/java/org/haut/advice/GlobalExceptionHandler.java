@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.validation.FieldError;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -29,9 +28,19 @@ public class GlobalExceptionHandler {
      * @param e 异常类型
      * @return 返回异常信息回显数据
      */
+    private static final int DEFAULT_STACK_LINES = 5;
+
+    private void logError(Exception e, int lines) {
+        String stackTrace = ExceptionUtils.getStackTrace(e)
+                .lines()
+                .limit(lines)
+                .collect(Collectors.joining("\n"));
+        log.error("{}\n{}", e.getMessage(), stackTrace);
+    }
+
     @ExceptionHandler(value = Exception.class)
     public JsonVO<String> exceptionHandler(Exception e) {
-        log.error(e.getMessage(), e);
+        logError(e, DEFAULT_STACK_LINES);
         if (e instanceof HttpMediaTypeException) {
             return JsonVO.create(null, ResultStatus.CONTENT_TYPE_ERR.getCode(), e.getMessage());
         }
@@ -51,40 +60,35 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public JsonVO<String> handleRuntimeException(RuntimeException ex) {
-        log.error(ex.getMessage(), ex);
+        logError(ex, DEFAULT_STACK_LINES);
         return JsonVO.fail(ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public JsonVO<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        log.error(ex.getMessage(), ex);
+        logError(ex, DEFAULT_STACK_LINES);
         return JsonVO.fail(ex.getMessage());
     }
 
     @ExceptionHandler(BusinessException.class)
     public JsonVO<Object> handleBusinessException(BusinessException ex) {
-        List<String> stackTrace = ExceptionUtils.getStackTrace(ex)
-                .lines()
-                .limit(5)
-                .toList();
-        log.error("{}:\n{}",ex.getMessage(),stackTrace);
+        logError(ex, DEFAULT_STACK_LINES);
         return JsonVO.create(null, ResultStatus.FAIL.getCode(), ex.getMessage());
     }
 
     @ExceptionHandler(MissingRequestValueException.class)
     public JsonVO<String> handleMissingRequestValueException(MissingRequestValueException ex) {
-        log.error(ex.getMessage(), ex);
+        logError(ex, DEFAULT_STACK_LINES);
         return JsonVO.fail("缺少必填参数");
     }
 
     /**
      * 接口幂等异常处理
      * @param ex 幂等异常
-     * @return
      */
     @ExceptionHandler(IdempotentException.class)
     public JsonVO<String> handleIdempotentException(IdempotentException ex) {
-        log.error(ex.getMessage(), ex);
-        return JsonVO.create(null,ResultStatus.REPETITIVE_OPERATION.getCode(),ex.getMessage());
+        logError(ex, DEFAULT_STACK_LINES);
+        return JsonVO.create(null, ResultStatus.REPETITIVE_OPERATION.getCode(), ex.getMessage());
     }
 }

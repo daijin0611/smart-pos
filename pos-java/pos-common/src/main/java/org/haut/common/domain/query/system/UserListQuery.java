@@ -3,6 +3,8 @@ package org.haut.common.domain.query.system;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Schema(description = "用户列表查询对象")
 public class UserListQuery {
@@ -31,10 +33,10 @@ public class UserListQuery {
     private Long roleId;
 
     /**
-     * 机构id
+     * 门店ID列表，不传则查全部关联门店
      */
-    @Schema(description = "结构id")
-    private Long orgId;
+    @Schema(description = "门店ID列表，不传则查全部关联门店")
+    private List<Long> orgIds;
 
     /**
      * 分页页码

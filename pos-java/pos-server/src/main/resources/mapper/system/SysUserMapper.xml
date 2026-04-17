@@ -88,8 +88,16 @@
             <if test="query.roleId != null">
                 AND u.role_id = #{query.roleId}
             </if>
-            <if test="query.orgId != null">
-                AND (u.org_id = #{query.orgId} OR EXISTS (SELECT 1 FROM sys_org_user sou WHERE sou.usr_id = u.id AND sou.org_id = #{query.orgId}))
+            <if test="query.orgIds != null and !query.orgIds.isEmpty()">
+                AND (u.org_id IN
+                <foreach collection="query.orgIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+                OR EXISTS (SELECT 1 FROM sys_org_user sou WHERE sou.usr_id = u.id AND sou.org_id IN
+                <foreach collection="query.orgIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+                ))
             </if>
     </select>
 </mapper>

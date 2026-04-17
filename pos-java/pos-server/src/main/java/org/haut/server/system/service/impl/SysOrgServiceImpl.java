@@ -24,7 +24,6 @@ import org.haut.server.system.mapper.SysUserRoleMapper;
 import org.haut.server.system.service.SysOrgService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -73,34 +72,9 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg>
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void addOrg(OrgCreateDTO dto) {
         SysOrg org = BeanUtil.toBean(dto, SysOrg.class);
         this.save(org);
-
-        SysRole managerRole = sysRoleMapper.selectOne(Wrappers.lambdaQuery(SysRole.class)
-                .eq(SysRole::getRoleCode, "STORE_MANAGER"));
-        if (managerRole == null) {
-            throw new BusinessException("店长角色不存在");
-        }
-
-        SysUser user = new SysUser();
-        String defaultCode = StringUtils.isNotBlank(dto.getOrgLeaderNum())
-                ? dto.getOrgLeaderNum()
-                : dto.getOrgCode() + "_MGR";
-        user.setUserCode(defaultCode);
-        user.setUserPassword("123456");
-        user.setUserName(dto.getOrgLeader());
-        user.setUserNumber(dto.getOrgLeaderNum());
-        user.setUserPosition("店长");
-        user.setOrgId(org.getId());
-        user.setRoleId(managerRole.getId());
-        user.setRemark("门店创建默认用户");
-        sysUserMapper.insert(user);
-
-        sysUserRoleMapper.insert(new SysUserRole()
-                .setUserId(user.getId())
-                .setRoleId(managerRole.getId()));
     }
 
     @Override
@@ -132,6 +106,46 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg>
             return Collections.emptyList();
         }
         return BeanUtil.copyToList(this.listByIds(orgIds), OrgSimpleVO.class);
+    }
+
+    @Override
+    public void validateOrgIdsExist(Collection<Long> orgIds) {
+        long existCount = this.count(
+                Wrappers.lambdaQuery(SysOrg.class)
+                        .in(SysOrg::getId, orgIds));
+        if (existCount != orgIds.size()) {
+            throw new BusinessException("关联门店ID不存在");
+        }
+    }
+
+    /**
+     * 创建门店默认用户（当前未启用，预留后续需求）
+     */
+    @Transactional(rollbackFor = Exception.class)
+    private void createDefaultUser(SysOrg org, OrgCreateDTO dto) {
+        SysRole managerRole = sysRoleMapper.selectOne(Wrappers.lambdaQuery(SysRole.class)
+                .eq(SysRole::getRoleCode, "STORE_MANAGER"));
+        if (managerRole == null) {
+            throw new BusinessException("店长角色不存在");
+        }
+
+        SysUser user = new SysUser();
+        String defaultCode = StringUtils.isNotBlank(dto.getOrgLeaderNum())
+                ? dto.getOrgLeaderNum()
+                : dto.getOrgCode() + "_MGR";
+        user.setUserCode(defaultCode);
+        user.setUserPassword("123456");
+        user.setUserName(dto.getOrgLeader());
+        user.setUserNumber(dto.getOrgLeaderNum());
+        user.setUserPosition("店长");
+        user.setOrgId(org.getId());
+        user.setRoleId(managerRole.getId());
+        user.setRemark("门店创建默认用户");
+        sysUserMapper.insert(user);
+
+        sysUserRoleMapper.insert(new SysUserRole()
+                .setUserId(user.getId())
+                .setRoleId(managerRole.getId()));
     }
 }
 

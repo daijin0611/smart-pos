@@ -1,0 +1,104 @@
+/**
+ * POS-Java CI/CD Pipeline
+ *
+ * 分支策略:
+ *   dev    → 自动部署到测试环境 (port 8081)
+ *   master → 自动部署到生产环境 (port 8080)
+ *   其他分支 → 仅构建和测试，不部署
+ *
+ * Jenkins 配置要求:
+ *   1. 全局工具配置: JDK17、Maven3
+ *   2. 安装 Docker（Jenkins 用户需有 docker 权限）
+ *   3. 确保 deploy/test/.env 和 deploy/prod/.env 文件存在
+ *   4. 创建 Pipeline 类型任务，SCM 指向本仓库
+ */
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JDK17'
+        maven 'Maven3'
+    }
+
+    environment {
+        IMAGE_NAME = 'pos-java'
+    }
+
+    stages {
+        stage('构建 & 测试') {
+            steps {
+                sh 'mvn clean package -B'
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('构建镜像') {
+            when {
+                anyOf { branch 'dev'; branch 'master' }
+            }
+            steps {
+                script {
+                    def deployEnv = BRANCH_NAME == 'master' ? 'prod' : 'test'
+                    dir("deploy/${deployEnv}") {
+                        sh 'docker-compose build'
+                    }
+                }
+            }
+        }
+
+        stage('部署') {
+            when {
+                anyOf { branch 'dev'; branch 'master' }
+            }
+            steps {
+                script {
+                    def deployEnv = BRANCH_NAME == 'master' ? 'prod' : 'test'
+                    dir("deploy/${deployEnv}") {
+                        sh 'docker-compose down'
+                        sh 'docker-compose up -d'
+                    }
+                }
+            }
+        }
+
+        stage('健康检查') {
+            when {
+                anyOf { branch 'dev'; branch 'master' }
+            }
+            steps {
+                script {
+                    def port = BRANCH_NAME == 'master' ? '8080' : '8081'
+                    sh """
+                        echo "等待应用启动..."
+                        for i in \$(seq 1 36); do
+                            if curl -sf http://localhost:${port}/api/actuator/health > /dev/null 2>&1; then
+                                echo "健康检查通过！"
+                                exit 0
+                            fi
+                            echo "第 \${i}/36 次检查，等待中..."
+                            sleep 5
+                        done
+                        echo "健康检查超时失败！"
+                        exit 1
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "部署成功！分支: ${BRANCH_NAME}, 构建: #${BUILD_NUMBER}"
+        }
+        failure {
+            echo "流水线失败，请检查上方日志。"
+        }
+        always {
+            sh 'docker image prune -f'
+        }
+    }
+}

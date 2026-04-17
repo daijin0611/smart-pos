@@ -1,0 +1,20 @@
+# === 构建阶段 ===
+FROM maven:3.9-eclipse-temurin-17 AS builder
+WORKDIR /build
+COPY pom.xml .
+COPY pos-common/pom.xml pos-common/
+COPY pos-server/pom.xml pos-server/
+COPY pos-web/pom.xml pos-web/
+# 先下载依赖（缓存层，依赖不变时跳过）
+RUN mvn dependency:go-offline -B
+COPY . .
+RUN mvn clean package -DskipTests -B
+
+# === 运行阶段 ===
+FROM eclipse-temurin:17-jre
+MAINTAINER mhding <daijin_0611@qq.com>
+COPY --from=builder /build/pos-web/target/pos-web-1.0-SNAPSHOT.jar app.jar
+ENV JAVA_OPTS="-Xms256m -Xmx512m"
+ENV SPRING_ARGS=""
+EXPOSE 8080
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar $SPRING_ARGS"]

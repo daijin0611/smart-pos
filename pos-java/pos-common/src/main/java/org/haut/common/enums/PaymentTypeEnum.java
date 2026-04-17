@@ -5,22 +5,34 @@ import lombok.Getter;
 
 /**
  * @author 丁铭瀚
- * @version 1.0
+ * @version 2.0
  */
 @Getter
 @AllArgsConstructor
 public enum PaymentTypeEnum {
 
-    WECHAT("0", "微信"),
-    ALIPAY("1", "支付宝"),
-    CASH("2","现金"),
-    ASSET("3","会员卡"),
-    TICKET("4","优惠券"),
-    MEITUAN("5","美团"),
-    DOUYIN("6","抖音"),
-    UNKNOWN("99","未知"),
+    QR("0", "收款码"),
+    CASH("1", "现金"),
+    POS("2", "POS"),
+    DOUYIN("3", "抖音"),
+    MEITUAN("4", "美团"),
+    MEMBER_CARD("5", "会员卡"),
+    TICKET_ITEM("6", "项目券"),
+    TICKET_CONSUMER("7", "代金券")
     ;
 
     private final String code;
     private final String label;
+
+    /**
+     * 根据 code 获取枚举
+     */
+    public static PaymentTypeEnum getByCode(String code) {
+        for (PaymentTypeEnum e : values()) {
+            if (e.code.equals(code)) {
+                return e;
+            }
+        }
+        return null;
+    }
 }

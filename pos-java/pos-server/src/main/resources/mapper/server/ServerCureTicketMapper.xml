@@ -15,7 +15,7 @@
             <result property="price" column="price" />
             <result property="type" column="type" />
             <result property="commissionValue" column="commission_value" />
-            <result property="commissionBase" column="commission_by" />
+            <result property="commissionBase" column="commission_base" />
             <result property="status" column="status"/>
     </resultMap>
 
@@ -34,7 +34,7 @@
         <result property="price" column="price" />
         <result property="type" column="type" />
         <result property="commissionValue" column="commission_value" />
-        <result property="commissionBase" column="commission_by" />
+        <result property="commissionBase" column="commission_base" />
         <result property="status" column="status"/>
         <collection property="ticketDetails" ofType="org.haut.common.domain.vo.server.ServerCureTicketVO$TicketDetailVO">
             <result property="vipTicketName" column="vip_ticket_name"/>

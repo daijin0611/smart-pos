@@ -3,6 +3,7 @@ package org.haut.server.kpi.service;
 import org.haut.common.domain.dto.PageDTO;
 import org.haut.common.domain.dto.kpi.KpiDetailCreateDTO;
 import org.haut.common.domain.dto.order.OrderDetailSettleDTO;
+import org.haut.common.domain.dto.order.OrderSettleDTO;
 import org.haut.common.domain.query.kpi.KpiListQuery;
 import org.haut.common.domain.query.kpi.KpiSummaryQuery;
 import org.haut.common.domain.vo.kpi.KpiListVO;
@@ -37,16 +38,16 @@ public interface KpiDetailService extends IService<KpiDetail> {
      * @param order 订单信息
      * @param orderDetails 订单明细DTO
      */
-    void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails);
+//    void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails);
 
     /**
      * 处理订单结算（使用已保存的订单明细实体，包含正确的ID）
      *
      * @param order 订单信息
-     * @param orderDetails 订单明细DTO
+     * @param orderSettleDTO 订单结算信息
      * @param savedDetails 已保存的订单明细实体列表（与orderDetails一一对应）
      */
-    void handelOrder(OrderInfoEntity order, List<OrderDetailSettleDTO> orderDetails, List<OrderDetailEntity> savedDetails);
+    void handelOrder(OrderInfoEntity order, OrderSettleDTO orderSettleDTO, List<OrderDetailEntity> savedDetails);
 
     /**
      * 获取KPI总结

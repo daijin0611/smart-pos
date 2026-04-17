@@ -9,7 +9,6 @@ import org.haut.common.domain.query.order.OrderInfoQuery;
 import org.haut.common.domain.query.order.OrderPageQuery;
 import org.haut.common.domain.vo.order.OrderInfoVO;
 import org.haut.server.order.entity.OrderInfoEntity;
-import org.haut.server.order.entity.OrderSalesSummary;
 
 import java.util.List;
 

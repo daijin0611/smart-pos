@@ -53,6 +53,9 @@ import org.haut.server.stock.service.StockInOrderService;
 import org.haut.common.domain.dto.stock.StockInOrderCreateDTO;
 import org.haut.server.vip.mapper.VipTicketMapper;
 import org.haut.common.domain.vo.vip.VipTicketVO;
+import org.haut.server.system.service.SysOrgUserService;
+import org.haut.server.system.service.SysOrgService;
+import org.haut.common.domain.vo.system.OrgSimpleVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Service;
@@ -92,6 +95,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private final VipAssetService vipAssetService;
     private final StockInOrderService stockInOrderService;
     private final VipTicketMapper vipTicketMapper;
+    private final SysOrgUserService sysOrgUserService;
+    private final SysOrgService sysOrgService;
 
 
 
@@ -154,6 +159,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             throw new BusinessException("会员不存在");
         else if (vipInfo == null)
             vipInfo = new VipInfo();
+        // 结算前先刷新会员余额，确保消费前余额准确
+        if (vipInfo.getId() != null) {
+            BigDecimal beforeBalance = vipInfoService.updateVipBalance(vipInfo.getId());
+            vipInfo.setBalance(beforeBalance);
+        }
         // 结算订单
         OrderInfoEntity order = initOrderInfo(settleOrderDTO,vipInfo);
         saveOrUpdate(order);
@@ -163,8 +173,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .set(RoomBed::getStatus, BedStatusEnum.FREE.getCode())
                 .update();
         log.info("床位{}状态已更新为空闲", order.getBedName());
+        // 结束所有未结束的计时
+        orderDetailService.stopAllTimersByOrderId(order.getId());
         // 结算订单明细（返回保存后的明细列表）
-        List<OrderDetailEntity> savedDetails = orderDetailService.settleOrderDetailAndReturn(order, settleOrderDTO.getOrderDetails());
+        List<OrderDetailEntity> savedDetails = orderDetailService.settleOrderDetailAndReturn(order, settleOrderDTO);
         log.info("订单明细结算完成");
         // 结算支付信息
         paymentDetailService.handelOrder(settleOrderDTO, order.getOrderCode());
@@ -399,6 +411,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                     .set(RoomBed::getStatus, BedStatusEnum.FREE.getCode())
                     .update();
         }
+        // 结束所有未结束的计时
+        orderDetailService.stopAllTimersByOrderId(orderId);
         return "订单取消成功";
     }
 
@@ -410,7 +424,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Override
     public PageDTO<OrderInfoVO> pageQuery(OrderPageQuery query) {
         AuthInfoDTO auth = AuthContextHolder.getAuth();
-        query.setOrgId(auth.getOrgId());
+        List<Long> orgIds = sysOrgUserService.resolveOrgIds(auth.getUserId(), auth.getOrgId(), query.getOrgIds());
+        query.setOrgIds(orgIds);
         Page<OrderInfoVO> page = Page.of(query.getPageNum(), query.getPageSize());
         IPage<OrderInfoVO> result = baseMapper.pageQuery(page,query);
 
@@ -430,6 +445,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .map(entity -> BeanUtil.toBean(entity, OrderDetailVO.class))
                 .collect(Collectors.toList());
 
+        // 填充技师列表
+        orderDetailService.fillTechnicians(allOrderDetails, orderDetailVOs);
+
         // 按订单ID分组订单明细
         Map<Long, List<OrderDetailVO>> orderDetailMap = orderDetailVOs.stream()
                 .collect(Collectors.groupingBy(OrderDetailVO::getOrderId));
@@ -438,7 +456,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<String> orderCodes = records.stream().map(OrderInfoVO::getOrderCode).collect(Collectors.toList());
         List<PaymentDetail> allPayments = paymentDetailService.lambdaQuery()
                 .in(PaymentDetail::getActiveCode, orderCodes)
-                .eq(PaymentDetail::getOrgId, auth.getOrgId())
+//                .eq(PaymentDetail::getOrgId, auth.getOrgId())
                 .list();
         List<PaymentVO> paymentVOs = BeanUtil.copyToList(allPayments, PaymentVO.class);
 
@@ -459,6 +477,21 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             List<PaymentVO> payments = paymentMap.getOrDefault(orderInfoVO.getOrderCode(), new ArrayList<>());
             orderInfoVO.setPayments(payments);
         });
+
+        // 批量填充门店信息
+        if (!records.isEmpty()) {
+            Set<Long> allOrgIds = records.stream().map(OrderInfoVO::getOrgId).filter(Objects::nonNull).collect(Collectors.toSet());
+            if (!allOrgIds.isEmpty()) {
+                Map<Long, OrgSimpleVO> orgMap = sysOrgService.getOrgSimpleMapByIds(allOrgIds);
+                records.forEach(vo -> {
+                    OrgSimpleVO org = orgMap.get(vo.getOrgId());
+                    if (org != null) {
+                        vo.setOrgName(org.getOrgName());
+                        vo.setOrgCode(org.getOrgCode());
+                    }
+                });
+            }
+        }
 
         return PageDTO.create(result, OrderInfoVO.class);
     }
@@ -595,7 +628,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             List<PaymentDetail> assetPays = paymentDetailService.lambdaQuery()
                     .eq(PaymentDetail::getActiveCode, orderCode)
                     .eq(PaymentDetail::getOrgId, auth.getOrgId())
-                    .eq(PaymentDetail::getPaymentType, Integer.parseInt(PaymentTypeEnum.ASSET.getCode()))
+                    .eq(PaymentDetail::getPaymentType, Integer.parseInt(PaymentTypeEnum.MEMBER_CARD.getCode()))
                     .list();
 
             if (assetPays != null && !assetPays.isEmpty()) {
@@ -723,7 +756,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 .setBedName(dto.getBedName())
                 .setUserId(auth.getUserId())
                 .setUserName(auth.getUserName())
-                .setOrgId(auth.getOrgId());
+                .setOrgId(auth.getOrgId())
+                .setManualOrderNo(dto.getManualOrderNo());
     }
 
     /**
@@ -832,6 +866,28 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         String base = original == null ? "" : original;
         String extra = append == null ? "" : (" " + append.trim());
         return base + extra + " [已对单]";
+    }
+
+    /**
+     * 修改手写单号
+     * @param orderId 订单ID
+     * @param manualOrderNo 新的手写单号
+     */
+    @Override
+    public void updateManualOrderNo(Long orderId, String manualOrderNo) {
+        OrderInfoEntity order = this.getById(orderId);
+        if (order == null) {
+            throw new BusinessException("订单不存在");
+        }
+        if (!OrderStatusEnum.SETTLED.getCode().equals(order.getOrderStatus())
+                && !OrderStatusEnum.RECONCILED.getCode().equals(order.getOrderStatus())) {
+            throw new BusinessException("仅已结算或已对单的订单可修改手写单号");
+        }
+        lambdaUpdate()
+                .eq(OrderInfoEntity::getId, orderId)
+                .set(OrderInfoEntity::getManualOrderNo, manualOrderNo)
+                .update();
+        log.info("订单手写单号修改成功，订单ID：{}，新手写单号：{}", orderId, manualOrderNo);
     }
 }
 

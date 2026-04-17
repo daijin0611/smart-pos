@@ -122,6 +122,16 @@ public class RechargeHistoryVO {
     private Long orgId;
 
     /**
+     * 门店名称
+     */
+    private String orgName;
+
+    /**
+     * 门店编码
+     */
+    private String orgCode;
+
+    /**
      * 支付信息
      */
     private List<PaymentInfoDTO> paymentInfoList;

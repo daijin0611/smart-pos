@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -52,4 +53,7 @@ public class RechargeHistoryQuery {
      */
     @Schema(description = "每页条数", example = "10")
     private Integer pageSize = 10;
+
+    @Schema(description = "门店ID列表，不传则查全部关联门店")
+    private List<Long> orgIds;
 }

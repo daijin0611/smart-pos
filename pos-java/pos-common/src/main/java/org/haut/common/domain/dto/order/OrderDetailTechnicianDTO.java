@@ -16,4 +16,7 @@ public class OrderDetailTechnicianDTO {
 
     @Schema(description = "技师姓名")
     private String userName;
+
+    @Schema(description = "员工编号")
+    private String userCode;
 }

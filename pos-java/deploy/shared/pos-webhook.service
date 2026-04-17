@@ -1,0 +1,15 @@
+[Unit]
+Description=POS Webhook Listener
+After=network.target docker.service
+Wants=docker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/pos/deploy/shared/webhook_listener.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

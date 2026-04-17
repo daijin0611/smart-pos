@@ -29,6 +29,7 @@
         <result column="user_id" property="userId" />
         <result column="user_name" property="userName" />
         <result column="org_id" property="orgId" />
+        <result column="manual_order_no" property="manualOrderNo" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -36,7 +37,7 @@
         id, create_time, update_time, is_delete, remark, order_code, order_time, order_status,
         customer_name, customer_type, vip_id, vip_name, vip_card_number, vip_phone_number, 
         before_balance, after_balance, settle_time, total_amount, actual_amount, discount_amount, 
-        bed_id, bed_name, user_id, user_name, org_id
+        bed_id, bed_name, user_id, user_name, org_id, manual_order_no
     </sql>
 
     <!-- 查询条件 -->
@@ -71,8 +72,11 @@
                 <if test="query.userId != null">
                     AND user_id = #{query.userId}
                 </if>
-                <if test="query.orgId != null">
-                    AND org_id = #{query.orgId}
+                <if test="query.orgIds != null and !query.orgIds.isEmpty()">
+                    AND org_id IN
+                    <foreach collection="query.orgIds" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
                 </if>
                 <if test="query.orderTimeStart != null">
                     AND order_time >= #{query.orderTimeStart}
@@ -195,7 +199,10 @@
         
         <!-- 门店信息 -->
         <result column="org_id" property="orgId" />
-        
+
+        <!-- 手写单号 -->
+        <result column="manual_order_no" property="manualOrderNo" />
+
         <!-- 订单明细列表 - 一对多关联 -->
         <collection property="orderDetails" ofType="org.haut.common.domain.vo.order.OrderDetailVO">
             <id column="detail_id" property="id" />
@@ -235,8 +242,9 @@
     <sql id="pageQueryCondition">
         <where>
             AND oi.is_delete = 0
-            <if test="query.date != null">
-                AND oi.order_time BETWEEN #{query.date[0]} AND #{query.date[1]}
+            <if test="query.date != null and query.date.length >= 2 and query.date[0] != null and query.date[1] != null">
+                AND oi.order_time >= #{query.date[0]}
+                AND oi.order_time &lt; #{query.date[1]} + INTERVAL 1 DAY
             </if>
             <if test="query.userId != null">
                 AND oi.user_id = #{query.userId}
@@ -265,7 +273,12 @@
             <if test="query.payZero == 0">
                 AND oi.actual_amount = 0.00
             </if>
-            AND oi.org_id = #{query.orgId}
+            <if test="query.orgIds != null and !query.orgIds.isEmpty()">
+                AND oi.org_id IN
+                <foreach collection="query.orgIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
         </where>
     </sql>
 
@@ -363,7 +376,8 @@
             oi.bed_name,
             oi.user_id,
             oi.user_name,
-            oi.org_id
+            oi.org_id,
+            oi.manual_order_no
         FROM  order_info oi
 
         <include refid="pageQueryCondition"/>

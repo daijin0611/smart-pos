@@ -172,4 +172,10 @@ public class OrderInfoEntity {
      */
     @Schema(description = "门店ID")
     private Long orgId;
+
+    /**
+     * 手写单号
+     */
+    @Schema(description = "手写单号")
+    private String manualOrderNo;
 }

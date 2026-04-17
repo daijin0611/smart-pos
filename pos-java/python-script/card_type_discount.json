@@ -1,0 +1,65 @@
+{
+  "description": "美管家储值卡类型与折扣率映射表。discount_rate 为整数百分比，= 原始折扣 × 10",
+  "card_types": [
+    {
+      "name": "24年新8.9会员卡",
+      "discount_rate": 89,
+      "discount_base": 0,
+      "remark": "8.9折会员卡"
+    },
+    {
+      "name": "24年新7.9会员卡",
+      "discount_rate": 79,
+      "discount_base": 0,
+      "remark": "7.9折会员卡"
+    },
+    {
+      "name": "24年新6.9会员卡",
+      "discount_rate": 69,
+      "discount_base": 0,
+      "remark": "6.9折会员卡"
+    },
+    {
+      "name": "24年新5.9会员卡",
+      "discount_rate": 59,
+      "discount_base": 0,
+      "remark": "5.9折会员卡"
+    },
+    {
+      "name": "24年新5会员卡",
+      "discount_rate": 50,
+      "discount_base": 0,
+      "remark": "5折会员卡"
+    },
+    {
+      "name": "24年现金价卡",
+      "discount_rate": 100,
+      "discount_base": 0,
+      "remark": "现金价，不打折"
+    },
+    {
+      "name": "25年8.9折赠送100元",
+      "discount_rate": 89,
+      "discount_base": 0,
+      "remark": "8.9折赠送100元"
+    },
+    {
+      "name": "25年7.9折赠送200元",
+      "discount_rate": 79,
+      "discount_base": 0,
+      "remark": "7.9折赠送200元"
+    },
+    {
+      "name": "25年6.9折赠送400元",
+      "discount_rate": 69,
+      "discount_base": 0,
+      "remark": "6.9折赠送400元"
+    },
+    {
+      "name": "25年6.9折赠送600元",
+      "discount_rate": 69,
+      "discount_base": 0,
+      "remark": "6.9折赠送600元"
+    }
+  ]
+}

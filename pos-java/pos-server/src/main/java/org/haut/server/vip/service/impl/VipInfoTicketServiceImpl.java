@@ -79,6 +79,8 @@ public class VipInfoTicketServiceImpl extends ServiceImpl<VipInfoTicketMapper, V
                     .setClaimTime(LocalDate.now())
                     .setOrgId(auth.getOrgId())
                     .setTicketType(vipTicket.getTicketType())
+                    .setSourceCode(dto.getRechargeHistoryCode())
+                    .setSourceType(StringUtils.hasText(dto.getRechargeHistoryCode()) ? 1 : null)
                     .setExpiryDate(vipTicket.getTicketEffectiveTime() == -1 ?
                             null : LocalDate.now().plusDays(vipTicket.getTicketEffectiveTime()))
             );

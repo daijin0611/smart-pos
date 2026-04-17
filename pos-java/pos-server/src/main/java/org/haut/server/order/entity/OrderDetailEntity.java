@@ -116,10 +116,16 @@ public class OrderDetailEntity {
     private BigDecimal stdPrice;
 
     /**
-     * 实际单价
+     * 实收总价
      */
-    @Schema(description = "实际单价")
+    @Schema(description = "实收总价")
     private BigDecimal truePrice;
+
+    /**
+     * 实收单价
+     */
+    @Schema(description = "实收单价")
+    private BigDecimal trueUnitPrice;
 
     /**
      * VIP价格
@@ -132,6 +138,12 @@ public class OrderDetailEntity {
      */
     @Schema(description = "销售数量")
     private Integer quantity;
+
+    /**
+     * 是否已计算折扣（0 未计算，1 已计算）
+     */
+    @Schema(description = "是否已计算折扣（0 未计算，1 已计算）")
+    private Integer isDiscount;
 
     /**
      * 上钟类型（0 点钟，1 加钟，2 轮牌）
@@ -156,4 +168,46 @@ public class OrderDetailEntity {
      */
     @Schema(description = "门店ID")
     private Long orgId;
+
+    /**
+     * 计时状态（0未开始,1进行中,2已暂停,3已结束）
+     */
+    @Schema(description = "计时状态（0未开始,1进行中,2已暂停,3已结束）")
+    private Integer timerStatus;
+
+    /**
+     * 计时开始时间
+     */
+    @Schema(description = "计时开始时间")
+    private Date timerStartTime;
+
+    /**
+     * 预计结束时间
+     */
+    @Schema(description = "预计结束时间")
+    private Date timerEndTime;
+
+    /**
+     * 累计暂停时长（秒）
+     */
+    @Schema(description = "累计暂停时长(秒)")
+    private Integer timerPausedDuration;
+
+    /**
+     * 最近一次暂停开始时间
+     */
+    @Schema(description = "最近暂停开始时间")
+    private Date timerLastPauseTime;
+
+    /**
+     * 实际服务时长（秒）
+     */
+    @Schema(description = "实际服务时长(秒)")
+    private Integer actualDuration;
+
+    /**
+     * 是否已发送到期提醒
+     */
+    @Schema(description = "是否已发送到期提醒")
+    private Integer timerWarned;
 }

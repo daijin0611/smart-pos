@@ -62,7 +62,7 @@ public class PaymentDetailServiceImpl extends ServiceImpl<PaymentDetailMapper, P
         AuthInfoDTO auth = AuthContextHolder.getAuth();
         List<PaymentInfoDTO> paymentInfoList = dto.getPaymentInfoList();
         if(CollectionUtil.isEmpty(paymentInfoList)){
-            if(dto.getActualAmount().equals(BigDecimal.ZERO)){
+            if(dto.getActualAmount().compareTo(BigDecimal.ZERO) == 0){
                 log.warn("订单：{} 实收金额等于0，跳过支付信息处理", orderCode);
                 return;
             }else{

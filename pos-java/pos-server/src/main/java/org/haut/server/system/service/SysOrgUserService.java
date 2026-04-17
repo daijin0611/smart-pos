@@ -32,4 +32,10 @@ public interface SysOrgUserService extends IService<SysOrgUser> {
      * 批量查询多个用户关联的门店ID（不含主门店），返回 Map<userId, List<orgId>>
      */
     Map<Long, List<Long>> batchGetOrgIdsByUserIds(List<Long> userIds);
+
+    /**
+     * 解析查询门店ID列表。
+     * 若 queryOrgIds 非空则直接返回，否则自动查询用户关联门店（主门店+额外关联门店）。
+     */
+    List<Long> resolveOrgIds(Long userId, Long primaryOrgId, List<Long> queryOrgIds);
 }

@@ -115,11 +115,11 @@ public class ServerItemServiceImpl extends ServiceImpl<ServerItemMapper, ServerI
                 .eq(ServerItem::getItemEncode, item.getItemEncode())) > 0) {
             throw new BusinessException("服务项目编码已存在");
         }
-        // 校验名称唯一
-        if (this.count(Wrappers.lambdaQuery(ServerItem.class)
-                .eq(ServerItem::getItemName, item.getItemName())) > 0) {
-            throw new BusinessException("服务项目名称已存在");
-        }
+        // 校验名称唯一 -- 暂不校验
+//        if (this.count(Wrappers.lambdaQuery(ServerItem.class)
+//                .eq(ServerItem::getItemName, item.getItemName())) > 0) {
+//            throw new BusinessException("服务项目名称已存在");
+//        }
         ServerItem entity = serverItemConvert.toEntity(item);
         this.save(entity);
         // 绑定门店关联
@@ -143,12 +143,12 @@ public class ServerItemServiceImpl extends ServiceImpl<ServerItemMapper, ServerI
                 .ne(ServerItem::getId, item.getId())) > 0) {
             throw new BusinessException("服务项目编码已存在");
         }
-        // 校验名称唯一
-        if (this.count(Wrappers.lambdaQuery(ServerItem.class)
-                .eq(ServerItem::getItemName, item.getItemName())
-                .ne(ServerItem::getId, item.getId())) > 0) {
-            throw new BusinessException("服务项目名称已存在");
-        }
+        // 校验名称唯一 -- 暂不校验
+//        if (this.count(Wrappers.lambdaQuery(ServerItem.class)
+//                .eq(ServerItem::getItemName, item.getItemName())
+//                .ne(ServerItem::getId, item.getId())) > 0) {
+//            throw new BusinessException("服务项目名称已存在");
+//        }
         ServerItem entity = serverItemConvert.toEntity(item);
         this.updateById(entity);
         // 更新门店关联

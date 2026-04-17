@@ -66,6 +66,10 @@ public class TicketCountVO {
     private String ticketName;
 
     /**
+     * 优惠券面额
+     */
+    private BigDecimal amount;
+    /**
      * 领取人名称
      */
     private String vipName;
