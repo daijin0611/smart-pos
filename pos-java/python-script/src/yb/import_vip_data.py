@@ -141,11 +141,18 @@ def main():
         last_cons = to_date(m.get("lastConsumptionTime"))
         last_rech = to_date(m.get("lastRechargeTime"))
 
+        # 构建会员remark: 保留老系统的业务备注
+        old_remark = (m.get("remark") or "").strip()
+        remark_parts = [f"{store_name}老系统导入"]
+        if old_remark and old_remark != "系统导入创建会员":
+            remark_parts.append(old_remark)
+        vip_remark = "; ".join(remark_parts)
+
         vip_vals.append(
             f"({sql_str(card)}, {sql_str(name)}, {gender}, {sql_str(phone)}, "
             f"{balance}, {sql_str(birthday)}, {sql_str('123456')}, {org_id}, "
             f"{sql_str(last_cons)}, {sql_str(last_rech)}, "
-            f"{sql_str(ct)}, {sql_str(ut)}, 0, NULL)"
+            f"{sql_str(ct)}, {sql_str(ut)}, 0, {sql_str(vip_remark)})"
         )
 
     for i in range(0, len(vip_vals), BATCH_SIZE):
@@ -183,6 +190,15 @@ def main():
         entity = c.get("entityCardNo") or ""
         ct = c.get("createTime")
 
+        # 构建会员卡remark: 保留老系统门店和卡号信息
+        asset_remark_parts = [f"{store_name}老系统导入"]
+        old_org_name = (c.get("orgName") or "").strip()
+        if old_org_name:
+            asset_remark_parts.append(f"原门店: {old_org_name}")
+        if fin_no:
+            asset_remark_parts.append(f"原卡号: {fin_no}")
+        asset_remark = "; ".join(asset_remark_parts)
+
         # vip_id 通过 cardNumber 子查询获取
         sub_vip = f"(SELECT vi.id FROM vip_info vi WHERE vi.card_number = {sql_str(card)} AND vi.org_id = {org_id} LIMIT 1)"
 
@@ -190,7 +206,7 @@ def main():
             f"({sub_vip}, {sql_str(card)}, {sql_str(asset_num)}, {sql_str(asset_name)}, "
             f"{balance}, {awarded}, {disc_base}, {disc_rate}, "
             f"{cross}, {sql_str(entity)}, {org_id}, "
-            f"{sql_str(ct)}, {sql_str(ct)}, 0, NULL, 0)"
+            f"{sql_str(ct)}, {sql_str(ct)}, 0, {sql_str(asset_remark)}, 0)"
         )
 
     for i in range(0, len(asset_vals), BATCH_SIZE):
@@ -265,9 +281,14 @@ def main():
         member_data = phone_member.get(phone, {})
         vip_name = (member_data.get("memName") or "").strip()
 
-        # 老券名称存入 remark 备查
+        # 构建优惠券remark: 保留老系统完整信息
         old_coupon_name = (def_info.get("couponName") or "").strip()
-        remark = f"老系统券: {old_coupon_name}" if old_coupon_name else None
+        remark_parts = [f"{store_name}老系统导入"]
+        if old_coupon_name:
+            remark_parts.append(f"原券名: {old_coupon_name}")
+        if coupon_no:
+            remark_parts.append(f"原券号: {coupon_no}")
+        remark = "; ".join(remark_parts)
 
         # 子查询
         sub_vip = f"(SELECT vi.id FROM vip_info vi WHERE vi.card_number = {sql_str(card)} AND vi.org_id = {org_id} LIMIT 1)"
